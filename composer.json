@@ -1,0 +1,16 @@
+{
+    "name": "drivezy/laravel-record-manager",
+    "description": "To efficiently manage records & its audits",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hemant Kumar Sah",
+            "email": "hemantanshu@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "drivezy/laravel-utility": "^0.6.0"
+    }
+}
