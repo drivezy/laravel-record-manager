@@ -20,7 +20,7 @@ class ModelRelationship extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function model () {
-        return $this->belongsTo(Model::class);
+        return $this->belongsTo(DataModel::class);
     }
 
     /**
@@ -41,7 +41,7 @@ class ModelRelationship extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function reference_model () {
-        return $this->belongsTo(Model::class);
+        return $this->belongsTo(DataModel::class);
     }
 
     /**
