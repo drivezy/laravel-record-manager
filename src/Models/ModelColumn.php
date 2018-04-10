@@ -12,11 +12,13 @@ use Drivezy\LaravelUtility\Models\LookupValue;
  */
 class ModelColumn extends BaseModel {
 
+    protected $table = 'dz_model_columns';
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function model () {
-        return $this->belongsTo(Model::class);
+        return $this->belongsTo(DataModel::class);
     }
 
     /**
@@ -30,7 +32,7 @@ class ModelColumn extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function reference_model () {
-        return $this->belongsTo(Model::class);
+        return $this->belongsTo(DataModel::class);
     }
 
     /**

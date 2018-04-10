@@ -11,6 +11,6 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "drivezy/laravel-utility": "^0.6.0"
+        "drivezy/laravel-utility": "^0.8.0"
     }
 }

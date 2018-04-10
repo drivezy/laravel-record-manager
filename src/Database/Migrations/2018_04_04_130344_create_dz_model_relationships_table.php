@@ -1,21 +1,26 @@
 <?php
 
 use App\User;
+use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelRecordManager\Models\ModelColumn;
+use Drivezy\LaravelUtility\Models\LookupValue;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateDzModelRelationshipsTable extends Migration
-{
+class CreateDzModelRelationshipsTable extends Migration {
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up()
-    {
+    public function up () {
         Schema::create('dz_model_relationships', function (Blueprint $table) {
             $userTable = ( new User() )->getTable();
+
+            $modelTable = ( new DataModel() )->getTable();
+            $modelColumn = (new ModelColumn())->getTable();
+            $lookupTable = ( new LookupValue() )->getTable();
 
             $table->increments('id');
             $table->unsignedInteger('model_id')->nullable();
@@ -31,10 +36,10 @@ class CreateDzModelRelationshipsTable extends Migration
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
 
-            $table->foreign('model_id')->references('id')->on('dz_model_details');
-            $table->foreign('reference_type_id')->references('id')->on('dz_lookup_values');
-            $table->foreign('reference_model_id')->references('id')->on('dz_model_details');
-            $table->foreign('column_id')->references('id')->on('dz_lookup_values');
+            $table->foreign('model_id')->references('id')->on($modelTable);
+            $table->foreign('reference_type_id')->references('id')->on($lookupTable);
+            $table->foreign('reference_model_id')->references('id')->on($modelTable);
+            $table->foreign('column_id')->references('id')->on($modelColumn);
 
             $table->foreign('created_by')->references('id')->on($userTable);
             $table->foreign('updated_by')->references('id')->on($userTable);
@@ -49,8 +54,7 @@ class CreateDzModelRelationshipsTable extends Migration
      *
      * @return void
      */
-    public function down()
-    {
+    public function down () {
         Schema::dropIfExists('dz_model_relationships');
     }
 }
