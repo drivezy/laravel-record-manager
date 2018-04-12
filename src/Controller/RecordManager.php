@@ -3,6 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Controller;
 
 use App\Http\Controllers\Controller;
+use Drivezy\LaravelRecordManager\Library\DictionaryManager;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -15,6 +16,11 @@ class RecordManager extends Controller {
      * @var
      */
     public $model;
+
+    /**
+     * @var
+     */
+    public $dictionary;
     /**
      * @var null
      */
@@ -214,15 +220,16 @@ class RecordManager extends Controller {
 
         $response['response'] = $data;
 
-//        if ( $request->has('dictionary') ) {
-//            if ( $request->get('dictionary') == 'true' ) {
-//                $model = self::$dictionary ? self::$dictionary : self::getDictionaryStarter();
-//                $dictionary = MenuManagement::getModelDictionary($model, $includes);
-//                $response['dictionary'] = $dictionary[0];
-//                $response['relationship'] = $dictionary[1];
+        if ( $request->has('dictionary') ) {
+            if ( $request->get('dictionary') == 'true' ) {
+                $model = $this->dictionary ? : self::getDictionaryStarter();
+
+                $dictionary = DictionaryManager::getModelDictionary($model, $includes);
+                $response['dictionary'] = $dictionary[0];
+                $response['relationship'] = $dictionary[1];
 //                $response['scopes'] = MenuManagement::getModelScopes($model);
-//            }
-//        }
+            }
+        }
 
         return $response;
     }
@@ -266,5 +273,14 @@ class RecordManager extends Controller {
             $val = $value;
 
         return $val;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getDictionaryStarter () {
+        $splits = explode('\\', $this->model);
+
+        return end($splits);
     }
 }
