@@ -3,7 +3,9 @@
 namespace Drivezy\LaravelRecordManager\Controller;
 
 use App\Http\Controllers\Controller;
+use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
+use Drivezy\LaravelRecordManager\Library\ModelManager;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -18,10 +20,6 @@ class RecordManager extends Controller {
     public $model;
 
     /**
-     * @var
-     */
-    public $dictionary;
-    /**
      * @var null
      */
     public $request = null;
@@ -32,6 +30,9 @@ class RecordManager extends Controller {
      * @return mixed
      */
     public function index (Request $request) {
+        if ( !ModelManager::validateModelAccess($this->model, ModelManager::READ) )
+            return AccessManager::unauthorizedAccess();
+
         $this->request = $request;
         $model = $this->model;
 
@@ -50,6 +51,9 @@ class RecordManager extends Controller {
      * @return mixed
      */
     public function show (Request $request, $id) {
+        if ( !ModelManager::validateModelAccess($this->model, ModelManager::READ) )
+            return AccessManager::unauthorizedAccess();
+
         if ( !is_numeric($id) )
             return Response::json(['success' => false, 'response' => 'invalid operation']);
 
@@ -68,6 +72,9 @@ class RecordManager extends Controller {
      * @return mixed
      */
     public function store (Request $request) {
+        if ( !ModelManager::validateModelAccess($this->model, ModelManager::ADD) )
+            return AccessManager::unauthorizedAccess();
+
         $model = $this->model;
         $data = $model::create($request->except('access_token'));
 
@@ -83,6 +90,9 @@ class RecordManager extends Controller {
      * @return null
      */
     public function update (Request $request, $id) {
+        if ( !ModelManager::validateModelAccess($this->model, ModelManager::EDIT) )
+            return AccessManager::unauthorizedAccess();
+
         if ( !is_numeric($id) )
             return Response::json(['success' => false, 'response' => 'invalid operation']);
 
@@ -109,6 +119,9 @@ class RecordManager extends Controller {
      * @return mixed
      */
     public function destroy ($id) {
+        if ( !ModelManager::validateModelAccess($this->model, ModelManager::DELETE) )
+            return AccessManager::unauthorizedAccess();
+
         $model = $this->model;
 
         $data = $model::find($id);
@@ -222,9 +235,7 @@ class RecordManager extends Controller {
 
         if ( $request->has('dictionary') ) {
             if ( $request->get('dictionary') == 'true' ) {
-                $model = $this->dictionary ? : self::getDictionaryStarter();
-
-                $dictionary = DictionaryManager::getModelDictionary($model, $includes);
+                $dictionary = DictionaryManager::getModelDictionary($this->model, $includes);
                 $response['dictionary'] = $dictionary[0];
                 $response['relationship'] = $dictionary[1];
 //                $response['scopes'] = MenuManagement::getModelScopes($model);
@@ -273,14 +284,5 @@ class RecordManager extends Controller {
             $val = $value;
 
         return $val;
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getDictionaryStarter () {
-        $splits = explode('\\', $this->model);
-
-        return end($splits);
     }
 }

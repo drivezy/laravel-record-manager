@@ -212,16 +212,20 @@ class DictionaryManager {
     }
 
     /**
-     * @param $base
+     * @param $className
      * @param $includes
      * @return array
      */
-    public static function getModelDictionary ($base, $includes) {
+    public static function getModelDictionary ($className, $includes) {
         $models = [];
+
+        $splits = explode('\\', $className);
+        $base = end($splits);
+
         array_push($models, $base);
 
         //fetching model against the base
-        $model = DataModel::where('name', $base)->first();
+        $model = DataModel::where('model_hash', md5($className))->first();
         if ( !$model ) return null;
 
         $modelId = $model->id;
@@ -244,6 +248,7 @@ class DictionaryManager {
                     $relatedId = $alias->reference_model_id;
 
                     $dictionary[ $relationShipName ] = self::getModelColumns($relatedId, true);
+                    $alias->actions = ModelManager::getModelActions($alias->reference_model);
 
 //                    $alias->actions = self::getDistinctActions('ModelAlias', $alias->id, $alias->related_model);
 //                    $alias->preferences = self::getUserPreferences($relationShipName);

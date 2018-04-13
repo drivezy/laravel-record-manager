@@ -54,7 +54,7 @@ class ModelRelationshipTypeSeeder extends Seeder {
         //first check the column definition if present in our lookup and
         //then update / create the record accordingly
         foreach ( $columns as $column ) {
-            $record = LookupValue::find($column->id);
+            $record = LookupValue::find($column['id']);
 
             if ( !$record )
                 LookupValue::create($column);
