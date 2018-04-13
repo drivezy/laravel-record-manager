@@ -26,6 +26,8 @@ class CreateDzModelColumnsTable extends Migration {
             $table->string('display_name');
             $table->string('description')->nullable();
 
+            $table->boolean('visibility')->default(true);
+
             $table->unsignedInteger('column_type_id')->nullable();
             $table->unsignedInteger('reference_model_id')->nullable();
 

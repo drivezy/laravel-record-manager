@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
+use Drivezy\LaravelAccessManager\Models\RoleAssignment;
 use Drivezy\LaravelRecordManager\Observers\ModelObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 
@@ -29,6 +30,12 @@ class DataModel extends BaseModel {
         return $this->hasMany(ModelRelationship::class, 'model_id');
     }
 
+    /**
+     * @return $this
+     */
+    public function roles () {
+        return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', 'Model');
+    }
 
     /**
      * Override the boot functionality to add up the observer

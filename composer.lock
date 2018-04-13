@@ -4,20 +4,56 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "23df8b0601bec1668ca28c0ca489602c",
+    "content-hash": "520a6e05791289017381f21687a6dad7",
     "packages": [
         {
-            "name": "drivezy/laravel-utility",
-            "version": "v0.8",
+            "name": "drivezy/laravel-access-manager",
+            "version": "v0.3",
             "source": {
                 "type": "git",
-                "url": "https://github.com/drivezy/laravel-utility.git",
-                "reference": "9fa4aeb535a8d23de9f668e2d84446a2210b1b63"
+                "url": "https://github.com/drivezy/laravel-access-manager.git",
+                "reference": "53a0854f56c5d2f9df7460a4e4495e2e4a87dabc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drivezy/laravel-utility/zipball/9fa4aeb535a8d23de9f668e2d84446a2210b1b63",
-                "reference": "9fa4aeb535a8d23de9f668e2d84446a2210b1b63",
+                "url": "https://api.github.com/repos/drivezy/laravel-access-manager/zipball/53a0854f56c5d2f9df7460a4e4495e2e4a87dabc",
+                "reference": "53a0854f56c5d2f9df7460a4e4495e2e4a87dabc",
+                "shasum": ""
+            },
+            "require": {
+                "drivezy/laravel-utility": "^0.9.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Drivezy\\LaravelAccessManager\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Hemant Kumar Sah",
+                    "email": "hemantanshu@gmail.com"
+                }
+            ],
+            "description": "To manage the different access levels across multiple records, routes",
+            "time": "2018-04-13T08:17:51+00:00"
+        },
+        {
+            "name": "drivezy/laravel-utility",
+            "version": "v0.9",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/drivezy/laravel-utility.git",
+                "reference": "72cd0942ea8dfb1c29e769bf2d9863f56beea860"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/drivezy/laravel-utility/zipball/72cd0942ea8dfb1c29e769bf2d9863f56beea860",
+                "reference": "72cd0942ea8dfb1c29e769bf2d9863f56beea860",
                 "shasum": ""
             },
             "type": "library",
@@ -37,7 +73,7 @@
                 }
             ],
             "description": "Base functionality for a scalable application.",
-            "time": "2018-04-10T06:20:37+00:00"
+            "time": "2018-04-10T07:01:27+00:00"
         }
     ],
     "packages-dev": [],

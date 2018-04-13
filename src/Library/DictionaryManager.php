@@ -211,5 +211,74 @@ class DictionaryManager {
         return 21;
     }
 
+    /**
+     * @param $className
+     * @param $includes
+     * @return array
+     */
+    public static function getModelDictionary ($className, $includes) {
+        $models = [];
+
+        $splits = explode('\\', $className);
+        $base = end($splits);
+
+        array_push($models, $base);
+
+        //fetching model against the base
+        $model = DataModel::where('model_hash', md5($className))->first();
+        if ( !$model ) return null;
+
+        $modelId = $model->id;
+        $dictionary = $links = [];
+
+        $links[ strtolower($base) ] = $model;
+        $dictionary[ strtolower($base) ] = self::getModelColumns($modelId, true);
+
+        foreach ( $includes as $include ) {
+            $splits = explode('.', $include);
+            $relatedId = $modelId;
+            $relationShipName = strtolower($base);
+
+            foreach ( $splits as $split ) {
+                $split = trim($split);
+                $relationShipName .= '.' . strtolower($split);
+                $alias = self::getModelAlias($relatedId, $split);
+
+                if ( $alias && $alias->reference_model ) {
+                    $relatedId = $alias->reference_model_id;
+
+                    $dictionary[ $relationShipName ] = self::getModelColumns($relatedId, true);
+                    $alias->actions = ModelManager::getModelActions($alias->reference_model);
+
+//                    $alias->actions = self::getDistinctActions('ModelAlias', $alias->id, $alias->related_model);
+//                    $alias->preferences = self::getUserPreferences($relationShipName);
+
+                    $links[ $relationShipName ] = $alias;
+                }
+            }
+        }
+
+        return [$dictionary, $links];
+    }
+
+    /**
+     * @param $modelId
+     * @param bool $relatedModel
+     * @return \Illuminate\Database\Eloquent\Collection|static[]
+     */
+    private static function getModelColumns ($modelId, $relatedModel = false) {
+        $includes = $relatedModel ? ['reference_model'] : [];
+
+        return ModelColumn::with($includes)->where('model_id', $modelId)->where('visibility', true)->get();
+    }
+
+    /**
+     * @param $modelId
+     * @param $alias
+     * @return \Illuminate\Database\Eloquent\Model|null|static
+     */
+    private static function getModelAlias ($modelId, $alias) {
+        return ModelRelationship::with(array('reference_type', 'reference_model'))->where('model_id', $modelId)->where('name', $alias)->first();
+    }
 
 }

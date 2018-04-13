@@ -11,6 +11,6 @@
     ],
     "minimum-stability": "stable",
     "require": {
-        "drivezy/laravel-utility": "^0.8.0"
+        "drivezy/laravel-access-manager": "^0.3.0"
     }
 }
