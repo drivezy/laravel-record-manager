@@ -1,0 +1,16 @@
+<?php
+
+namespace Drivezy\LaravelRecordManager\Controller;
+
+use Drivezy\LaravelAccessManager\Models\Role;
+
+/**
+ * Class RoleController
+ * @package Drivezy\LaravelRecordManager\Controller
+ */
+class RoleController extends RecordController {
+    /**
+     * @var string
+     */
+    public $model = Role::class;
+}
