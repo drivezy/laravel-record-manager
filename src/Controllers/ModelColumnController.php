@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivezy\LaravelRecordManager\Controller;
+namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 
