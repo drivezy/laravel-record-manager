@@ -12,9 +12,12 @@ class LaravelRecordManagerServiceProvider extends ServiceProvider {
      * @return void
      */
     public function boot () {
+        $this->loadRoutesFrom(__DIR__ . '/routes.php');
+
+        $this->loadMigrationsFrom(__DIR__ . '/Database/Migrations');
+
         $this->publishes([
-            __DIR__ . '/Database/Migrations' => database_path('migrations'),
-            __DIR__ . '/Database/Seeds'      => database_path('seeds'),
+            __DIR__ . '/Database/Seeds' => database_path('seeds'),
         ], 'migrations');
     }
 
@@ -24,5 +27,6 @@ class LaravelRecordManagerServiceProvider extends ServiceProvider {
      * @return void
      */
     public function register () {
+
     }
 }
