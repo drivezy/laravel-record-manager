@@ -1,0 +1,11 @@
+
+            $userTable = ( new \App\User() )->getTable();
+            $table->increments('id');
+
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
+
+            $table->foreign('created_by')->references('id')->on($userTable);
+            $table->foreign('updated_by')->references('id')->on($userTable);
+
+            $table->softDeletes();
