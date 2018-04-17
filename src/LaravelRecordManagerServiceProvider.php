@@ -25,11 +25,6 @@ class LaravelRecordManagerServiceProvider extends ServiceProvider {
                 CodeGeneratorCommand::class,
             ]);
         }
-
-        //publish the seeds
-        $this->publishes([
-            __DIR__ . '/Database/Seeds' => database_path('seeds'),
-        ], 'migrations');
     }
 
     /**

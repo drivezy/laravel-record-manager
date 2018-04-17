@@ -1,13 +1,14 @@
 <?php
 
+namespace Drivezy\LaravelRecordManager\Database\Seeds;
+
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
-use Illuminate\Database\Seeder;
 
 /**
  * Class DataModelSeeder
  */
-class DataModelSeeder extends Seeder {
+class DataModelSeeder {
     /**
      * Run the database seeds.
      *

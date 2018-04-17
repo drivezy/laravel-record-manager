@@ -1,6 +1,7 @@
 <?php
 
 use App\User;
+use Drivezy\LaravelRecordManager\Database\Seeds\DataModelSeeder;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -38,6 +39,9 @@ class CreateDzModelDetailsTable extends Migration {
 
             $table->index('model_hash');
         });
+
+        //populate the data model table
+        ( new DataModelSeeder() )->run();
     }
 
     /**

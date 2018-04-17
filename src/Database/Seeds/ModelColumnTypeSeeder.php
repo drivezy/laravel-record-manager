@@ -1,10 +1,11 @@
 <?php
 
+namespace Drivezy\LaravelRecordManager\Database\Seeds;
+
 use Drivezy\LaravelUtility\Models\LookupType;
 use Drivezy\LaravelUtility\Models\LookupValue;
-use Illuminate\Database\Seeder;
 
-class ModelColumnTypeSeeder extends Seeder {
+class ModelColumnTypeSeeder {
     /**
      * Run the database seeds.
      *
