@@ -1,12 +1,13 @@
 <?php
 
 use App\User;
+use Drivezy\LaravelRecordManager\Database\Seeds\ModelRelationshipTypeSeeder;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelUtility\Models\LookupValue;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateDzModelRelationshipsTable extends Migration {
     /**
@@ -19,7 +20,7 @@ class CreateDzModelRelationshipsTable extends Migration {
             $userTable = ( new User() )->getTable();
 
             $modelTable = ( new DataModel() )->getTable();
-            $modelColumn = (new ModelColumn())->getTable();
+            $modelColumn = ( new ModelColumn() )->getTable();
             $lookupTable = ( new LookupValue() )->getTable();
 
             $table->increments('id');
@@ -47,6 +48,9 @@ class CreateDzModelRelationshipsTable extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+
+        //load model relationship seeder
+        ( new ModelRelationshipTypeSeeder() )->run();
     }
 
     /**

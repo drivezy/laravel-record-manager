@@ -1,13 +1,14 @@
 <?php
 
+namespace Drivezy\LaravelRecordManager\Database\Seeds;
+
 use Drivezy\LaravelUtility\Models\LookupType;
 use Drivezy\LaravelUtility\Models\LookupValue;
-use Illuminate\Database\Seeder;
 
 /**
  * Class ModelRelationshipTypeSeeder
  */
-class ModelRelationshipTypeSeeder extends Seeder {
+class ModelRelationshipTypeSeeder {
     /**
      * Run the database seeds.
      *
