@@ -13,6 +13,11 @@
   "require": {
     "drivezy/laravel-access-manager": "^0.3.0"
   },
+  "autoload": {
+    "psr-4": {
+      "Drivezy\\LaravelRecordManager\\": "src/"
+    }
+  },
   "extra": {
     "laravel": {
       "providers": [
