@@ -19,4 +19,6 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
     Route::resource('userGroup', 'UserGroupController');
     Route::resource('userGroupMember', 'UserGroupMemberController');
+
+    Route::resource('document', 'DocumentController');
 });

@@ -17,7 +17,7 @@ class ModelColumnTypeSeeder {
 
         LookupType::create([
             'id'          => 1,
-            'name'        => 'Model Column Types',
+            'name'        => 'Data Model Column Types',
             'description' => 'Different types of model columns supported by the platform code',
         ]);
         $columns = [
