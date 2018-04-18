@@ -4,9 +4,9 @@ use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\ModelColumnTypeSeeder;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelUtility\Models\LookupValue;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateDzModelColumnsTable extends Migration {
     /**

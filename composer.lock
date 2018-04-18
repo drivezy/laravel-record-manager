@@ -1,10 +1,10 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "520a6e05791289017381f21687a6dad7",
+    "content-hash": "f45447a15d2d182b37d47b05df328771",
     "packages": [
         {
             "name": "drivezy/laravel-access-manager",
@@ -44,19 +44,26 @@
         },
         {
             "name": "drivezy/laravel-utility",
-            "version": "v0.9",
+            "version": "v0.9.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drivezy/laravel-utility.git",
-                "reference": "72cd0942ea8dfb1c29e769bf2d9863f56beea860"
+                "reference": "b361833642f6417189b0a8abbc6e0499d8aa6c60"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drivezy/laravel-utility/zipball/72cd0942ea8dfb1c29e769bf2d9863f56beea860",
-                "reference": "72cd0942ea8dfb1c29e769bf2d9863f56beea860",
+                "url": "https://api.github.com/repos/drivezy/laravel-utility/zipball/b361833642f6417189b0a8abbc6e0499d8aa6c60",
+                "reference": "b361833642f6417189b0a8abbc6e0499d8aa6c60",
                 "shasum": ""
             },
             "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Drivezy\\LaravelUtility\\LaravelUtilityServiceProvider"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Drivezy\\LaravelUtility\\": "src/"
@@ -73,7 +80,7 @@
                 }
             ],
             "description": "Base functionality for a scalable application.",
-            "time": "2018-04-10T07:01:27+00:00"
+            "time": "2018-04-17T18:40:54+00:00"
         }
     ],
     "packages-dev": [],
