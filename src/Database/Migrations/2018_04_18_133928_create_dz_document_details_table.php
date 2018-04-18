@@ -14,7 +14,7 @@ class CreateDzDocumentDetailsTable extends Migration {
      * @return void
      */
     public function up () {
-        Schema::table('dz_document_details', function (Blueprint $table) {
+        Schema::create('dz_document_details', function (Blueprint $table) {
             $userTable = ( new User() )->getTable();
             $lookupTable = ( new LookupValue() )->getTable();
 
@@ -50,8 +50,6 @@ class CreateDzDocumentDetailsTable extends Migration {
      * @return void
      */
     public function down () {
-        Schema::table('dz_document_details', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('dz_document_details');
     }
 }
