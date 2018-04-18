@@ -1,7 +1,6 @@
 <?php
 
 use App\User;
-use Drivezy\LaravelRecordManager\Database\Seeds\ModelColumnTypeSeeder;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelUtility\Models\LookupValue;
 use Illuminate\Database\Migrations\Migration;
@@ -45,9 +44,6 @@ class CreateDzModelColumnsTable extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
-
-        //load the model column lookup type
-        ( new ModelColumnTypeSeeder() )->run();
     }
 
     /**

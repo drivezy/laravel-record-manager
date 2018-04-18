@@ -2,6 +2,7 @@
 
 use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\DataModelSeeder;
+use Drivezy\LaravelRecordManager\Database\Seeds\ModelColumnTypeSeeder;
 use Drivezy\LaravelRecordManager\Database\Seeds\ModelRelationshipTypeSeeder;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
@@ -50,11 +51,14 @@ class CreateDzModelRelationshipsTable extends Migration {
             $table->softDeletes();
         });
 
-        //populate the data model table
-        ( new DataModelSeeder() )->run();
+        //load the model column lookup type
+        ( new ModelColumnTypeSeeder() )->run();
 
         //load model relationship seeder
         ( new ModelRelationshipTypeSeeder() )->run();
+
+        //populate the data model table
+        ( new DataModelSeeder() )->run();
     }
 
     /**
