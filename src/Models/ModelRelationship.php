@@ -45,7 +45,7 @@ class ModelRelationship extends BaseModel {
     }
 
     /**
-     *Override the boot functionality to add up the observer
+     * Override the boot functionality to add up the observer
      */
     public static function boot () {
         parent::boot();

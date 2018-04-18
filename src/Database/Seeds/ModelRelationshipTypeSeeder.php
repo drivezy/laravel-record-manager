@@ -18,6 +18,7 @@ class ModelRelationshipTypeSeeder {
         //this would be locked down to the 20th record.
         //21st and above would be used for something else
 
+
         //create record only if required
         $record = LookupType::find(2);
         if ( !$record )
