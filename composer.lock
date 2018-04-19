@@ -4,23 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "00e1f262a9874d972904b6ba7dc19081",
-    "packages": [
+    "content-hash": "db63b97a9e3143a5d61a18430c7b58a8",
+    "packages": [],
+    "packages-dev": [
         {
             "name": "drivezy/laravel-access-manager",
-            "version": "v0.4.4",
+            "version": "v0.4.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drivezy/laravel-access-manager.git",
-                "reference": "11d04b4459969bc8d65dad31161c05ae61026806"
+                "reference": "ee67d33c68e93591fa4af76630bf608ba2ddc689"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drivezy/laravel-access-manager/zipball/11d04b4459969bc8d65dad31161c05ae61026806",
-                "reference": "11d04b4459969bc8d65dad31161c05ae61026806",
+                "url": "https://api.github.com/repos/drivezy/laravel-access-manager/zipball/ee67d33c68e93591fa4af76630bf608ba2ddc689",
+                "reference": "ee67d33c68e93591fa4af76630bf608ba2ddc689",
                 "shasum": ""
             },
-            "require": {
+            "require-dev": {
                 "drivezy/laravel-utility": "^0.9.5"
             },
             "type": "library",
@@ -47,7 +48,7 @@
                 }
             ],
             "description": "To manage the different access levels across multiple records, routes",
-            "time": "2018-04-19T07:57:55+00:00"
+            "time": "2018-04-19T08:19:20+00:00"
         },
         {
             "name": "drivezy/laravel-utility",
@@ -90,7 +91,6 @@
             "time": "2018-04-17T18:40:54+00:00"
         }
     ],
-    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],

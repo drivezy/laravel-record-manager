@@ -10,6 +10,10 @@
     }
   ],
   "minimum-stability": "stable",
+  "require-dev": {
+    "drivezy/laravel-access-manager": "^0.4.6",
+    "drivezy/laravel-utility": "^0.9.5"
+  },
   "autoload": {
     "psr-4": {
       "Drivezy\\LaravelRecordManager\\": "src/"
@@ -21,8 +25,5 @@
         "Drivezy\\LaravelRecordManager\\LaravelRecordManagerServiceProvider"
       ]
     }
-  },
-  "require": {
-    "drivezy/laravel-access-manager": "^0.4.4"
   }
 }
