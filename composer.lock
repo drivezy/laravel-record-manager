@@ -4,26 +4,34 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f45447a15d2d182b37d47b05df328771",
-    "packages": [
+    "content-hash": "4afa15a939a29d5b4454119fb947ef8c",
+    "packages": [],
+    "packages-dev": [
         {
             "name": "drivezy/laravel-access-manager",
-            "version": "v0.3",
+            "version": "v0.4.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/drivezy/laravel-access-manager.git",
-                "reference": "53a0854f56c5d2f9df7460a4e4495e2e4a87dabc"
+                "reference": "a2141b37a8f666cbed970fe0bc9ef56a3078e861"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/drivezy/laravel-access-manager/zipball/53a0854f56c5d2f9df7460a4e4495e2e4a87dabc",
-                "reference": "53a0854f56c5d2f9df7460a4e4495e2e4a87dabc",
+                "url": "https://api.github.com/repos/drivezy/laravel-access-manager/zipball/a2141b37a8f666cbed970fe0bc9ef56a3078e861",
+                "reference": "a2141b37a8f666cbed970fe0bc9ef56a3078e861",
                 "shasum": ""
             },
-            "require": {
-                "drivezy/laravel-utility": "^0.9.0"
+            "require-dev": {
+                "drivezy/laravel-utility": "^0.9.5"
             },
             "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Drivezy\\LaravelAccessManager\\LaravelAccessManagerServiceProvider"
+                    ]
+                }
+            },
             "autoload": {
                 "psr-4": {
                     "Drivezy\\LaravelAccessManager\\": "src/"
@@ -40,50 +48,9 @@
                 }
             ],
             "description": "To manage the different access levels across multiple records, routes",
-            "time": "2018-04-13T08:17:51+00:00"
-        },
-        {
-            "name": "drivezy/laravel-utility",
-            "version": "v0.9.5",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/drivezy/laravel-utility.git",
-                "reference": "b361833642f6417189b0a8abbc6e0499d8aa6c60"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/drivezy/laravel-utility/zipball/b361833642f6417189b0a8abbc6e0499d8aa6c60",
-                "reference": "b361833642f6417189b0a8abbc6e0499d8aa6c60",
-                "shasum": ""
-            },
-            "type": "library",
-            "extra": {
-                "laravel": {
-                    "providers": [
-                        "Drivezy\\LaravelUtility\\LaravelUtilityServiceProvider"
-                    ]
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "Drivezy\\LaravelUtility\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Hemant Kumar Sah",
-                    "email": "hemantanshu@gmail.com"
-                }
-            ],
-            "description": "Base functionality for a scalable application.",
-            "time": "2018-04-17T18:40:54+00:00"
+            "time": "2018-04-19T07:15:46+00:00"
         }
     ],
-    "packages-dev": [],
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": [],
