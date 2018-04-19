@@ -1,5 +1,5 @@
 
-            $userTable = ( new \App\User() )->getTable();
+            $userTable = ( new User() )->getTable();
             $table->increments('id');
 
             $table->unsignedInteger('created_by')->nullable();

@@ -3,6 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Commands;
 
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Artisan;
 
 /**
  * Class CodeGeneratorCommand
@@ -101,33 +102,46 @@ class CodeGeneratorCommand extends Command {
      * If not then create one
      */
     public function verifyNamespaceValidity () {
-        if ( is_dir(app_path() . '/Models/' . $this->namespace) ) return;
+        //check if models directory is created in app
+        if ( !is_dir(app_path() . '/Models') ) mkdir(app_path() . '/Models');
 
-        mkdir(app_path() . '/Models/' . $this->namespace);
-        $this->info('Created Directory : ' . 'Models/' . $this->namespace);
+        //check if observers are created in app
+        if ( !is_dir(app_path() . '/Observers') ) mkdir(app_path() . '/Observers');
 
-        mkdir(app_path() . '/Observers/' . $this->namespace);
-        $this->info('Created Directory : ' . 'Observers/' . $this->namespace);
+        //check for model namespace directory
+        if ( !is_dir(app_path() . '/Models/' . $this->namespace) ) {
+            mkdir(app_path() . '/Models/' . $this->namespace);
+            $this->info('Created Directory : ' . 'Models/' . $this->namespace);
+        }
 
-        mkdir(app_path() . '/Http/Controllers/' . $this->namespace);
-        $this->info('Created Directory : ' . 'Http/Controllers/' . $this->namespace);
+        //check for observer namespace directory
+        if ( !is_dir(app_path() . '/Observers/' . $this->namespace) ) {
+            mkdir(app_path() . '/Observers/' . $this->namespace);
+            $this->info('Created Directory : ' . 'Observers/' . $this->namespace);
+        }
+
+        //check for controller namespace directory
+        if ( !is_dir(app_path() . '/Http/Controllers/' . $this->namespace) ) {
+            mkdir(app_path() . '/Http/Controllers/' . $this->namespace);
+            $this->info('Created Directory : ' . 'Http/Controllers/' . $this->namespace);
+        }
     }
 
     /**
      * Create observer, model and then controller
      */
     public function generateResourceFiles () {
-        $content = $this->replaceContents(__DIR__ . '/../Templates/ObserverTemplate.stub');
+        $content = $this->replaceContents(file_get_contents(__DIR__ . '/../Templates/ObserverTemplate.stub'));
         $file = app_path() . '/Observers/' . $this->namespace . '/' . $this->name . 'Observer.php';
         file_put_contents($file, $content);
         $this->info('Created Observer File : ' . str_replace(app_path(), '', $file));
 
-        $content = $this->replaceContents(__DIR__ . '/../Templates/ModelTemplate.stub');
+        $content = $this->replaceContents(file_get_contents(__DIR__ . '/../Templates/ModelTemplate.stub'));
         $file = app_path() . '/Models/' . $this->namespace . '/' . $this->name . '.php';
         file_put_contents($file, $content);
         $this->info('Created Model File : ' . str_replace(app_path(), '', $file));
 
-        $content = $this->replaceContents(__DIR__ . '/../Templates/ControllerTemplate.stub');
+        $content = $this->replaceContents(file_get_contents(__DIR__ . '/../Templates/ControllerTemplate.stub'));
         $file = app_path() . '/Http/Controllers/' . $this->namespace . '/' . $this->name . 'Controller.php';
         file_put_contents($file, $content);
         $this->info('Created Controller File : ' . str_replace(app_path(), '', $file));
