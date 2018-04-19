@@ -76,8 +76,7 @@ class ModelManager {
     public static function validateModelAccess ($model, $operation) {
         $model = is_string($model) ? DataModel::where('model_hash', md5($model))->first() : $model;
 
-        if ( !$model )
-            return AccessManager::unauthorizedAccess();
+        if ( !$model ) return false;
 
         $roles = RoleAssignment::where('source_id', $model->id)
             ->where('source_type', 'Model')
