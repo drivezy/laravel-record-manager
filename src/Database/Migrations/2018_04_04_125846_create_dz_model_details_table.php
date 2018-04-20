@@ -23,7 +23,7 @@ class CreateDzModelDetailsTable extends Migration {
             $table->string('route_name')->nullable();
             $table->string('namespace')->nullable();
 
-            $table->char('allowed_permissions', 4);
+            $table->char('allowed_permissions', 4)->nullable();
 
             $table->string('model_hash');
 
