@@ -3,6 +3,8 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\ExpenseVoucher;
+use App\User;
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
@@ -38,6 +40,7 @@ class RecordManager extends Controller {
 
         $query = $this->getEncodedQuery();
         $query = $model::whereRaw($query['query'], $query['value']);
+        $query = $query->whereRaw('restricted = 0');
 
         $data = $this->getRecordData($query);
         $data['success'] = true;
@@ -238,7 +241,6 @@ class RecordManager extends Controller {
                 $dictionary = DictionaryManager::getModelDictionary($this->model, $includes);
                 $response['dictionary'] = $dictionary[0];
                 $response['relationship'] = $dictionary[1];
-//                $response['scopes'] = MenuManagement::getModelScopes($model);
             }
         }
 

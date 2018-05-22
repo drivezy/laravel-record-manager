@@ -81,7 +81,7 @@ class ModelManager {
         $roles = RoleAssignment::where('source_id', $model->id)
             ->where('source_type', 'Model')
             ->where('scope', 'like', '%' . $operation . '%')
-            ->pluck('role_id');
+            ->pluck('role_id')->toArray();
 
         return AccessManager::hasRole($roles);
     }

@@ -32,7 +32,7 @@ class ModelScanner {
             $ns = $namespace . '\\' . $strippedFile;
 
             if ( is_dir($pwd) ) {
-                self::getModels($pwd, $ns);
+                self::loadModels($pwd, $ns);
                 continue;
             }
 
@@ -47,8 +47,8 @@ class ModelScanner {
             DataModel::create([
                 'name'        => $strippedFile,
                 'namespace'   => $namespace,
-                'permissions' => '----',
-                'table'       => $class->getTable(),
+                'allowed_permissions' => '----',
+                'table_name'       => $class->getTable(),
             ]);
         }
     }
