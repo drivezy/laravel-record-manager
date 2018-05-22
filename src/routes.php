@@ -21,4 +21,7 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('userGroupMember', 'UserGroupMemberController');
 
     Route::resource('document', 'DocumentController');
+
+    Route::resource('listPreference', 'ListPreferenceController');
+    Route::resource('formPreference', 'FormPreferenceController');
 });

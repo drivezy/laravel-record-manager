@@ -4,7 +4,6 @@ namespace Drivezy\LaravelRecordManager\Models;
 
 use Drivezy\LaravelRecordManager\Observers\ModelColumnObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
-use Drivezy\LaravelUtility\Models\LookupValue;
 
 /**
  * Class ModelColumn
@@ -25,7 +24,7 @@ class ModelColumn extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function column_type () {
-        return $this->belongsTo(LookupValue::class);
+        return $this->belongsTo(ColumnDefinition::class);
     }
 
     /**

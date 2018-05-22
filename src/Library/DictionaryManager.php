@@ -8,7 +8,6 @@ use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Drivezy\LaravelUtility\Models\BaseModel;
 use Drivezy\LaravelUtility\Models\LookupValue;
-use Illuminate\Database\Eloquent\Model;
 
 /**
  * Class DictionaryManager
@@ -31,13 +30,6 @@ class DictionaryManager {
     private $userColumns = [
         'created_by',
         'updated_by',
-    ];
-
-    /**
-     * @var array
-     */
-    private $allowedRelationshipParents = [
-        BaseModel::class,
     ];
 
     /**
@@ -98,11 +90,10 @@ class DictionaryManager {
      */
     private function loadModelMethods () {
         $className = $this->model->namespace . '\\' . $this->model->name;
-        array_push($this->allowedRelationshipParents, $className);
 
         $class = new \ReflectionClass($className);
-
         $methods = $class->getMethods();
+
         foreach ( $methods as $method ) {
             if ( in_array($method->name, $this->userRelationshipNames) ) {
                 self::attachModelRelationship($method->name, [
@@ -111,8 +102,9 @@ class DictionaryManager {
                 continue;
             }
 
-            if ( in_array($method->class, $this->allowedRelationshipParents) && !$method->isStatic() )
+            if ( $method->class == $className && !$method->isStatic() ) {
                 self::attachModelRelationship($method->name);
+            }
         }
     }
 
@@ -204,11 +196,11 @@ class DictionaryManager {
      * @return int
      */
     private function getMethodRelationshipType ($method) {
-        if ( substr($method, 0, 5) == 'scope' ) return 23;
+        if ( substr($method, 0, 5) == 'scope' ) return 3;
 
-        if ( substr($method, -1) == 's' ) return 22;
+        if ( substr($method, -1) == 's' ) return 2;
 
-        return 21;
+        return 1;
     }
 
     /**
