@@ -38,17 +38,18 @@ class ModelManager {
 
         $permissions = str_split($model->allowed_permissions);
         $actions = [];
+
         //checking for read permission
-        if ( in_array(EDIT, $permissions) ) {
-            if ( self::validateModelAccess($model, EDIT) ) {
+        if ( in_array(self::EDIT, $permissions) ) {
+            if ( self::validateModelAccess($model, self::EDIT) ) {
                 $action = ['name' => 'edit', 'parameter' => 'edit', 'icon' => 'fa-pencil', 'placement_id' => 167, 'active' => 1, 'display_order' => 2, 'multi_operation' => 1];
                 array_push($actions, $action);
             }
         }
 
         //check for addition permission
-        if ( in_array(ADD, $permissions) ) {
-            if ( self::validateModelAccess($model, ADD) ) {
+        if ( in_array(self::ADD, $permissions) ) {
+            if ( self::validateModelAccess($model, self::ADD) ) {
                 $action = ['name' => 'add', 'parameter' => 'add', 'icon' => 'fa-plus', 'placement_id' => 168, 'active' => 1, 'display_order' => 0, 'multi_operation' => 0];
                 array_push($actions, $action);
 
@@ -58,8 +59,8 @@ class ModelManager {
         }
 
 
-        if ( in_array(DELETE, $permissions) ) {
-            if ( self::validateModelAccess($model, DELETE) ) {
+        if ( in_array(self::DELETE, $permissions) ) {
+            if ( self::validateModelAccess($model, self::DELETE) ) {
                 $action = ['name' => 'delete', 'parameter' => 'delete', 'icon' => 'fa-trash', 'placement_id' => 167, 'active' => 1, 'display_order' => 3, 'multi_operation' => 1];
                 array_push($actions, $action);
             }
@@ -81,7 +82,7 @@ class ModelManager {
         $roles = RoleAssignment::where('source_id', $model->id)
             ->where('source_type', 'Model')
             ->where('scope', 'like', '%' . $operation . '%')
-            ->pluck('role_id');
+            ->pluck('role_id')->toArray();
 
         return AccessManager::hasRole($roles);
     }

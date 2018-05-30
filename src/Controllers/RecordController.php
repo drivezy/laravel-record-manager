@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Controllers;
 
-class RecordController extends RecordManager {
+use App\ExpenseVoucher;
 
+class RecordController extends RecordManager {
 }

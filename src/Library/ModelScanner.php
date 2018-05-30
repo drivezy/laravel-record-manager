@@ -32,7 +32,7 @@ class ModelScanner {
             $ns = $namespace . '\\' . $strippedFile;
 
             if ( is_dir($pwd) ) {
-                self::getModels($pwd, $ns);
+                self::loadModels($pwd, $ns);
                 continue;
             }
 
@@ -42,14 +42,17 @@ class ModelScanner {
             if ( !is_subclass_of($class, Model::class) ) continue;
 
             $model = DataModel::where('model_hash', md5($ns))->first();
-            if ( $model ) continue;
+            if (! $model ){
+                $model = DataModel::create([
+                    'name'        => $strippedFile,
+                    'namespace'   => $namespace,
+                    'allowed_permissions' => '----',
+                    'table_name'       => $class->getTable(),
+                ]);
+            }
 
-            DataModel::create([
-                'name'        => $strippedFile,
-                'namespace'   => $namespace,
-                'permissions' => '----',
-                'table'       => $class->getTable(),
-            ]);
+            (new DictionaryManager($model))->process();
+
         }
     }
 
