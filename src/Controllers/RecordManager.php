@@ -3,13 +3,14 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use App\Http\Controllers\Controller;
-use App\Models\ExpenseVoucher;
-use App\User;
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
+use Drivezy\LaravelRecordManager\Library\ListManager;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
+use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Response;
 
 /**
  * Class RecordManager
@@ -26,6 +27,10 @@ class RecordManager extends Controller {
      */
     public $request = null;
 
+    public function __construct () {
+        $this->model = DataModel::where('model_hash', md5($this->model))->first();
+    }
+
     /**
      * Display a listing of the resource.
      * @param Request $request
@@ -34,6 +39,9 @@ class RecordManager extends Controller {
     public function index (Request $request) {
         if ( !ModelManager::validateModelAccess($this->model, ModelManager::READ) )
             return AccessManager::unauthorizedAccess();
+
+        if ( $request->has('list') )
+            return self::getListIndex($request);
 
         $this->request = $request;
         $model = $this->model;
@@ -45,6 +53,25 @@ class RecordManager extends Controller {
         $data['success'] = true;
 
         return $data;
+    }
+
+    private function getListIndex (Request $request) {
+        $listPreference = [];
+        if ( $request->has('layout_id') ) {
+            $listPreference = ListPreference::find($request->layout_id);
+            $listPreference = $listPreference->column_definition;
+        }
+        $records = ( new ListManager($this->model, [
+            'includes'           => $request->has('includes') ? $request->get('includes') : false,
+            'layout'             => $listPreference,
+            'stats'              => $request->has('stats') ? $request->get('stats') : false,
+            'query'              => $request->has('query') ? $request->get('query') : false,
+            'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
+            'limit'              => $request->has('limit') ? $request->get('limit') : 20,
+            'page'               => $request->has('page') ? $request->get('page') : 1,
+        ]) )->process();
+
+        return Response::json(['success' => true, 'response' => $records]);
     }
 
     /**
