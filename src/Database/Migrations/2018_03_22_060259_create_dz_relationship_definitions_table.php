@@ -1,10 +1,9 @@
 <?php
 
-use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\ModelRelationshipTypeSeeder;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
 class CreateDzRelationshipDefinitionsTable extends Migration {
     /**
@@ -14,7 +13,7 @@ class CreateDzRelationshipDefinitionsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_relationship_definitions', function (Blueprint $table) {
-            $userTable = ( new User() )->getTable();
+            $userTable = config('utility.user_table');
 
             $table->increments('id');
 

@@ -1,6 +1,5 @@
 <?php
 
-use App\User;
 use Drivezy\LaravelRecordManager\Models\ColumnDefinition;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Illuminate\Database\Migrations\Migration;
@@ -15,7 +14,8 @@ class CreateDzModelColumnsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_model_columns', function (Blueprint $table) {
-            $userTable = ( new User() )->getTable();
+            $userTable = config('utility.user_table');
+
             $modelTable = ( new DataModel() )->getTable();
             $columnTable = ( new ColumnDefinition() )->getTable();
 
@@ -44,8 +44,6 @@ class CreateDzModelColumnsTable extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
-
-
     }
 
     /**

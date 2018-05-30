@@ -1,7 +1,7 @@
 <?php
 
-use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\DataModelSeeder;
+use Drivezy\LaravelRecordManager\Database\Seeds\ModelColumnTypeSeeder;
 use Drivezy\LaravelRecordManager\Database\Seeds\ModelRelationshipTypeSeeder;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
@@ -18,7 +18,7 @@ class CreateDzModelRelationshipsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_model_relationships', function (Blueprint $table) {
-            $userTable = ( new User() )->getTable();
+            $userTable = config('utility.user_table');
 
             $modelTable = ( new DataModel() )->getTable();
             $modelColumn = ( new ModelColumn() )->getTable();
@@ -52,6 +52,12 @@ class CreateDzModelRelationshipsTable extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
+
+        //load the model column lookup type
+        ( new ModelColumnTypeSeeder() )->run();
+
+        //load model relationship seeder
+        ( new ModelRelationshipTypeSeeder() )->run();
 
         //populate the data model table
         ( new DataModelSeeder() )->run();

@@ -2,7 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
-use App\User;
+use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Observers\ListPreferenceObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 
@@ -20,7 +20,7 @@ class ListPreference extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function user () {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(AccessManager::getUserClass());
     }
 
     /**
