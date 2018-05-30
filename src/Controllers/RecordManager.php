@@ -40,7 +40,6 @@ class RecordManager extends Controller {
 
         $query = $this->getEncodedQuery();
         $query = $model::whereRaw($query['query'], $query['value']);
-        $query = $query->whereRaw('restricted = 0');
 
         $data = $this->getRecordData($query);
         $data['success'] = true;

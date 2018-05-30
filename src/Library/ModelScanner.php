@@ -42,14 +42,17 @@ class ModelScanner {
             if ( !is_subclass_of($class, Model::class) ) continue;
 
             $model = DataModel::where('model_hash', md5($ns))->first();
-            if ( $model ) continue;
+            if (! $model ){
+                $model = DataModel::create([
+                    'name'        => $strippedFile,
+                    'namespace'   => $namespace,
+                    'allowed_permissions' => '----',
+                    'table_name'       => $class->getTable(),
+                ]);
+            }
 
-            DataModel::create([
-                'name'        => $strippedFile,
-                'namespace'   => $namespace,
-                'allowed_permissions' => '----',
-                'table_name'       => $class->getTable(),
-            ]);
+            (new DictionaryManager($model))->process();
+
         }
     }
 

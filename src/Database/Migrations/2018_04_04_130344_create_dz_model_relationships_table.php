@@ -30,6 +30,7 @@ class CreateDzModelRelationshipsTable extends Migration {
             $table->string('name');
             $table->string('display_name');
             $table->string('description')->nullable();
+            $table->string('join_definition')->nullable();
 
             $table->unsignedInteger('reference_type_id')->nullable();
             $table->unsignedInteger('reference_model_id')->nullable();
