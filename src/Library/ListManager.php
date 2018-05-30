@@ -42,7 +42,7 @@ class ListManager {
 
         $this->base = strtolower($model->name);
 
-        $this->dictionary[ $this->base ] = ModelColumn::where('model_id', $this->model->id)->get();
+        $this->dictionary[ $this->base ] = ModelColumn::with('reference_model')->where('model_id', $this->model->id)->get();
         $this->relationships[ $this->base ] = $model;
         $this->tables[ $this->base ] = $model->table_name;
     }
@@ -80,7 +80,7 @@ class ListManager {
             $base = $this->base;
 
             foreach ( $relationships as $relationship ) {
-                $data = ModelRelationship::with('reference_model')
+                $data = ModelRelationship::with(['reference_model', 'source_column', 'alias_column'])
                     ->where('model_id', $model->id)->where('name', $relationship)
                     ->first();
 
@@ -91,21 +91,36 @@ class ListManager {
                 if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) )
                     break;
 
-                $join = str_replace('current', '`' . $base . '`', $data->join_definition);
-                $model = $data->reference_model;
-                $base .= '.' . $relationship;
-
-                $join = str_replace('alias', '`' . $base . '`', $join);
+                //set up the joins against the necessary columns
+                self::setupColumnJoins($data, $base);
 
                 //setting up the required documents
+                $base .= '.' . $relationship;
+                $model = $data->reference_model;
+
                 $this->relationships[ $base ] = $data;
                 $this->dictionary[ $base ] = ModelColumn::where('model_id', $data->reference_model_id)->get();
                 $this->tables[ $base ] = $data->reference_model->table_name;
-
-
-                array_push($this->joins, $join);
             }
         }
+    }
+
+    /**
+     * @param $relationship
+     * @param $base
+     */
+    private function setupColumnJoins ($relationship, $base) {
+        //setup for the default column joins
+        $join = '`' . $base . '`.' . $relationship->source_column->name . ' = ';
+        \Log::info($relationship->alias_column_id);
+        $aliasColumn = $relationship->alias_column ? $relationship->alias_column->name : 'id';
+        $join .= '`' . $base . '.' . $relationship->name . '`.' . $aliasColumn;
+
+        array_push($this->joins, $join);
+        //check for additional definition
+        $join = str_replace('current', '`' . $base . '`', $relationship->join_definition);
+        $join = str_replace('alias', '`' . $base . '.' . $relationship->name . '`', $join);
+        array_push($this->joins, $join);
     }
 
     /**
@@ -114,7 +129,7 @@ class ListManager {
     private function constructQuery () {
         $this->sql['columns'] = self::getSelectItems();
         $this->sql['tables'] = self::getTableDefinitions();
-        $this->sql['joins'] = self::getJoins();
+        $this->sql['joins'] = self::getJoins() ? : ' 1 = 1';
 
         $this->sqlCacheIdentifier = md5($this->model->model_hash . '-' . microtime('true') . '-' . md5($this->includes));
         Cache::put($this->sqlCacheIdentifier, (object) [
@@ -142,7 +157,7 @@ class ListManager {
 
         $sql .= ' LIMIT ' . $this->limit . ' OFFSET ' . $this->limit * ( $this->page - 1 );
 
-        $this->data = DB::connection('test')->select(DB::raw($sql));
+        $this->data = DB::select(DB::raw($sql));
     }
 
     /**
@@ -182,6 +197,8 @@ class ListManager {
     private function getJoins () {
         $query = '';
         foreach ( $this->joins as $join ) {
+            if ( !$join ) continue;
+
             if ( !$query )
                 $query = $join;
             else
@@ -196,13 +213,13 @@ class ListManager {
      */
     private function fixSelectItems () {
         $columns = [];
-        if ( !sizeof($this->layout) ) {
-            foreach ( $this->dictionary[ $this->base ] as $item ) {
-                if ( sizeof($columns) > 5 ) break;
+//        if ( !sizeof($this->layout) ) {
+        foreach ( $this->dictionary[ $this->base ] as $item ) {
+//                if ( sizeof($columns) > 5 ) break;
 
-                $columns[ $this->base . '.' . $item->name ] = '`' . $this->base . '`.' . $item->name;
-            }
+            $columns[ $this->base . '.' . $item->name ] = '`' . $this->base . '`.' . $item->name;
         }
+//        }
 
         foreach ( $this->layout as $item ) {
             $columns[ $item['object'] . '.' . $item['column'] ] = '`' . $item['object'] . '`.' . $item['column'];
@@ -223,7 +240,7 @@ class ListManager {
             $sql .= ' and (' . $this->query . ')';
 
         return [
-            'total'  => DB::connection('test')->select(DB::raw($sql))[0]->count,
+            'total'  => DB::select(DB::raw($sql))[0]->count,
             'page'   => $this->page,
             'record' => $this->limit,
         ];
@@ -242,5 +259,7 @@ class ListManager {
 
         return true;
     }
+
+
 }
 

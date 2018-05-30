@@ -34,7 +34,8 @@ class CreateDzModelRelationshipsTable extends Migration {
 
             $table->unsignedInteger('reference_type_id')->nullable();
             $table->unsignedInteger('reference_model_id')->nullable();
-            $table->unsignedInteger('column_id')->nullable();
+            $table->unsignedInteger('source_column_id')->nullable();
+            $table->unsignedInteger('alias_column_id')->nullable();
 
             $table->unsignedInteger('created_by')->nullable();
             $table->unsignedInteger('updated_by')->nullable();
@@ -42,7 +43,8 @@ class CreateDzModelRelationshipsTable extends Migration {
             $table->foreign('model_id')->references('id')->on($modelTable);
             $table->foreign('reference_type_id')->references('id')->on($relationshipTable);
             $table->foreign('reference_model_id')->references('id')->on($modelTable);
-            $table->foreign('column_id')->references('id')->on($modelColumn);
+            $table->foreign('source_column_id')->references('id')->on($modelColumn);
+            $table->foreign('alias_column_id')->references('id')->on($modelColumn);
 
             $table->foreign('created_by')->references('id')->on($userTable);
             $table->foreign('updated_by')->references('id')->on($userTable);

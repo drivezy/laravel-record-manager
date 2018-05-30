@@ -26,7 +26,14 @@ class ModelRelationship extends BaseModel {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function column () {
+    public function source_column () {
+        return $this->belongsTo(ModelColumn::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function alias_column () {
         return $this->belongsTo(ModelColumn::class);
     }
 

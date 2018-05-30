@@ -145,7 +145,7 @@ class DictionaryManager {
         if ( $record->id ) return $record;
 
         $record->display_name = ucwords(str_replace('_', ' ', $method));
-        $record->column_id = self::getModelMethodColumn($method);
+        $record->source_column_id = self::getModelMethodColumn($method);
         $record->reference_type_id = self::getMethodRelationshipType($method);
 
         foreach ( $arr as $key => $value )
@@ -182,7 +182,7 @@ class DictionaryManager {
      * @return null
      */
     private function getModelMethodColumn ($method) {
-        $record = ModelColumn::where('model_id', $this->model->id)->where('name', $method . '_id')->first();
+        $record = ModelColumn::where('model_id', $this->model->id)->where('name', strtolower($method) . '_id')->first();
         if ( $record ) return $record->id;
 
         $record = ModelColumn::where('model_id', $this->model->id)->where('name', strtolower(preg_replace('/[A-Z]/', '_$0', $method)))->first();
