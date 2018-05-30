@@ -2,9 +2,8 @@
 
 namespace Drivezy\LaravelRecordManager\Database\Seeds;
 
-use App\User;
+use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
-use Drivezy\LaravelRecordManager\Library\ModelManager;
 use Drivezy\LaravelRecordManager\Library\ModelScanner;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 
@@ -24,7 +23,7 @@ class DataModelSeeder {
                 'description'         => 'User defined in the system',
                 'namespace'           => 'App',
                 'allowed_permissions' => 'raed',
-                'table_name'          => ( new User() )->getTable(),
+                'table_name'          => AccessManager::getUserClass(),
             ],
         ];
 
