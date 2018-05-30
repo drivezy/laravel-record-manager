@@ -32,6 +32,6 @@ class ModelRelationshipTypeSeeder {
         ];
 
         foreach ( $columns as $column )
-            RelationshipDefinition::create($column);
+            RelationshipDefinition::firstOrCreate($column);
     }
 }

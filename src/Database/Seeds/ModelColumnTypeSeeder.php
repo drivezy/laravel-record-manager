@@ -62,6 +62,6 @@ class ModelColumnTypeSeeder {
             ],
         ];
         foreach ( $columns as $column )
-            ColumnDefinition::create($column);
+            ColumnDefinition::firstOrCreate($column);
     }
 }
