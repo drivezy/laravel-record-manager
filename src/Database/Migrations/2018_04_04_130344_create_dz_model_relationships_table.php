@@ -1,6 +1,5 @@
 <?php
 
-use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\DataModelSeeder;
 use Drivezy\LaravelRecordManager\Database\Seeds\ModelColumnTypeSeeder;
 use Drivezy\LaravelRecordManager\Database\Seeds\ModelRelationshipTypeSeeder;
@@ -19,7 +18,7 @@ class CreateDzModelRelationshipsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_model_relationships', function (Blueprint $table) {
-            $userTable = ( new User() )->getTable();
+            $userTable = config('utility.user_table');
 
             $modelTable = ( new DataModel() )->getTable();
             $modelColumn = ( new ModelColumn() )->getTable();

@@ -1,6 +1,5 @@
 <?php
 
-use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\ModelColumnTypeSeeder;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,7 +13,7 @@ class CreateDzColumnDefinitionsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_column_definitions', function (Blueprint $table) {
-            $userTable = ( new User() )->getTable();
+            $userTable = config('utility.user_table');
 
             $table->increments('id');
 

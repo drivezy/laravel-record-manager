@@ -15,7 +15,7 @@ class CreateDzDocumentDetailsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_document_details', function (Blueprint $table) {
-            $userTable = ( new User() )->getTable();
+            $userTable = config('utility.user_table');
             $lookupTable = ( new LookupValue() )->getTable();
 
             $table->increments('id');

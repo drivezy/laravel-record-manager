@@ -1,6 +1,5 @@
 <?php
 
-use App\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +12,7 @@ class CreateDzFormPreferencesTable extends Migration {
      */
     public function up () {
         Schema::create('dz_form_preferences', function (Blueprint $table) {
-            $userTable = ( new User() )->getTable();
+            $userTable = config('utility.user_table');
 
             $table->increments('id');
 

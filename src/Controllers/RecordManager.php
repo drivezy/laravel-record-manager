@@ -2,7 +2,6 @@
 
 namespace Drivezy\LaravelRecordManager\Controllers;
 
-use App\Http\Controllers\Controller;
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
 use Drivezy\LaravelRecordManager\Library\ListManager;
@@ -10,6 +9,7 @@ use Drivezy\LaravelRecordManager\Library\ModelManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Illuminate\Http\Request;
+use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
 
 /**
