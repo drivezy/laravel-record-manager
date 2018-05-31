@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Controllers\{{namespace}};
+namespace {{app}}\Http\Controllers\{{namespace}};
 
 use Drivezy\LaravelRecordManager\Controllers\{{read}}RecordController;
-use App\Models\{{namespace}}\{{name}};
+use {{app}}\Models\{{namespace}}\{{name}};
 
 /**
  * Class PropertyController
- * @package @package App\Http\Controllers\{{namespace}}
+ * @package @package {{app}}\Http\Controllers\{{namespace}}
  */
 class {{name}}Controller extends {{read}}RecordController {
     /**

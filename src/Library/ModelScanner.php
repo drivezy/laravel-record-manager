@@ -15,7 +15,7 @@ class ModelScanner {
      *
      */
     public static function scanModels () {
-        self::loadModels(app_path() . '/Models', 'App\\Models');
+        self::loadModels(app_path() . '/Models', config('utility.namespace') . '\\Models');
     }
 
     /**
@@ -42,16 +42,16 @@ class ModelScanner {
             if ( !is_subclass_of($class, Model::class) ) continue;
 
             $model = DataModel::where('model_hash', md5($ns))->first();
-            if (! $model ){
+            if ( !$model ) {
                 $model = DataModel::create([
-                    'name'        => $strippedFile,
-                    'namespace'   => $namespace,
-                    'allowed_permissions' => '----',
-                    'table_name'       => $class->getTable(),
+                    'name'                => $strippedFile,
+                    'namespace'           => $namespace,
+                    'allowed_permissions' => 'rae-',
+                    'table_name'          => $class->getTable(),
                 ]);
             }
 
-            (new DictionaryManager($model))->process();
+            ( new DictionaryManager($model) )->process();
 
         }
     }
