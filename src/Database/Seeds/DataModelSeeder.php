@@ -21,7 +21,7 @@ class DataModelSeeder {
             [
                 'name'                => 'User',
                 'description'         => 'User defined in the system',
-                'namespace'           => 'App',
+                'namespace'           => config('utility.namespace'),
                 'allowed_permissions' => 'raed',
                 'table_name'          => AccessManager::getUserClass(),
             ],
