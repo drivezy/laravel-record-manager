@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Models\{{namespace}};
+namespace {{app}}\Models\{{namespace}};
 
 use Drivezy\LaravelUtility\Models\BaseModel;
-use App\Observers\{{namespace}}\{{name}}Observer;
+use {{app}}\Observers\{{namespace}}\{{name}}Observer;
 
 /**
  * Class {{name}}
- * @package App\Models\{{namespace}}
+ * @package {{app}}\Models\{{namespace}}
  */
 class {{name}} extends BaseModel {
 
