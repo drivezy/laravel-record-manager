@@ -6,6 +6,7 @@ use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
 use Drivezy\LaravelRecordManager\Library\ListManager;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
+use Drivezy\LaravelRecordManager\Library\RecordManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Illuminate\Http\Request;
@@ -21,6 +22,7 @@ class BaseController extends Controller {
      * @var
      */
     public $model;
+    public $dataModel;
 
     /**
      * @var null
@@ -28,7 +30,7 @@ class BaseController extends Controller {
     public $request = null;
 
     public function __construct () {
-        $this->model = DataModel::where('model_hash', md5($this->model))->first();
+        $this->dataModel = DataModel::where('model_hash', md5($this->model))->first();
     }
 
     /**
@@ -37,13 +39,13 @@ class BaseController extends Controller {
      * @return mixed
      */
     public function index (Request $request) {
-        if ( !ModelManager::validateModelAccess($this->model, ModelManager::READ) )
+        if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::READ) )
             return AccessManager::unauthorizedAccess();
 
         if ( $request->has('list') )
             return self::getListIndex($request);
 
-        $this->request = $request;
+
         $model = $this->model;
 
         $query = $this->getEncodedQuery();
@@ -55,15 +57,14 @@ class BaseController extends Controller {
         return $data;
     }
 
+    /**
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
     private function getListIndex (Request $request) {
-        $listPreference = [];
-        if ( $request->has('layout_id') ) {
-            $listPreference = ListPreference::find($request->layout_id);
-            $listPreference = $listPreference->column_definition;
-        }
-        $records = ( new ListManager($this->model, [
+        $records = ( new ListManager($this->dataModel, [
             'includes'           => $request->has('includes') ? $request->get('includes') : false,
-            'layout'             => $listPreference,
+            'layout'             => self::getLayoutDefinition($request),
             'stats'              => $request->has('stats') ? $request->get('stats') : false,
             'query'              => $request->has('query') ? $request->get('query') : false,
             'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
@@ -80,11 +81,15 @@ class BaseController extends Controller {
      * @return mixed
      */
     public function show (Request $request, $id) {
-        if ( !ModelManager::validateModelAccess($this->model, ModelManager::READ) )
+        if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::READ) )
             return AccessManager::unauthorizedAccess();
 
         if ( !is_numeric($id) )
             return Response::json(['success' => false, 'response' => 'invalid operation']);
+
+        if ( $request->has('list') ) {
+            return self::getRecord($request, $id);
+        }
 
         $this->request = $request;
         $model = $this->model;
@@ -98,10 +103,25 @@ class BaseController extends Controller {
 
     /**
      * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse
+     */
+    private function getRecord (Request $request, $id) {
+        $records = ( new RecordManager($this->dataModel, [
+            'includes'           => $request->has('includes') ? $request->get('includes') : false,
+            'layout'             => self::getLayoutDefinition($request),
+            'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
+        ]) )->process($id);
+
+        return Response::json(['success' => true, 'response' => $records]);
+    }
+
+    /**
+     * @param Request $request
      * @return mixed
      */
     public function store (Request $request) {
-        if ( !ModelManager::validateModelAccess($this->model, ModelManager::ADD) )
+        if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::ADD) )
             return AccessManager::unauthorizedAccess();
 
         $model = $this->model;
@@ -119,7 +139,7 @@ class BaseController extends Controller {
      * @return null
      */
     public function update (Request $request, $id) {
-        if ( !ModelManager::validateModelAccess($this->model, ModelManager::EDIT) )
+        if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::EDIT) )
             return AccessManager::unauthorizedAccess();
 
         if ( !is_numeric($id) )
@@ -148,7 +168,7 @@ class BaseController extends Controller {
      * @return mixed
      */
     public function destroy ($id) {
-        if ( !ModelManager::validateModelAccess($this->model, ModelManager::DELETE) )
+        if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::DELETE) )
             return AccessManager::unauthorizedAccess();
 
         $model = $this->model;
@@ -312,5 +332,26 @@ class BaseController extends Controller {
             $val = $value;
 
         return $val;
+    }
+
+    /**
+     * @param Request $request
+     * @return array
+     */
+    private function getLayoutDefinition (Request $request) {
+        $columns = [];
+        if ( !$request->has('layout_id') ) return $columns;
+
+        $definition = ListPreference::find($request->get('layout_id'));
+        $definition = json_decode($definition->column_definition, true);
+
+        foreach ( $definition as $item ) {
+            array_push($columns, [
+                'object' => $item['object'],
+                'column' => $item['column'],
+            ]);
+        }
+
+        return $columns;
     }
 }
