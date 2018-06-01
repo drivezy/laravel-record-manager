@@ -58,10 +58,10 @@ class ListManager {
         self::loadResults();
 
         return [
-            'relationship'       => $this->relationships,
-            'dictionary'         => $this->dictionary,
             'data'               => $this->data,
             'stats'              => $this->stats,
+            'relationship'       => $this->relationships,
+            'dictionary'         => $this->dictionary,
             'request_identifier' => $this->sqlCacheIdentifier,
         ];
     }
