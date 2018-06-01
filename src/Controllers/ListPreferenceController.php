@@ -6,6 +6,7 @@ use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Response;
 
 /**
  * Class ListPreferenceController
@@ -28,25 +29,25 @@ class ListPreferenceController extends RecordController {
 
         //avoiding the duplicate record against each
         $preference = ListPreference::firstOrNew([
-            'source_type' => $request->source_type,
-            'source_id'   => $request->source_id,
-            'user_id'     => $request->user_id,
-            'name'        => $request->name,
+            'source_type' => $request->get('source_type'),
+            'source_id'   => $request->get('source_id'),
+            'user_id'     => $request->get('user_id'),
+            'name'        => $request->get('name'),
         ]);
 
-        $preference->query = $request->query;
-        $preference->column_definition = $request->column_definition;
+        $preference->query = $request->get('query');
+        $preference->column_definition = $request->get('column_definition');
 
         $preference->save();
 
         //if the user wants to override to all users with the configuration
         if ( $isFormConfigurator && $request->override_all ) {
-            ListPreference::where('source_type', $request->source_type)
-                ->where('source_id', $request->source_id)
-                ->where('name', $request->name)
+            ListPreference::where('source_type', $request->get('source_type'))
+                ->where('source_id', $request->get('source_id'))
+                ->where('name', $request->get('name'))
                 ->update([
-                    'query'             => $request->query,
-                    'column_definition' => $request->column_definition,
+                    'query'             => $request->get('query'),
+                    'column_definition' => $request->get('column_definition'),
                 ]);
         }
 
