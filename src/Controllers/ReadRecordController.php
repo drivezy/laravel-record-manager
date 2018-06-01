@@ -8,7 +8,7 @@ use Illuminate\Http\Request;
  * Class ReadRecordController
  * @package Drivezy\LaravelRecordManager\Controller
  */
-class ReadRecordController extends RecordManager {
+class ReadRecordController extends BaseController {
 
     /**
      * @param Request $request

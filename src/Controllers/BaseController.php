@@ -16,7 +16,7 @@ use Illuminate\Support\Facades\Response;
  * Class RecordManager
  * @package Drivezy\LaravelRecordManager\Controller
  */
-class RecordManager extends Controller {
+class BaseController extends Controller {
     /**
      * @var
      */
