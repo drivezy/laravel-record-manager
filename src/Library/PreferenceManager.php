@@ -24,7 +24,7 @@ class PreferenceManager {
             ->where('source_id', $id)
             ->where(function ($q) use ($userId) {
                 $q->where('user_id', $userId)
-                    ->orWhereNull($userId);
+                    ->orWhereNull('user_id');
             })->get();
 
         return $listPreferences;
@@ -36,14 +36,8 @@ class PreferenceManager {
      * @return mixed
      */
     public static function getFormPreference ($source, $id) {
-        $userId = Auth::id();
-
         $formPreference = FormPreference::where('source_type', $source)
-            ->where('source_id', $id)
-            ->where(function ($q) use ($userId) {
-                $q->where('user_id', $userId)
-                    ->orWhereNull($userId);
-            })->get();
+            ->where('source_id', $id)->get();
 
         return $formPreference;
     }

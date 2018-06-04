@@ -5,38 +5,16 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class RecordManager {
-
-    private $id = null;
+class RecordManager extends DataManager {
     private $detailArray = [];
     private $recordData = null;
 
-    private $dictionary = [];
-    private $relationships = [];
-    private $layout = [];
-    private $joins = [];
-    private $tables = [];
-    private $sql = [];
-
-    public function __construct ($model, $args = []) {
-        $this->model = $model;
-        $this->model->actions = ModelManager::getModelActions($model);
-
-        foreach ( $args as $key => $value ) {
-            $this->{$key} = $value;
-        }
-
-        $this->base = strtolower($model->name);
-
-        $this->dictionary[ $this->base ] = ModelColumn::with('reference_model')->where('model_id', $this->model->id)->get();
-        $this->relationships[ $this->base ] = $model;
-        $this->tables[ $this->base ] = $model->table_name;
-    }
-
+    /**
+     * @param $id
+     * @return array
+     */
     public function process ($id) {
         $className = $this->model->namespace . '\\' . $this->model->name;
         $this->recordData = $className::find($id);
@@ -50,6 +28,7 @@ class RecordManager {
 
         return [
             'record' => [
+                'base'               => $this->base,
                 'data'               => $this->data,
                 'relationship'       => $this->relationships,
                 'dictionary'         => $this->dictionary,
@@ -59,6 +38,9 @@ class RecordManager {
         ];
     }
 
+    /**
+     * @return bool
+     */
     private function segregateIncludes () {
         if ( !$this->includes ) return true;
 
@@ -85,15 +67,19 @@ class RecordManager {
 
                 if ( $first && $data->reference_type_id == 2 ) {
                     if ( !isset($this->detailArray[ $relationship ]) ) {
+                        $sourceColumn = $data->source_column_id ? $data->source_column->name : 'id';
                         $aliasColumn = $data->alias_column_id ? $data->alias_column->name : 'id';
 
                         $this->detailArray[ $relationship ] = [
                             'id'                => $data->id,
+                            'base'              => strtolower($data->reference_model->name),
                             'display_name'      => $data->display_name,
                             'includes'          => [],
-                            'query'             => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$data->source_column->name},
+                            'query'             => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
                             'restricted_column' => $aliasColumn,
                             'route'             => $data->reference_model->route_name,
+                            'list_layouts'      => PreferenceManager::getListPreference(ModelRelationship::class, $data->id),
+                            'form_layouts'      => PreferenceManager::getFormPreference(ModelRelationship::class, $data->id),
                         ];
                     }
 
@@ -115,116 +101,11 @@ class RecordManager {
         }
     }
 
-    private function setupColumnJoins ($relationship, $base) {
-        //setup for the default column joins
-        $join = '`' . $base . '`.' . $relationship->source_column->name . ' = ';
-        $aliasColumn = $relationship->alias_column ? $relationship->alias_column->name : 'id';
-        $join .= '`' . $base . '.' . $relationship->name . '`.' . $aliasColumn;
-
-        array_push($this->joins, $join);
-        //check for additional definition
-        $join = str_replace('current', '`' . $base . '`', $relationship->join_definition);
-        $join = str_replace('alias', '`' . $base . '.' . $relationship->name . '`', $join);
-        array_push($this->joins, $join);
-    }
-
-    private function constructQuery () {
-        $this->sql['columns'] = self::getSelectItems();
-        $this->sql['tables'] = self::getTableDefinitions();
-        $this->sql['joins'] = self::getJoins() ? : ' 1 = 1';
-
-        $this->sqlCacheIdentifier = md5($this->model->model_hash . '-' . microtime('true') . '-' . md5($this->includes));
-        Cache::put($this->sqlCacheIdentifier, (object) [
-            'user_id' => Auth::id(),
-            'sql'     => $this->sql,
-            'time'    => strtotime('now'),
-        ], 30);
-    }
-
-    /**
-     * @return string
-     */
-    private function getSelectItems () {
-        self::fixSelectItems();
-        $query = '';
-        foreach ( $this->layout as $key => $value ) {
-            if ( !$query )
-                $query = $value . ' as \'' . $key . '\'';
-            else
-                $query .= ', ' . $value . ' as \'' . $key . '\'';
-        }
-
-        return $query;
-    }
-
-    /**
-     * @return string
-     */
-    private function getTableDefinitions () {
-        $query = '';
-        foreach ( $this->tables as $key => $value ) {
-            if ( !$query )
-                $query = $value . ' `' . $key . '` ';
-            else
-                $query .= ', ' . $value . ' `' . $key . '` ';
-        }
-
-        return $query;
-    }
-
     /**
      *
      */
-    private function fixSelectItems () {
-        $columns = [];
-        foreach ( $this->dictionary[ $this->base ] as $item ) {
-            $columns[ $this->base . '.' . $item->name ] = '`' . $this->base . '`.' . $item->name;
-        }
-
-        foreach ( $this->layout as $item ) {
-            $columns[ $item['object'] . '.' . $item['column'] ] = '`' . $item['object'] . '`.' . $item['column'];
-        }
-
-        foreach ( $this->relationships as $key => $value ) {
-            $columns[ $key . '.id' ] = '`' . $key . '`.id';
-        }
-        $this->layout = $columns;
-    }
-
-    /**
-     * @return mixed|string
-     */
-    private function getJoins () {
-        $query = '';
-        foreach ( $this->joins as $join ) {
-            if ( !$join ) continue;
-
-            if ( !$query )
-                $query = $join;
-            else
-                $query .= ' AND ' . $join;
-        }
-
-        return $query;
-    }
-
     private function loadResults () {
         $sql = 'SELECT ' . $this->sql['columns'] . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'] . ' AND `' . $this->base . '`.id = ' . $this->recordData->id;
         $this->data = DB::select(DB::raw($sql))[0];
     }
-
-    /**
-     * @return array|bool|mixed
-     */
-    private function loadDataFromCache () {
-        if ( !$this->sqlCacheIdentifier ) return false;
-
-        $record = Cache::get($this->sqlCacheIdentifier, false);
-        if ( !$record ) return false;
-
-        $this->sql = $record->sql;
-
-        return true;
-    }
-
 }

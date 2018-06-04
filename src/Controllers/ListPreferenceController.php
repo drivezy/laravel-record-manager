@@ -53,13 +53,4 @@ class ListPreferenceController extends RecordController {
 
         return Response::json(['success' => true, 'response' => $preference]);
     }
-
-    /**
-     * @param Request $request
-     * @param $id
-     * @return mixed
-     */
-    public function update (Request $request, $id) {
-        return AccessManager::unauthorizedAccess();
-    }
 }
