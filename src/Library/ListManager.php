@@ -4,51 +4,20 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 /**
  * Class ListManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class ListManager {
+class ListManager extends DataManager {
 
-    private $stats, $query, $includes, $order, $sqlCacheIdentifier = false;
+    private $stats, $order = false;
     private $limit = 20;
     private $page = 1;
 
-    private $model;
-    private $base;
-
-    private $dictionary = [];
-    private $relationships = [];
-    private $layout = [];
-    private $joins = [];
-    private $tables = [];
-    private $sql = [];
     /**
-     * @var
-     */
-    private $data;
-
-    public function __construct ($model, $args = []) {
-        $this->model = $model;
-        $this->model->actions = ModelManager::getModelActions($model);
-
-        foreach ( $args as $key => $value ) {
-            $this->{$key} = $value;
-        }
-
-        $this->base = strtolower($model->name);
-
-        $this->dictionary[ $this->base ] = ModelColumn::with('reference_model')->where('model_id', $this->model->id)->get();
-        $this->relationships[ $this->base ] = $model;
-        $this->tables[ $this->base ] = $model->table_name;
-    }
-
-    /**
-     *
+     * @return array
      */
     public function process () {
         if ( !self::loadDataFromCache() ) {
@@ -58,6 +27,7 @@ class ListManager {
         self::loadResults();
 
         return [
+            'base'               => $this->base,
             'data'               => $this->data,
             'stats'              => $this->stats,
             'relationship'       => $this->relationships,
@@ -106,38 +76,6 @@ class ListManager {
         }
     }
 
-    /**
-     * @param $relationship
-     * @param $base
-     */
-    private function setupColumnJoins ($relationship, $base) {
-        //setup for the default column joins
-        $join = '`' . $base . '`.' . $relationship->source_column->name . ' = ';
-        $aliasColumn = $relationship->alias_column ? $relationship->alias_column->name : 'id';
-        $join .= '`' . $base . '.' . $relationship->name . '`.' . $aliasColumn;
-
-        array_push($this->joins, $join);
-        //check for additional definition
-        $join = str_replace('current', '`' . $base . '`', $relationship->join_definition);
-        $join = str_replace('alias', '`' . $base . '.' . $relationship->name . '`', $join);
-        array_push($this->joins, $join);
-    }
-
-    /**
-     *
-     */
-    private function constructQuery () {
-        $this->sql['columns'] = self::getSelectItems();
-        $this->sql['tables'] = self::getTableDefinitions();
-        $this->sql['joins'] = self::getJoins() ? : ' 1 = 1';
-
-        $this->sqlCacheIdentifier = md5($this->model->model_hash . '-' . microtime('true') . '-' . md5($this->includes));
-        Cache::put($this->sqlCacheIdentifier, (object) [
-            'user_id' => Auth::id(),
-            'sql'     => $this->sql,
-            'time'    => strtotime('now'),
-        ], 30);
-    }
 
     /**
      *
@@ -161,73 +99,6 @@ class ListManager {
     }
 
     /**
-     * @return string
-     */
-    private function getSelectItems () {
-        self::fixSelectItems();
-        $query = '';
-        foreach ( $this->layout as $key => $value ) {
-            if ( !$query )
-                $query = $value . ' as \'' . $key . '\'';
-            else
-                $query .= ', ' . $value . ' as \'' . $key . '\'';
-        }
-
-        return $query;
-    }
-
-    /**
-     * @return string
-     */
-    private function getTableDefinitions () {
-        $query = '';
-        foreach ( $this->tables as $key => $value ) {
-            if ( !$query )
-                $query = $value . ' `' . $key . '` ';
-            else
-                $query .= ', ' . $value . ' `' . $key . '` ';
-        }
-
-        return $query;
-    }
-
-    /**
-     * @return mixed|string
-     */
-    private function getJoins () {
-        $query = '';
-        foreach ( $this->joins as $join ) {
-            if ( !$join ) continue;
-
-            if ( !$query )
-                $query = $join;
-            else
-                $query .= ' AND ' . $join;
-        }
-
-        return $query;
-    }
-
-    /**
-     *
-     */
-    private function fixSelectItems () {
-        $columns = [];
-        foreach ( $this->dictionary[ $this->base ] as $item ) {
-            $columns[ $this->base . '.' . $item->name ] = '`' . $this->base . '`.' . $item->name;
-        }
-
-        foreach ( $this->layout as $item ) {
-            $columns[ $item['object'] . '.' . $item['column'] ] = '`' . $item['object'] . '`.' . $item['column'];
-        }
-
-        foreach ( $this->relationships as $key => $value ) {
-            $columns[ $key . '.id' ] = '`' . $key . '`.id';
-        }
-        $this->layout = $columns;
-    }
-
-    /**
      * @return array
      */
     private function getStatsData () {
@@ -241,21 +112,5 @@ class ListManager {
             'record' => $this->limit,
         ];
     }
-
-    /**
-     * @return array|bool|mixed
-     */
-    private function loadDataFromCache () {
-        if ( !$this->sqlCacheIdentifier ) return false;
-
-        $record = Cache::get($this->sqlCacheIdentifier, false);
-        if ( !$record ) return false;
-
-        $this->sql = $record->sql;
-
-        return true;
-    }
-
-
 }
 
