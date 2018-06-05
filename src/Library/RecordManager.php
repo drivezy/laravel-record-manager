@@ -73,9 +73,9 @@ class RecordManager extends DataManager {
                         $this->detailArray[ $relationship ] = [
                             'id'                => $data->id,
                             'base'              => strtolower($data->reference_model->name),
-                            'display_name'      => $data->display_name,
+                            'name'      => $data->display_name,
                             'includes'          => [],
-                            'query'             => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
+                            'restricted_query'             => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
                             'restricted_column' => $aliasColumn,
                             'route'             => $data->reference_model->route_name,
                             'list_layouts'      => PreferenceManager::getListPreference(ModelRelationship::class, $data->id),

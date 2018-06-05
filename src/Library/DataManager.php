@@ -22,6 +22,10 @@ class DataManager {
     protected $tables = [];
     protected $sql = [];
 
+    protected $stats, $order = false;
+    protected $limit = 20;
+    protected $page = 1;
+
     /**
      * DataManager constructor.
      * @param $model

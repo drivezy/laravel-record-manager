@@ -12,10 +12,6 @@ use Illuminate\Support\Facades\DB;
  */
 class ListManager extends DataManager {
 
-    private $stats, $order = false;
-    private $limit = 20;
-    private $page = 1;
-
     /**
      * @return array
      */

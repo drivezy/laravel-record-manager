@@ -45,8 +45,8 @@ class BaseController extends Controller {
         if ( $request->has('list') )
             return self::getListIndex($request);
 
-
         $model = $this->model;
+        $this->request = $request;
 
         $query = $this->getEncodedQuery();
         $query = $model::whereRaw($query['query'], $query['value']);
@@ -187,7 +187,7 @@ class BaseController extends Controller {
      */
     private function getEncodedQuery () {
         $query = $this->request->get('query');
-        if ( !$query ) return array('query' => '1 < ?', 'value' => array('2'));
+        if ( !$this->request->has('query') ) return array('query' => '1 < ?', 'value' => array('2'));
 
         $splits = explode(',', $query);
         $encode = $arr = [];
