@@ -27,4 +27,6 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
     Route::resource('scriptType', 'ScriptTypeController');
     Route::resource('systemScript', 'SystemScriptController');
+
+    Route::resource('securityRule', 'SecurityRuleController');
 });
