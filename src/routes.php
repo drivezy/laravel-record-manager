@@ -24,4 +24,7 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
     Route::resource('listPreference', 'ListPreferenceController');
     Route::resource('formPreference', 'FormPreferenceController');
+
+    Route::resource('scriptType', 'ScriptTypeController');
+    Route::resource('systemScript', 'SystemScriptController');
 });
