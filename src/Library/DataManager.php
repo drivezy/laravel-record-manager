@@ -50,6 +50,7 @@ class DataManager {
     }
 
     /**
+     * This will create the join condition for the alias as part of its relationship with the parent one
      * @param $relationship
      * @param $base
      */
@@ -68,10 +69,13 @@ class DataManager {
     }
 
     /**
+     * Get the select items which are to be part of the record
+     * Also create necessary alias and the return element
      * @return string
      */
     private function getSelectItems () {
         self::fixSelectItems();
+
         $query = '';
         foreach ( $this->layout as $key => $value ) {
             if ( !$query )
@@ -84,7 +88,8 @@ class DataManager {
     }
 
     /**
-     *
+     * Get the select items which are part of the requested layout
+     * Also load the parent items part of the dictionary
      */
     private function fixSelectItems () {
         $columns = [];
@@ -103,6 +108,8 @@ class DataManager {
     }
 
     /**
+     * Check if the cache against the sql conditions is present
+     * If yes then load back to the system
      * @return array|bool|mixed
      */
     protected function loadDataFromCache () {
@@ -117,6 +124,8 @@ class DataManager {
     }
 
     /**
+     * Create the sql join against the tables that are attached as part of the inclusions
+     * This is part of the where condition
      * @return mixed|string
      */
     private function getJoins () {
@@ -134,6 +143,7 @@ class DataManager {
     }
 
     /**
+     * create array of  necessary join conditions against the tables that are part of the includes.
      * @return string
      */
     private function getTableDefinitions () {
@@ -149,7 +159,9 @@ class DataManager {
     }
 
     /**
-     *
+     * Create the data related to base query excluding the restrictive condition
+     * Then save it to the cache so that it can be fetched
+     * back without need of too much query iteration
      */
     protected function constructQuery () {
         $this->sql['columns'] = self::getSelectItems();

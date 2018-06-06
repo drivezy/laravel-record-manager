@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\DB;
 class ListManager extends DataManager {
 
     /**
+     * Get the data from the system and then return the result as list
      * @return array
      */
     public function process () {
@@ -33,6 +34,7 @@ class ListManager extends DataManager {
     }
 
     /**
+     * Get the includes and check their necessary joins and segregate the data
      * @return bool
      */
     private function processIncludes () {
@@ -74,7 +76,7 @@ class ListManager extends DataManager {
 
 
     /**
-     *
+     * Load the results of the record as requested by the list condition
      */
     private function loadResults () {
         if ( $this->stats ) {
@@ -95,6 +97,7 @@ class ListManager extends DataManager {
     }
 
     /**
+     * Get the stats data as part of the list condition
      * @return array
      */
     private function getStatsData () {

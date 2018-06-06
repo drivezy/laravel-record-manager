@@ -12,6 +12,7 @@ class RecordManager extends DataManager {
     private $recordData = null;
 
     /**
+     * return the data as part of the record with its tabs
      * @param $id
      * @return array
      */
@@ -39,6 +40,7 @@ class RecordManager extends DataManager {
     }
 
     /**
+     * Differentiate the multiple includes to single and tabs and create data accordingly
      * @return bool
      */
     private function segregateIncludes () {
@@ -73,9 +75,9 @@ class RecordManager extends DataManager {
                         $this->detailArray[ $relationship ] = [
                             'id'                => $data->id,
                             'base'              => strtolower($data->reference_model->name),
-                            'name'      => $data->display_name,
+                            'name'              => $data->display_name,
                             'includes'          => [],
-                            'restricted_query'             => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
+                            'restricted_query'  => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
                             'restricted_column' => $aliasColumn,
                             'route'             => $data->reference_model->route_name,
                             'list_layouts'      => PreferenceManager::getListPreference(ModelRelationship::class, $data->id),
@@ -102,7 +104,7 @@ class RecordManager extends DataManager {
     }
 
     /**
-     *
+     * Load the results of the record as requested by the record condition
      */
     private function loadResults () {
         $sql = 'SELECT ' . $this->sql['columns'] . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'] . ' AND `' . $this->base . '`.id = ' . $this->recordData->id;
