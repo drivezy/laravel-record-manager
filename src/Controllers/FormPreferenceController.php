@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
  * Class FormPreferenceController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class FormPreferenceController extends ReadRecordController {
+class FormPreferenceController extends RecordController {
     /**
      * @var string
      */
