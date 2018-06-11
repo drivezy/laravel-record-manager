@@ -11,6 +11,9 @@ use Drivezy\LaravelUtility\Models\BaseModel;
  */
 class ModelColumn extends BaseModel {
 
+    /**
+     * @var string
+     */
     protected $table = 'dz_model_columns';
 
     /**
@@ -32,6 +35,27 @@ class ModelColumn extends BaseModel {
      */
     public function reference_model () {
         return $this->belongsTo(DataModel::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function security_rules () {
+        return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', self::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function read_security_rules () {
+        return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', self::class)->where('operation', 'r');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function write_security_rules () {
+        return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', self::class)->whereIn('operation', ['r', 'w']);
     }
 
     /**

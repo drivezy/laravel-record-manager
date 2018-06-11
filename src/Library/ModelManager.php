@@ -5,6 +5,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelAccessManager\Models\RoleAssignment;
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelRecordManager\Models\ModelColumn;
 
 /**
  * Class ModelManager
@@ -85,5 +86,56 @@ class ModelManager {
             ->pluck('role_id')->toArray();
 
         return AccessManager::hasRole($roles);
+    }
+
+
+    /**
+     * @param $model
+     * @param $data
+     * @param $operation
+     * @return array
+     */
+    public static function getModelDictionary ($model) {
+        $dictionary = self::getDictionary($model);
+        $columns = [];
+
+        foreach ( $dictionary as $column ) {
+            //check if there are any security rule against the column
+            $column = self::evaluateColumnSecurityRule($column);
+            if ( $column )
+                array_push($columns, $column);
+
+        }
+
+        return $columns;
+    }
+
+    /**
+     * @param $column
+     * @param null $data
+     * @param $operation
+     * @return bool
+     */
+    private static function evaluateColumnSecurityRule ($column, $data = null
+    ) {
+        $rules = $column->read_security_rules;
+        unset($column->read_security_rules);
+
+        if ( !sizeof($rules) ) return $column;
+
+        foreach ( $rules as $rule ) {
+            $passed = ( new SecurityRuleEvaluator($rule, $data) )->process();
+            if ( !$passed ) return false;
+        }
+
+        return $column;
+    }
+
+    /**
+     * @param $model
+     * @return ModelColumn[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
+     */
+    public static function getViewDictionary ($model) {
+        return ModelColumn::with(['reference_model', 'read_security_rules'])->where('model_id', $model->id)->get();
     }
 }
