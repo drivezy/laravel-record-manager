@@ -11,17 +11,9 @@ use Illuminate\Support\Facades\Auth;
  * @package Drivezy\LaravelRecordManager\Library
  */
 class SecurityRuleEvaluator {
-    /**
-     * @var bool|\Illuminate\Contracts\Auth\Authenticatable|null
-     */
+
     private $auth = false;
-    /**
-     * @var SecurityRule|null
-     */
     private $rule = null;
-    /**
-     * @var null
-     */
     private $data = null;
 
     /**
@@ -29,7 +21,7 @@ class SecurityRuleEvaluator {
      * @param SecurityRule $rule
      * @param $data the current state of the model onto which the rule is being processed
      */
-    public function __construct (SecurityRule $rule, $data = null) {
+    public function __construct ($rule, $data = null) {
         $this->auth = Auth::user();
 
         $this->rule = $rule;
@@ -55,7 +47,7 @@ class SecurityRuleEvaluator {
      * @return bool
      */
     private function evaluateRole () {
-        $roles = $this->rule->roles();
+        $roles = $this->rule->roles;
 
         //check if there were any role attached to the rule
         //if empty then evaluate to true
@@ -90,7 +82,7 @@ class SecurityRuleEvaluator {
     private function evaluateAdvancedCondition () {
         if ( !$this->rule->script_id ) return true;
 
-        $auth = $this->auth;
+        $user = $this->auth;
         $data = $this->data;
 
         $answer = true;

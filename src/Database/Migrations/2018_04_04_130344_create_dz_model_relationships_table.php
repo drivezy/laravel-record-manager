@@ -1,10 +1,11 @@
 <?php
 
 use Drivezy\LaravelRecordManager\Database\Seeds\DataModelSeeder;
+use Drivezy\LaravelRecordManager\Database\Seeds\ModelRelationshipTypeSeeder;
+use Drivezy\LaravelRecordManager\Models\Column;
 use Drivezy\LaravelRecordManager\Models\DataModel;
-use Drivezy\LaravelRecordManager\Models\ModelColumn;
-use Drivezy\LaravelRecordManager\Models\RelationshipDefinition;
 use Drivezy\LaravelUtility\LaravelUtility;
+use Drivezy\LaravelUtility\Models\LookupValue;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -20,8 +21,8 @@ class CreateDzModelRelationshipsTable extends Migration {
             $userTable = LaravelUtility::getUserTable();
 
             $modelTable = ( new DataModel() )->getTable();
-            $modelColumn = ( new ModelColumn() )->getTable();
-            $relationshipTable = ( new RelationshipDefinition() )->getTable();
+            $modelColumn = ( new Column() )->getTable();
+            $relationshipTable = ( new LookupValue() )->getTable();
 
             $table->increments('id');
             $table->unsignedInteger('model_id')->nullable();
@@ -40,8 +41,10 @@ class CreateDzModelRelationshipsTable extends Migration {
             $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('model_id')->references('id')->on($modelTable);
+
             $table->foreign('reference_type_id')->references('id')->on($relationshipTable);
             $table->foreign('reference_model_id')->references('id')->on($modelTable);
+
             $table->foreign('source_column_id')->references('id')->on($modelColumn);
             $table->foreign('alias_column_id')->references('id')->on($modelColumn);
 
@@ -53,6 +56,7 @@ class CreateDzModelRelationshipsTable extends Migration {
         });
 
         //populate the data model table
+        (new ModelRelationshipTypeSeeder())->run();
         ( new DataModelSeeder() )->run();
     }
 
@@ -62,6 +66,7 @@ class CreateDzModelRelationshipsTable extends Migration {
      * @return void
      */
     public function down () {
+        (new ModelRelationshipTypeSeeder())->drop();
         Schema::dropIfExists('dz_model_relationships');
     }
 }

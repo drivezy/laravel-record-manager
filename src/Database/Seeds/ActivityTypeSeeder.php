@@ -66,5 +66,4 @@ class ActivityTypeSeeder {
         $record = LookupType::find(1);
         $record->forceDelete();
     }
-
 }

@@ -3,12 +3,13 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelAccessManager\AccessManager;
-use Drivezy\LaravelRecordManager\Library\DictionaryManager;
-use Drivezy\LaravelRecordManager\Library\ListManager;
+use Drivezy\LaravelRecordManager\Library\AdminResponseManager;
+use Drivezy\LaravelRecordManager\Library\ApiResponseManager;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
-use Drivezy\LaravelRecordManager\Library\RecordManager;
+use Drivezy\LaravelRecordManager\Library\PreferenceManager;
+use Drivezy\LaravelRecordManager\Models\ClientScript;
 use Drivezy\LaravelRecordManager\Models\DataModel;
-use Drivezy\LaravelRecordManager\Models\ListPreference;
+use Drivezy\LaravelUtility\Models\BaseModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
@@ -18,17 +19,13 @@ use Illuminate\Support\Facades\Response;
  * @package Drivezy\LaravelRecordManager\Controller
  */
 class BaseController extends Controller {
-    /**
-     * @var
-     */
-    public $model;
-    public $dataModel;
+    protected $model;
+    private $dataModel;
+    private $request = null;
 
     /**
-     * @var null
+     * BaseController constructor.
      */
-    public $request = null;
-
     public function __construct () {
         $this->dataModel = DataModel::where('model_hash', md5($this->model))->first();
     }
@@ -43,36 +40,9 @@ class BaseController extends Controller {
             return AccessManager::unauthorizedAccess();
 
         if ( $request->has('list') )
-            return self::getListIndex($request);
+            return ( new AdminResponseManager($request, $this->dataModel) )->index();
 
-        $model = $this->model;
-        $this->request = $request;
-
-        $query = $this->getEncodedQuery();
-        $query = $model::whereRaw($query['query'], $query['value']);
-
-        $data = $this->getRecordData($query);
-        $data['success'] = true;
-
-        return $data;
-    }
-
-    /**
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    private function getListIndex (Request $request) {
-        $records = ( new ListManager($this->dataModel, [
-            'includes'           => $request->has('includes') ? $request->get('includes') : false,
-            'layout'             => self::getLayoutDefinition($request),
-            'stats'              => $request->has('stats') ? $request->get('stats') : false,
-            'query'              => $request->has('query') ? $request->get('query') : false,
-            'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
-            'limit'              => $request->has('limit') ? $request->get('limit') : 20,
-            'page'               => $request->has('page') ? $request->get('page') : 1,
-        ]) )->process();
-
-        return Response::json(['success' => true, 'response' => $records]);
+        return ( new ApiResponseManager($request, $this->model) )->index();
     }
 
     /**
@@ -85,35 +55,34 @@ class BaseController extends Controller {
             return AccessManager::unauthorizedAccess();
 
         if ( !is_numeric($id) )
-            return Response::json(['success' => false, 'response' => 'invalid operation']);
+            return invalid_operation();
 
-        if ( $request->has('list') ) {
-            return self::getRecord($request, $id);
-        }
+        if ( $request->has('list') )
+            return ( new AdminResponseManager($request, $this->dataModel) )->show($id);
 
-        $this->request = $request;
-        $model = $this->model;
-
-        $includes = $this->getQueryInclusions();
-        $response['response'] = $model::with($includes)->find($id);
-        $response['success'] = true;
-
-        return Response::json($response);
+        return ( new ApiResponseManager($request, $this->model) )->show($id);
     }
 
     /**
      * @param Request $request
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\JsonResponse|mixed
      */
-    private function getRecord (Request $request, $id) {
-        $records = ( new RecordManager($this->dataModel, [
-            'includes'           => $request->has('includes') ? $request->get('includes') : false,
-            'layout'             => self::getLayoutDefinition($request),
-            'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
-        ]) )->process($id);
+    public function create (Request $request) {
+        if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::ADD) )
+            return AccessManager::unauthorizedAccess();
 
-        return Response::json(['success' => true, 'response' => $records]);
+        BaseModel::$dictionary_mode = true;
+
+        $columns = ModelManager::getModelDictionary($this->dataModel, ModelManager::ADD);
+
+        return success_response([
+            'dictionary'     => [
+                strtolower($this->dataModel->name) => $columns->allowed,
+            ],
+            'form_layouts'   => PreferenceManager::getFormPreference(DataModel::class, $this->dataModel->id),
+            'model'          => $this->dataModel,
+            'client_scripts' => ModelManager::getClientScripts($this->dataModel),
+        ]);
     }
 
     /**
@@ -125,12 +94,48 @@ class BaseController extends Controller {
             return AccessManager::unauthorizedAccess();
 
         $model = $this->model;
-        $data = $model::create($request->except('access_token'));
+
+        $columns = ModelManager::getModelDictionary($this->dataModel, ModelManager::ADD);
+        $inputs = $request->except('deleted_at', 'created_at', 'updated_at', 'created_by', 'updated_by', 'access_token');
+
+        $data = new $model();
+        foreach ( $inputs as $key => $value ) {
+            if ( in_array($key, $columns->restrictedIdentifiers) ) continue;
+
+            $data->setAttribute($key, $this->convertToDbValue($value));
+        }
+
+        $data->save();
 
         if ( !isset($data->errors) )
-            return Response::json(['success' => true, 'response' => $data]);
+            return success_response($data);
 
         return Response::json(['success' => false, 'response' => $data, 'reason' => 'Validation error']);
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return mixed
+     */
+    public function edit (Request $request, $id) {
+        $model = $this->model;
+        $data = $model::find($id);
+
+        $columns = ModelManager::getModelDictionary($this->dataModel, ModelManager::EDIT, $data);
+        foreach ( $columns[1] as $item ) {
+            unset($data->{$item->name});
+        }
+
+        return success_response([
+            'data'           => $data,
+            'dictionary'     => [
+                strtolower($this->dataModel->name) => $columns->allowed,
+            ],
+            'form_layouts'   => PreferenceManager::getFormPreference(DataModel::class, $this->dataModel->id),
+            'model'          => $this->dataModel,
+            'client_scripts' => ModelManager::getClientScripts($this->dataModel),
+        ]);
     }
 
     /**
@@ -143,7 +148,7 @@ class BaseController extends Controller {
             return AccessManager::unauthorizedAccess();
 
         if ( !is_numeric($id) )
-            return Response::json(['success' => false, 'response' => 'invalid operation']);
+            return invalid_operation();
 
         $model = $this->model;
 
@@ -151,14 +156,18 @@ class BaseController extends Controller {
         if ( !$data ) return null;
 
         $inputs = $request->except('deleted_at', 'created_at', 'updated_at', 'created_by', 'updated_by', 'access_token');
+        $columns = ModelManager::getModelDictionary($this->dataModel, ModelManager::EDIT, $data);
 
-        foreach ( $inputs as $key => $value )
+        foreach ( $inputs as $key => $value ) {
+            if ( in_array($key, $columns->restrictedIdentifiers) ) continue;
+
             $data->setAttribute($key, $this->convertToDbValue($value));
+        }
 
         $data->save();
 
         if ( !isset($data->errors) )
-            return Response::json(['success' => true, 'response' => $data]);
+            return success_response($data);
 
         return Response::json(['success' => false, 'response' => $data, 'reason' => 'Validation error']);
     }
@@ -175,145 +184,11 @@ class BaseController extends Controller {
 
         $data = $model::find($id);
         if ( !$data )
-            return Response::json(['success' => true, 'response' => null]);
+            return failed_response('Record not found');
 
         $data->delete();
 
-        return Response::json(['success' => true, 'response' => $data]);
-    }
-
-    /**
-     * @return array
-     */
-    private function getEncodedQuery () {
-        $query = $this->request->get('query');
-        if ( !$this->request->has('query') ) return array('query' => '1 < ?', 'value' => array('2'));
-
-        $splits = explode(',', $query);
-        $encode = $arr = [];
-        $flag = true;
-
-        foreach ( $splits as $split ) {
-            if ( $flag ) {
-                $encode['query'] = $split;
-                $flag = false;
-            } else
-                array_push($arr, $split);
-        }
-        $encode['value'] = $arr;
-
-        return $encode;
-    }
-
-    /**
-     * @param $query
-     * @return mixed
-     */
-    private function addQueryParams ($query) {
-        $request = $this->request;
-
-        if ( $request->has('scopes') ) {
-            $scopes = explode(',', $request->get('scopes'));
-            foreach ( $scopes as $scope ) {
-                $query->{$scope}();
-            }
-        }
-
-        if ( $request->has('in') ) {
-            $ins = explode("and", $request->get('in'));
-            foreach ( $ins as $in ) {
-                $x = explode('=', $in);
-                $query->whereIn(trim($x[0]), explode(',', trim($x[1])));
-            }
-        }
-
-        if ( $request->has('not_in') ) {
-            $ins = explode("and", $request->get('not_in'));
-            foreach ( $ins as $in ) {
-                $x = explode('=', $in);
-                $query->whereNotIn(trim($x[0]), explode(',', trim($x[1])));
-            }
-        }
-
-        return $query;
-    }
-
-    /**
-     * @param $query
-     * @return array|mixed
-     */
-    public function getRecordData ($query) {
-        $request = $this->request;
-
-        $response = [];
-        $query = $this->addQueryParams($query);
-
-        if ( $request->has('aggregation_column') )
-            return self::handleAggregation($query);
-
-        $includes = self::getQueryInclusions();
-        $limit = $request->has('limit') ? intval($request->get('limit')) : 20;
-
-        $offset = $request->has('page') ? ( $request->get('page') - 1 ) * $limit : 0;
-        $offset = $offset > 0 ? $offset : 0;
-
-        if ( $request->has('order') ) {
-            $splits = explode(',', $request->get('order'));
-            $order = $request->has('order') ? $splits[0] : 'id';
-            $orderingOrder = isset($splits[1]) ? $splits[1] : 'ASC';
-        } else {
-            $order = 'id';
-            $orderingOrder = 'ASC';
-        }
-
-        if ( $request->has('stats') ) {
-            if ( $request->get('stats') == 'true' ) {
-                $count = $query->count();
-                $stats = array('records' => $count, 'count' => $limit, 'offset' => $offset);
-                $response['stats'] = $stats;
-            }
-        }
-
-        $data = $query->with($includes)
-            ->skip($offset)
-            ->limit($limit)
-            ->orderBy($order, $orderingOrder)
-            ->get();
-
-        $response['response'] = $data;
-
-        if ( $request->has('dictionary') ) {
-            if ( $request->get('dictionary') == 'true' ) {
-                $dictionary = DictionaryManager::getModelDictionary($this->model, $includes);
-                $response['dictionary'] = $dictionary[0];
-                $response['relationship'] = $dictionary[1];
-            }
-        }
-
-        return $response;
-    }
-
-    /**
-     * @param $query
-     * @return mixed
-     */
-    private function handleAggregation ($query) {
-        $request = $this->request;
-        $response['response'] = $query->{$request->get('aggregation_operator')}($request->get('aggregation_column'));
-
-        return $response;
-    }
-
-    /**
-     * @return array
-     */
-    private function getQueryInclusions () {
-        $includes = $this->request->get('includes');
-        if ( !$includes ) return [];
-
-        if ( $includes == 'null' ) return [];
-
-        return explode(',', $includes);
+        return success_response($data);
     }
 
     /**
@@ -332,26 +207,5 @@ class BaseController extends Controller {
             $val = $value;
 
         return $val;
-    }
-
-    /**
-     * @param Request $request
-     * @return array
-     */
-    private function getLayoutDefinition (Request $request) {
-        $columns = [];
-        if ( !$request->has('layout_id') ) return $columns;
-
-        $definition = ListPreference::find($request->get('layout_id'));
-        $definition = json_decode($definition->column_definition, true);
-
-        foreach ( $definition as $item ) {
-            array_push($columns, [
-                'object' => $item['object'],
-                'column' => $item['column'],
-            ]);
-        }
-
-        return $columns;
     }
 }

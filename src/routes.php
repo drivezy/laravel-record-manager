@@ -8,7 +8,12 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('lookupType', 'LookupTypeController');
     Route::resource('lookupValue', 'LookupValueController');
 
+    Route::resource('columnDefinition', 'ColumnDefinitionController');
+    Route::resource('relationshipDefinition', 'RelationshipDefinitionController');
+
     Route::resource('dataModel', 'DataModelController');;
+    Route::resource('column', 'ColumnController');
+
     Route::resource('modelColumn', 'ModelColumnController');
     Route::resource('modelRelationship', 'ModelRelationshipController');
 

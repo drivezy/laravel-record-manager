@@ -3,7 +3,9 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelRecordManager\Models\FormPreference;
+use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 /**
  * Class FormPreferenceController
@@ -30,6 +32,9 @@ class FormPreferenceController extends RecordController {
         $preference->column_definition = $request->column_definition;
         $preference->save();
 
-        return Response::json(['success' => true, 'response' => $preference]);
+        if ( !isset($preference->errors) )
+            return Response::json(['success' => true, 'response' => $preference]);
+
+        return Response::json(['success' => false, 'response' => $preference, 'reason' => 'Validation error']);
     }
 }

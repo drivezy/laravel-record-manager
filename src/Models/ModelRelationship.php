@@ -16,6 +16,7 @@ class ModelRelationship extends BaseModel {
      */
     protected $table = 'dz_model_relationships';
 
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
@@ -27,14 +28,14 @@ class ModelRelationship extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function source_column () {
-        return $this->belongsTo(ModelColumn::class);
+        return $this->belongsTo(Column::class);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function alias_column () {
-        return $this->belongsTo(ModelColumn::class);
+        return $this->belongsTo(Column::class);
     }
 
     /**

@@ -17,27 +17,26 @@ class FormPreferenceObserver extends BaseObserver {
      */
     protected $rules = [];
 
-    /**
-     * @param Eloquent $model
-     * @return bool
-     */
-    public function saving (Eloquent $model) {
-        $isFormConfigurator = AccessManager::hasPermission('form-configurator');
-        if ( !$isFormConfigurator ) return false;
-
-        return parent::updating($model);
-    }
-
-    /**
-     * @param Eloquent $model
-     * @return bool|void
-     */
-    public function deleting (Eloquent $model) {
-        $isFormConfigurator = AccessManager::hasPermission('form-configurator');
-        if ( !$isFormConfigurator ) return false;
-
-        parent::deleting($model);
-    }
-
+//    /**
+//     * @param Eloquent $model
+//     * @return bool
+//     */
+//    public function saving (Eloquent $model) {
+////        $isFormConfigurator = AccessManager::hasPermission('form-configurator');
+////        if ( !$isFormConfigurator ) return false;
+//
+//        return parent::saving($model);
+//    }
+//
+//    /**
+//     * @param Eloquent $model
+//     * @return bool|void
+//     */
+//    public function deleting (Eloquent $model) {
+////        $isFormConfigurator = AccessManager::hasPermission('form-configurator');
+////        if ( !$isFormConfigurator ) return false;
+//
+//        parent::deleting($model);
+//    }
 
 }

@@ -20,7 +20,7 @@ class DataModel extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function columns () {
-        return $this->hasMany(ModelColumn::class, 'model_id');
+        return $this->hasMany(Column::class, 'source_id')->where('source_type', self::class);
     }
 
     /**

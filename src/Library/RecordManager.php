@@ -16,11 +16,13 @@ class RecordManager extends DataManager {
      * @param $id
      * @return array
      */
-    public function process ($id) {
+    public function process ($id = null) {
         $className = $this->model->namespace . '\\' . $this->model->name;
         $this->recordData = $className::find($id);
 
         if ( !self::loadDataFromCache() ) {
+            parent::process();
+
             self::segregateIncludes();
             self::constructQuery();
         }
@@ -90,7 +92,7 @@ class RecordManager extends DataManager {
                 }
 
                 //set up the joins against the necessary columns
-                self::setupColumnJoins($data, $base);
+                self::setupColumnJoins($model, $data, $base);
 
                 //setting up the required documents
                 $base .= '.' . $relationship;
@@ -98,7 +100,6 @@ class RecordManager extends DataManager {
 
                 $this->relationships[ $base ] = $data;
                 $this->dictionary[ $base ] = ModelColumn::where('model_id', $data->reference_model_id)->get();
-                $this->tables[ $base ] = $data->reference_model->table_name;
             }
         }
     }

@@ -2,24 +2,24 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
-use Drivezy\LaravelRecordManager\Observers\RelationshipDefinitionObserver;
+use Drivezy\LaravelRecordManager\Observers\CustomFormObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 
 /**
- * Class RelationshipDefinition
+ * Class CustomForm
  * @package Drivezy\LaravelRecordManager\Models
  */
-class RelationshipDefinition extends BaseModel {
+class CustomForm extends BaseModel {
     /**
      * @var string
      */
-    protected $table = 'dz_relationship_definitions';
+    protected $table = 'dz_custom_forms';
 
     /**
      * Override the boot functionality to add up the observer
      */
     public static function boot () {
         parent::boot();
-        self::observe(new RelationshipDefinitionObserver());
+        self::observe(new CustomFormObserver());
     }
 }
