@@ -16,22 +16,53 @@ class ModelRelationshipTypeSeeder {
      * @return void
      */
     public function run () {
-        $columns = [
+
+        //create client script against the record
+        LookupType::firstOrCreate([
+            'id'          => 4,
+            'name'        => 'Model Relationship Types',
+            'description' => 'Different types of relationships maintained within the models',
+        ]);
+
+        $records = [
             [
-                'name'        => 'Single',
-                'description' => 'One to one relationship - belongsTo or has one',
+                'id'             => 41,
+                'lookup_type_id' => 4,
+                'name'           => 'Single',
+                'value'          => 'Single',
+                'description'    => 'One to one relationship',
             ],
             [
-                'name'        => 'Multiple',
-                'description' => 'One to many relationship - has many',
+                'id'             => 42,
+                'lookup_type_id' => 4,
+                'name'           => 'Multiple',
+                'value'          => 'Multiple',
+                'description'    => 'One to many relationship',
             ],
             [
-                'name'        => 'Scope',
-                'description' => 'System limiter on the query',
+                'id'             => 43,
+                'lookup_type_id' => 4,
+                'name'           => 'Scope',
+                'value'          => 'Scope',
+                'description'    => 'different scopes',
             ],
         ];
 
-        foreach ( $columns as $column )
-            RelationshipDefinition::firstOrCreate($column);
+        foreach ( $records as $record )
+            LookupValue::create($record);
+    }
+
+    /**
+     * Drop the records that were created as part of the migration
+     */
+    public function drop () {
+        //delete the records of the lookup value
+        $records = LookupValue::where('lookup_type_id', 4)->get();
+        foreach ( $records as $record )
+            $record->forceDelete();
+
+        //delete the lookup definition itself
+        $record = LookupType::find(4);
+        $record->forceDelete();
     }
 }

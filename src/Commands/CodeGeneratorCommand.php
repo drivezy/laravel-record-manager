@@ -153,7 +153,7 @@ class CodeGeneratorCommand extends Command {
      * @return mixed
      */
     public function replaceContents ($content) {
-        $content = str_replace('{{app}}', config('utility.namespace'), $content);
+        $content = str_replace('{{app}}', config('utility.app_namespace'), $content);
         $content = str_replace('{{namespace}}', $this->namespace, $content);
         $content = str_replace('{{name}}', $this->name, $content);
         $content = str_replace('{{table}}', $this->table, $content);

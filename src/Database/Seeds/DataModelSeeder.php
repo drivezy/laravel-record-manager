@@ -6,6 +6,7 @@ use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
 use Drivezy\LaravelRecordManager\Library\ModelScanner;
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelUtility\LaravelUtility;
 
 /**
  * Class DataModelSeeder
@@ -21,9 +22,9 @@ class DataModelSeeder {
             [
                 'name'                => 'User',
                 'description'         => 'User defined in the system',
-                'namespace'           => config('utility.namespace'),
+                'namespace'           => config('utility.app_namespace'),
                 'allowed_permissions' => 'raed',
-                'table_name'          => AccessManager::getUserClass(),
+                'table_name'          => LaravelUtility::getUserTable(),
             ],
         ];
 

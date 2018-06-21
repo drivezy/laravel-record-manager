@@ -2,36 +2,38 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
-use Drivezy\LaravelRecordManager\Observers\ModelColumnObserver;
+use Drivezy\LaravelRecordManager\Observers\UIActionObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 
 /**
- * Class ModelColumn
+ * Class UIAction
  * @package Drivezy\LaravelRecordManager\Models
  */
-class ModelColumn extends BaseModel {
-
-    protected $table = 'dz_model_columns';
+class UIAction extends BaseModel {
+    /**
+     * @var string
+     */
+    protected $table = 'dz_ui_actions';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function model () {
-        return $this->belongsTo(DataModel::class);
+    public function filter_condition () {
+        return $this->belongsTo(SystemScript::class);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function column_type () {
-        return $this->belongsTo(ColumnDefinition::class);
+    public function execution_script () {
+        return $this->belongsTo(SystemScript::class);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function reference_model () {
-        return $this->belongsTo(DataModel::class);
+    public function form () {
+        return $this->belongsTo(CustomForm::class);
     }
 
     /**
@@ -39,6 +41,6 @@ class ModelColumn extends BaseModel {
      */
     public static function boot () {
         parent::boot();
-        self::observe(new ModelColumnObserver());
+        self::observe(new UIActionObserver());
     }
 }

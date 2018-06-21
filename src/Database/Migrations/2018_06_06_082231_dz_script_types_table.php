@@ -1,19 +1,19 @@
 <?php
 
-use Drivezy\LaravelRecordManager\Database\Seeds\ModelRelationshipTypeSeeder;
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
+use Drivezy\LaravelUtility\LaravelUtility;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Database\Migrations\Migration;
 
-class CreateDzRelationshipDefinitionsTable extends Migration {
+class DzScriptTypesTable extends Migration {
     /**
      * Run the migrations.
      *
      * @return void
      */
     public function up () {
-        Schema::create('dz_relationship_definitions', function (Blueprint $table) {
-            $userTable = config('utility.user_table');
+        Schema::create('dz_script_types', function (Blueprint $table) {
+            $userTable = LaravelUtility::getUserTable();
 
             $table->increments('id');
 
@@ -29,9 +29,6 @@ class CreateDzRelationshipDefinitionsTable extends Migration {
             $table->timestamps();
             $table->softDeletes();
         });
-
-        //load the model column lookup type
-        ( new ModelRelationshipTypeSeeder() )->run();
     }
 
     /**
@@ -40,6 +37,6 @@ class CreateDzRelationshipDefinitionsTable extends Migration {
      * @return void
      */
     public function down () {
-        Schema::dropIfExists('dz_relationship_definitions');
+        Schema::dropIfExists('dz_script_types');
     }
 }

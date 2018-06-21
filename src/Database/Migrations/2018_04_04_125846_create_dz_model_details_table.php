@@ -1,6 +1,7 @@
 <?php
 
 use Drivezy\LaravelAccessManager\Models\Route;
+use Drivezy\LaravelUtility\LaravelUtility;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -13,7 +14,7 @@ class CreateDzModelDetailsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_model_details', function (Blueprint $table) {
-            $userTable = config('utility.user_table');
+            $userTable = LaravelUtility::getUserTable();
             $routeTable = ( new Route() )->getTable();
 
             $table->increments('id');

@@ -2,7 +2,8 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
-
+use Drivezy\LaravelRecordManager\Models\Column;
+use Drivezy\LaravelRecordManager\Models\ColumnDefinition;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
@@ -42,7 +43,6 @@ class DictionaryManager {
      */
     public function __construct (DataModel $model) {
         $this->model = $model;
-
     }
 
     /**
@@ -52,7 +52,6 @@ class DictionaryManager {
         self::loadModelColumns();
         self::loadModelMethods();
     }
-
 
     /**
      *
@@ -114,9 +113,10 @@ class DictionaryManager {
      * @return mixed
      */
     private function attachModelColumn ($column, $type, $arr = []) {
-        $record = ModelColumn::firstOrNew([
-            'name'     => $column,
-            'model_id' => $this->model->id,
+        $record = Column::firstOrNew([
+            'name'        => $column,
+            'source_id'   => $this->model->id,
+            'source_type' => DataModel::class,
         ]);
         if ( $record->id ) return $record;
 
@@ -159,9 +159,9 @@ class DictionaryManager {
      *
      */
     private function loadColumnMappings () {
-        $records = LookupValue::where('lookup_type_id', 1)->get();
+        $records = ColumnDefinition::get();
         foreach ( $records as $record ) {
-            $items = explode(',', $record->value);
+            $items = explode(',', $record->supported_identifiers);
             foreach ( $items as $item )
                 $this->columnMappings[ strtolower($item) ] = $record->id;
         }
@@ -181,10 +181,14 @@ class DictionaryManager {
      * @return null
      */
     private function getModelMethodColumn ($method) {
-        $record = ModelColumn::where('model_id', $this->model->id)->where('name', strtolower($method) . '_id')->first();
+        $record = Column::where('source_type', DataModel::class)
+            ->where('source_id', $this->model->id)
+            ->where('name', strtolower($method) . '_id')->first();
         if ( $record ) return $record->id;
 
-        $record = ModelColumn::where('model_id', $this->model->id)->where('name', strtolower(preg_replace('/[A-Z]/', '_$0', $method)))->first();
+        $record = Column::where('source_type', DataModel::class)
+            ->where('source_id', $this->model->id)
+            ->where('name', strtolower(preg_replace('/[A-Z]/', '_$0', $method)))->first();
         if ( $record ) return $record->id;
 
         return null;
@@ -195,11 +199,11 @@ class DictionaryManager {
      * @return int
      */
     private function getMethodRelationshipType ($method) {
-        if ( substr($method, 0, 5) == 'scope' ) return 3;
+        if ( substr($method, 0, 5) == 'scope' ) return 43;
 
-        if ( substr($method, -1) == 's' ) return 2;
+        if ( substr($method, -1) == 's' ) return 42;
 
-        return 1;
+        return 41;
     }
 
     /**
@@ -241,9 +245,6 @@ class DictionaryManager {
                     $dictionary[ $relationShipName ] = self::getModelColumns($relatedId, true);
                     $alias->actions = ModelManager::getModelActions($alias->reference_model);
 
-//                    $alias->actions = self::getDistinctActions('ModelAlias', $alias->id, $alias->related_model);
-//                    $alias->preferences = self::getUserPreferences($relationShipName);
-
                     $links[ $relationShipName ] = $alias;
                 }
             }
@@ -260,7 +261,8 @@ class DictionaryManager {
     private static function getModelColumns ($modelId, $relatedModel = false) {
         $includes = $relatedModel ? ['reference_model'] : [];
 
-        return ModelColumn::with($includes)->where('model_id', $modelId)->where('visibility', true)->get();
+        return Column::with($includes)->where('source_type', DataModel::class)
+            ->where('source_id', $modelId)->where('visibility', true)->get();
     }
 
     /**

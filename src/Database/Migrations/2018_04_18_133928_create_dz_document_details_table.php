@@ -2,6 +2,7 @@
 
 use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\DocumentTypeSeeder;
+use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Models\LookupValue;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -15,7 +16,7 @@ class CreateDzDocumentDetailsTable extends Migration {
      */
     public function up () {
         Schema::create('dz_document_details', function (Blueprint $table) {
-            $userTable = config('utility.user_table');
+            $userTable = LaravelUtility::getUserTable();
             $lookupTable = ( new LookupValue() )->getTable();
 
             $table->increments('id');

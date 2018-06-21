@@ -12,18 +12,18 @@ use Illuminate\Support\Facades\DB;
  */
 class ListManager extends DataManager {
 
-    private $stats, $order = false;
-    private $limit = 20;
-    private $page = 1;
-
     /**
+     * Get the data from the system and then return the result as list
      * @return array
      */
-    public function process () {
+    public function process ($id = null) {
         if ( !self::loadDataFromCache() ) {
+            parent::process();
+
             self::processIncludes();
             self::constructQuery();
         }
+
         self::loadResults();
 
         return [
@@ -37,6 +37,7 @@ class ListManager extends DataManager {
     }
 
     /**
+     * Get the includes and check their necessary joins and segregate the data
      * @return bool
      */
     private function processIncludes () {
@@ -63,24 +64,27 @@ class ListManager extends DataManager {
                     break;
 
                 //set up the joins against the necessary columns
-                self::setupColumnJoins($data, $base);
+                self::setupColumnJoins($model, $data, $base);
 
                 //setting up the required documents
                 $base .= '.' . $relationship;
                 $model = $data->reference_model;
 
+                self::setReadDictionary($base, $model);
+
                 $this->relationships[ $base ] = $data;
-                $this->dictionary[ $base ] = ModelColumn::where('model_id', $data->reference_model_id)->get();
-                $this->tables[ $base ] = $data->reference_model->table_name;
             }
         }
     }
 
 
     /**
-     *
+     * Load the results of the record as requested by the list condition
      */
     private function loadResults () {
+        if ( $this->aggregation_column )
+            return self::setAggregationData();
+
         if ( $this->stats ) {
             $this->stats = self::getStatsData();
         }
@@ -88,6 +92,8 @@ class ListManager extends DataManager {
         $sql = 'SELECT ' . $this->sql['columns'] . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
         if ( $this->query )
             $sql .= ' and (' . $this->query . ')';
+
+        $sql .= ' and `' . $this->base . '`.deleted_at is null';
 
         if ( $this->order ) {
             $sql .= ' ORDER BY ' . $this->order;
@@ -99,18 +105,33 @@ class ListManager extends DataManager {
     }
 
     /**
+     * Get the stats data as part of the list condition
      * @return array
      */
     private function getStatsData () {
         $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
         if ( $this->query )
-            $sql .= ' and (' . $this->query . ')';
+            $sql .= ' and (' . $this->query . ') and `' . $this->base . '`.deleted_at is null';
+        else
+            $sql .= ' and `' . $this->base . '`.deleted_at is null';
 
         return [
             'total'  => DB::select(DB::raw($sql))[0]->count,
             'page'   => $this->page,
             'record' => $this->limit,
         ];
+    }
+
+    /**
+     * If aggregation operation has been requested then do the same
+     */
+    private function setAggregationData () {
+        $sql = 'SELECT ' . $this->aggregation_operator . '(' . $this->aggregation_column . ')' . ' as ' . $this->aggregation_column . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
+        if ( $this->query )
+            $sql .= ' and (' . $this->query . ')';
+
+        $sql .= ' and `' . $this->base . '`.deleted_at is null';
+        $this->data = DB::select(DB::raw($sql));
     }
 }
 

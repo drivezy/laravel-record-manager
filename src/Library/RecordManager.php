@@ -12,14 +12,17 @@ class RecordManager extends DataManager {
     private $recordData = null;
 
     /**
+     * return the data as part of the record with its tabs
      * @param $id
      * @return array
      */
-    public function process ($id) {
+    public function process ($id = null) {
         $className = $this->model->namespace . '\\' . $this->model->name;
         $this->recordData = $className::find($id);
 
         if ( !self::loadDataFromCache() ) {
+            parent::process();
+
             self::segregateIncludes();
             self::constructQuery();
         }
@@ -39,6 +42,7 @@ class RecordManager extends DataManager {
     }
 
     /**
+     * Differentiate the multiple includes to single and tabs and create data accordingly
      * @return bool
      */
     private function segregateIncludes () {
@@ -73,9 +77,9 @@ class RecordManager extends DataManager {
                         $this->detailArray[ $relationship ] = [
                             'id'                => $data->id,
                             'base'              => strtolower($data->reference_model->name),
-                            'display_name'      => $data->display_name,
+                            'name'              => $data->display_name,
                             'includes'          => [],
-                            'query'             => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
+                            'restricted_query'  => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
                             'restricted_column' => $aliasColumn,
                             'route'             => $data->reference_model->route_name,
                             'list_layouts'      => PreferenceManager::getListPreference(ModelRelationship::class, $data->id),
@@ -88,7 +92,7 @@ class RecordManager extends DataManager {
                 }
 
                 //set up the joins against the necessary columns
-                self::setupColumnJoins($data, $base);
+                self::setupColumnJoins($model, $data, $base);
 
                 //setting up the required documents
                 $base .= '.' . $relationship;
@@ -96,13 +100,12 @@ class RecordManager extends DataManager {
 
                 $this->relationships[ $base ] = $data;
                 $this->dictionary[ $base ] = ModelColumn::where('model_id', $data->reference_model_id)->get();
-                $this->tables[ $base ] = $data->reference_model->table_name;
             }
         }
     }
 
     /**
-     *
+     * Load the results of the record as requested by the record condition
      */
     private function loadResults () {
         $sql = 'SELECT ' . $this->sql['columns'] . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'] . ' AND `' . $this->base . '`.id = ' . $this->recordData->id;
