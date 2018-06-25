@@ -5,9 +5,9 @@ namespace Drivezy\LaravelRecordManager\Controllers;
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\AdminResponseManager;
 use Drivezy\LaravelRecordManager\Library\ApiResponseManager;
+use Drivezy\LaravelRecordManager\Library\ClientScriptManager;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
 use Drivezy\LaravelRecordManager\Library\PreferenceManager;
-use Drivezy\LaravelRecordManager\Models\ClientScript;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelUtility\Models\BaseModel;
 use Illuminate\Http\Request;
@@ -81,7 +81,7 @@ class BaseController extends Controller {
             ],
             'form_layouts'   => PreferenceManager::getFormPreference(DataModel::class, $this->dataModel->id),
             'model'          => $this->dataModel,
-            'client_scripts' => ModelManager::getClientScripts($this->dataModel),
+            'client_scripts' => ClientScriptManager::getClientScripts($this->dataModel->table_name),
         ]);
     }
 
@@ -134,7 +134,7 @@ class BaseController extends Controller {
             ],
             'form_layouts'   => PreferenceManager::getFormPreference(DataModel::class, $this->dataModel->id),
             'model'          => $this->dataModel,
-            'client_scripts' => ModelManager::getClientScripts($this->dataModel),
+            'client_scripts' => ClientScriptManager::getClientScripts($this->dataModel->table_name),
         ]);
     }
 
