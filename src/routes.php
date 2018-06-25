@@ -35,4 +35,7 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
     Route::resource('securityRule', 'SecurityRuleController');
     Route::resource('clientScript', 'ClientScriptController');
+
+    Route::resource('customForm', 'CustomFormController');
+    Route::get('formDetails/{id}', 'CustomFormController@getFormDetails');
 });
