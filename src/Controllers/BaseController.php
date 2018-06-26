@@ -71,8 +71,6 @@ class BaseController extends Controller {
         if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::ADD) )
             return AccessManager::unauthorizedAccess();
 
-        BaseModel::$dictionary_mode = true;
-
         $columns = ModelManager::getModelDictionary($this->dataModel, ModelManager::ADD);
 
         return success_response([

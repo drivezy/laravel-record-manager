@@ -54,7 +54,7 @@ class SecurityRuleManager {
      * @param Form $form
      * @return array
      */
-    public static function getFormSecurityRules (Form $form) {
+    public static function getFormSecurityRules (CustomForm $form) {
         $rules = [];
 
         $query = "SELECT id, name, filter_condition, script_id 

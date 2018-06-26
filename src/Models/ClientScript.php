@@ -14,6 +14,7 @@ class ClientScript extends BaseModel {
      * @var string
      */
     protected $table = 'dz_client_scripts';
+    protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
