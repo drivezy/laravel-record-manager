@@ -15,6 +15,7 @@ class ModelRelationship extends BaseModel {
      * @var string
      */
     protected $table = 'dz_model_relationships';
+    protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
 
     /**

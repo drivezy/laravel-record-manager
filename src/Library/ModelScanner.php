@@ -15,7 +15,7 @@ class ModelScanner {
      *
      */
     public static function scanModels () {
-        self::loadModels(app_path() . '/Models', config('utility.namespace') . '\\Models');
+        self::loadModels(app_path() . '/Models', config('utility.app_namespace') . '\\Models');
     }
 
     /**

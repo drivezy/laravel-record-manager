@@ -14,6 +14,7 @@ class CustomForm extends BaseModel {
      * @var string
      */
     protected $table = 'dz_custom_forms';
+    protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * Override the boot functionality to add up the observer

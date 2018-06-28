@@ -71,8 +71,6 @@ class BaseController extends Controller {
         if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::ADD) )
             return AccessManager::unauthorizedAccess();
 
-        BaseModel::$dictionary_mode = true;
-
         $columns = ModelManager::getModelDictionary($this->dataModel, ModelManager::ADD);
 
         return success_response([
@@ -123,8 +121,8 @@ class BaseController extends Controller {
         $data = $model::find($id);
 
         $columns = ModelManager::getModelDictionary($this->dataModel, ModelManager::EDIT, $data);
-        foreach ( $columns[1] as $item ) {
-            unset($data->{$item->name});
+        foreach ( $columns->restrictedIdentifiers as $item ) {
+            unset($data->{$item});
         }
 
         return success_response([

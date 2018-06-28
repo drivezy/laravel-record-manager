@@ -15,6 +15,7 @@ class DataModel extends BaseModel {
      * @var string
      */
     protected $table = 'dz_model_details';
+    protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -34,7 +35,7 @@ class DataModel extends BaseModel {
      * @return $this
      */
     public function roles () {
-        return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', 'Model');
+        return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', self::class);
     }
 
     /**

@@ -14,6 +14,7 @@ class Column extends BaseModel {
      * @var string
      */
     protected $table = 'dz_column_details';
+    protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at', 'source_type', 'source_id'];
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
