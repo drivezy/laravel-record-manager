@@ -32,7 +32,7 @@ class DataModel extends BaseModel {
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return $this
      */
     public function roles () {
         return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', self::class);

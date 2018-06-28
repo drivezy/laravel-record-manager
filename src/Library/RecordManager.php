@@ -3,6 +3,8 @@
 namespace Drivezy\LaravelRecordManager\Library;
 
 
+use Drivezy\LaravelRecordManager\Models\Column;
+use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Illuminate\Support\Facades\DB;
@@ -69,7 +71,7 @@ class RecordManager extends DataManager {
                 if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) )
                     break;
 
-                if ( $first && $data->reference_type_id == 2 ) {
+                if ( $first && $data->reference_type_id == 42 ) {
                     if ( !isset($this->detailArray[ $relationship ]) ) {
                         $sourceColumn = $data->source_column_id ? $data->source_column->name : 'id';
                         $aliasColumn = $data->alias_column_id ? $data->alias_column->name : 'id';
@@ -84,6 +86,7 @@ class RecordManager extends DataManager {
                             'route'             => $data->reference_model->route_name,
                             'list_layouts'      => PreferenceManager::getListPreference(ModelRelationship::class, $data->id),
                             'form_layouts'      => PreferenceManager::getFormPreference(ModelRelationship::class, $data->id),
+                            'ui_actions'        => UIActionManager::getObjectUIActions(ModelRelationship::class, $data->id),
                         ];
                     }
 
@@ -99,7 +102,7 @@ class RecordManager extends DataManager {
                 $model = $data->reference_model;
 
                 $this->relationships[ $base ] = $data;
-                $this->dictionary[ $base ] = ModelColumn::where('model_id', $data->reference_model_id)->get();
+                $this->dictionary[ $base ] = Column::where('source_type', DataModel::class)->where('source_id', $data->reference_model_id)->get();
             }
         }
     }
