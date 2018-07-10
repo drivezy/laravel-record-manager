@@ -67,6 +67,7 @@ class DataManager {
 
     /**
      * This will create the join condition for the alias as part of its relationship with the parent one
+     * @param $model
      * @param $relationship
      * @param $base
      */

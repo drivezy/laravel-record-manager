@@ -2,7 +2,6 @@
 
 namespace Drivezy\LaravelRecordManager\Database\Seeds;
 
-use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\SystemScript;
 use Drivezy\LaravelRecordManager\Models\UIAction;
 
@@ -59,7 +58,7 @@ class UIActionSeeder {
                 'as_dropdown'         => 0,
                 'as_context'          => 1,
                 'as_record'           => 1,
-                'execution_script_id' => 1,
+                'execution_script_id' => null,
                 'filter_condition_id' => null,
             ],
             [
@@ -74,23 +73,12 @@ class UIActionSeeder {
                 'as_dropdown'         => 0,
                 'as_context'          => 1,
                 'as_record'           => 0,
-                'execution_script_id' => 1,
+                'execution_script_id' => null,
                 'filter_condition_id' => null,
             ],
         ];
 
         foreach ( $records as $record ) {
-            $script = SystemScript::create([
-                'source_type' => UIAction::class,
-                'source_id'   => $record['id'],
-                'script'      => $record['identifier'] . '()',
-
-            ]);
-
-            $record['execution_script_id'] = $script->id;
-            $record['source_type'] = DataModel::class;
-            $record['source_id'] = 0;
-
             return UIAction::create($record);
         }
     }

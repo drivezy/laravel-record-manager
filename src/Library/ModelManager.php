@@ -9,6 +9,7 @@ use Drivezy\LaravelRecordManager\Models\ClientScript;
 use Drivezy\LaravelRecordManager\Models\Column;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
+use Drivezy\LaravelRecordManager\Models\UIAction;
 use Drivezy\LaravelUtility\Models\BaseModel;
 
 /**
@@ -47,29 +48,27 @@ class ModelManager {
         //checking for read permission
         if ( in_array(self::EDIT, $permissions) ) {
             if ( self::validateModelAccess($model, self::EDIT) ) {
-                $action = ['name' => 'edit', 'parameter' => 'edit', 'icon' => 'fa-pencil', 'placement_id' => 167, 'active' => 1, 'display_order' => 2, 'multi_operation' => 1];
-                array_push($actions, $action);
+                array_push($actions, UIAction::with('execution_script')->find(2));
             }
         }
 
         //check for addition permission
         if ( in_array(self::ADD, $permissions) ) {
             if ( self::validateModelAccess($model, self::ADD) ) {
-                $action = ['name' => 'add', 'parameter' => 'add', 'icon' => 'fa-plus', 'placement_id' => 168, 'active' => 1, 'display_order' => 0, 'multi_operation' => 0];
-                array_push($actions, $action);
-
-                $action = ['name' => 'copy', 'parameter' => 'copy', 'icon' => 'fa-files-o', 'placement_id' => 167, 'active' => 1, 'display_order' => 1, 'multi_operation' => 0];
-                array_push($actions, $action);
+                array_push($actions, UIAction::with('execution_script')->find(1));
+                array_push($actions, UIAction::with('execution_script')->find(5));
             }
         }
 
 
         if ( in_array(self::DELETE, $permissions) ) {
             if ( self::validateModelAccess($model, self::DELETE) ) {
-                $action = ['name' => 'delete', 'parameter' => 'delete', 'icon' => 'fa-trash', 'placement_id' => 167, 'active' => 1, 'display_order' => 3, 'multi_operation' => 1];
-                array_push($actions, $action);
+                array_push($actions, UIAction::with('execution_script')->find(3));
             }
         }
+
+        if ( sizeof($actions) )
+            array_push($actions, UIAction::with('execution_script')->find(4));
 
         return $actions;
     }
