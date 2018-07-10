@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Database\Seeds;
 
+use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\SystemScript;
 use Drivezy\LaravelRecordManager\Models\UIAction;
 
@@ -19,7 +20,7 @@ class UIActionSeeder {
             [
                 'id'                  => 1,
                 'name'                => 'Add Generic Record',
-                'identifier'          => 'add-generic',
+                'identifier'          => 'addGeneric',
                 'description'         => 'Add generic record',
                 'display_order'       => '1',
                 'image'               => 'fa-plus',
@@ -34,7 +35,7 @@ class UIActionSeeder {
             [
                 'id'                  => 2,
                 'name'                => 'Edit Generic Record',
-                'identifier'          => 'edit-generic',
+                'identifier'          => 'editGeneric',
                 'description'         => 'Edit generic record',
                 'display_order'       => '1',
                 'image'               => 'fa-pencil',
@@ -49,7 +50,7 @@ class UIActionSeeder {
             [
                 'id'                  => 3,
                 'name'                => 'Delete Generic Record',
-                'identifier'          => 'delete-generic',
+                'identifier'          => 'deleteGeneric',
                 'description'         => 'Delete generic record',
                 'display_order'       => '2',
                 'image'               => '',
@@ -64,7 +65,7 @@ class UIActionSeeder {
             [
                 'id'                  => 4,
                 'name'                => 'Audit Generic Record',
-                'identifier'          => 'audit-generic',
+                'identifier'          => 'auditGeneric',
                 'description'         => 'Add generic record',
                 'display_order'       => '1',
                 'image'               => '',
@@ -79,7 +80,10 @@ class UIActionSeeder {
         ];
 
         foreach ( $records as $record ) {
-            return UIAction::create($record);
+            $record['source_type'] = DataModel::class;
+            $record['source_id'] = 0;
+
+            UIAction::create($record);
         }
     }
 
