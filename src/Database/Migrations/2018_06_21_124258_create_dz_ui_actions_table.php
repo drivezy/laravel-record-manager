@@ -1,5 +1,6 @@
 <?php
 
+use Drivezy\LaravelRecordManager\Database\Seeds\UIActionSeeder;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -35,7 +36,6 @@ class CreateDzUiActionsTable extends Migration {
             $table->boolean('as_record')->default(false);
 
             $table->boolean('active')->default(true);
-            $table->string('on_click')->nullable();
 
             $table->unsignedInteger('form_id')->nullable();
             $table->unsignedInteger('filter_condition_id')->nullable();
@@ -56,6 +56,8 @@ class CreateDzUiActionsTable extends Migration {
 
             $table->index(['source_type', 'source_id']);
         });
+
+        ( new UIActionSeeder() )->run();
     }
 
     /**
@@ -64,6 +66,8 @@ class CreateDzUiActionsTable extends Migration {
      * @return void
      */
     public function down () {
+        ( new UIActionSeeder() )->drop();
+
         Schema::dropIfExists('dz_ui_actions');
     }
 }
