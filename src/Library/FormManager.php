@@ -19,11 +19,11 @@ class FormManager {
      */
     public static function validateFormAccess ($formId) {
         //get all the roles attached to the form
-        $roles = RoleAssignment::where('source_type', CustomForm::class)->where('source_id', $formId)->pluck('role_id');
+        $roles = RoleAssignment::where('source_type', CustomForm::class)->where('source_id', $formId)->pluck('role_id')->toArray();
         if ( AccessManager::hasRole($roles) ) return true;
 
         //get all the permissions attached to the form
-        $permissions = PermissionAssignment::where('source_type', CustomForm::class)->where('source_id', $formId)->pluck('permission_id');
+        $permissions = PermissionAssignment::where('source_type', CustomForm::class)->where('source_id', $formId)->pluck('permission_id')->toArray();
         if ( AccessManager::hasPermission($permissions) ) return true;
 
         //if either of the entity is true then it violated security policy
