@@ -3,6 +3,7 @@
 namespace Drivezy\LaravelRecordManager;
 
 use Drivezy\LaravelRecordManager\Commands\CodeGeneratorCommand;
+use Drivezy\LaravelRecordManager\Commands\ModelScannerCommand;
 use Illuminate\Support\ServiceProvider;
 
 class LaravelRecordManagerServiceProvider extends ServiceProvider {
@@ -23,6 +24,7 @@ class LaravelRecordManagerServiceProvider extends ServiceProvider {
         if ( $this->app->runningInConsole() ) {
             $this->commands([
                 CodeGeneratorCommand::class,
+                ModelScannerCommand::class,
             ]);
         }
     }
