@@ -15,6 +15,9 @@ class ModelRelationship extends BaseModel {
      * @var string
      */
     protected $table = 'dz_model_relationships';
+    /**
+     * @var array
+     */
     protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
 
@@ -51,6 +54,13 @@ class ModelRelationship extends BaseModel {
      */
     public function reference_model () {
         return $this->belongsTo(DataModel::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function ui_actions () {
+        return $this->hasMany(UIAction::class, 'source_id')->where('source_type', self::class);
     }
 
     /**
