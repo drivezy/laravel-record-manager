@@ -43,6 +43,27 @@ class CustomForm extends BaseModel {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function client_scripts () {
+        return $this->hasMany(ClientScript::class, 'source_id')->where('source_type', md5(self::class));
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function security_rules () {
+        return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', md5(self::class));
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function columns () {
+        return $this->hasMany(Column::class, 'source_id')->where('source_type', md5(self::class));
+    }
+
+    /**
      * Override the boot functionality to add up the observer
      */
     public static function boot () {

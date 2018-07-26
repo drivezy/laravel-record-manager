@@ -24,7 +24,7 @@ class DataModel extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function columns () {
-        return $this->hasMany(Column::class, 'source_id')->where('source_type', self::class);
+        return $this->hasMany(Column::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**
@@ -38,14 +38,28 @@ class DataModel extends BaseModel {
      * @return $this
      */
     public function roles () {
-        return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', self::class);
+        return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ui_actions () {
-        return $this->hasMany(UIAction::class, 'source_id')->where('source_type', self::class);
+        return $this->hasMany(UIAction::class, 'source_id')->where('source_type', md5(self::class));
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function client_scripts () {
+        return $this->hasMany(ClientScript::class, 'source_id')->where('source_type', md5(self::class));
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function security_rules () {
+        return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**

@@ -38,6 +38,8 @@ class RecordManager extends DataManager {
                 'relationship'       => $this->relationships,
                 'dictionary'         => $this->dictionary,
                 'request_identifier' => $this->sqlCacheIdentifier,
+                'model_class'        => $className,
+                'model_hash'         => md5($className),
             ],
             'tabs'   => $this->detailArray,
         ];
@@ -76,17 +78,27 @@ class RecordManager extends DataManager {
                         $sourceColumn = $data->source_column_id ? $data->source_column->name : 'id';
                         $aliasColumn = $data->alias_column_id ? $data->alias_column->name : 'id';
 
+                        $restrictedQuery = '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn};
+
+                        //added restricted query for join condition
+                        if ( $data->join_definition ) {
+                            $join = str_replace('alias', '`' . strtolower($data->reference_model->name) . '`', $data->join_definition);
+                            $restrictedQuery .= ' and ' . $join;
+                        }
+
                         $this->detailArray[ $relationship ] = [
                             'id'                => $data->id,
                             'base'              => strtolower($data->reference_model->name),
                             'name'              => $data->display_name,
                             'includes'          => [],
-                            'restricted_query'  => '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn},
+                            'restricted_query'  => $restrictedQuery,
                             'restricted_column' => $aliasColumn,
                             'route'             => $data->reference_model->route_name,
-                            'list_layouts'      => PreferenceManager::getListPreference(ModelRelationship::class, $data->id),
-                            'form_layouts'      => PreferenceManager::getFormPreference(ModelRelationship::class, $data->id),
-                            'ui_actions'        => UIActionManager::getObjectUIActions(ModelRelationship::class, $data->id),
+                            'list_layouts'      => PreferenceManager::getListPreference(md5(ModelRelationship::class), $data->id),
+                            'form_layouts'      => PreferenceManager::getFormPreference(md5(ModelRelationship::class), $data->id),
+                            'ui_actions'        => UIActionManager::getObjectUIActions(md5(ModelRelationship::class), $data->id),
+                            'model_class'       => $data->reference_model->namespace . '\\' . $data->reference_model->name,
+                            'model_hash'        => $data->reference_model->model_hash,
                         ];
                     }
 
@@ -102,7 +114,7 @@ class RecordManager extends DataManager {
                 $model = $data->reference_model;
 
                 $this->relationships[ $base ] = $data;
-                $this->dictionary[ $base ] = Column::where('source_type', DataModel::class)->where('source_id', $data->reference_model_id)->get();
+                $this->dictionary[ $base ] = Column::where('source_type', md5(DataModel::class))->where('source_id', $data->reference_model_id)->get();
             }
         }
     }

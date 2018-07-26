@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Models;
 
 use Drivezy\LaravelRecordManager\Observers\ClientScriptObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Drivezy\LaravelUtility\Models\LookupValue;
 
 /**
  * Class ClientScript
@@ -14,6 +15,9 @@ class ClientScript extends BaseModel {
      * @var string
      */
     protected $table = 'dz_client_scripts';
+    /**
+     * @var array
+     */
     protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
@@ -21,6 +25,13 @@ class ClientScript extends BaseModel {
      */
     public function script () {
         return $this->belongsTo(SystemScript::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function activity_type () {
+        return $this->belongsTo(LookupValue::class);
     }
 
     /**

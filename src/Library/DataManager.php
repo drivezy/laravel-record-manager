@@ -18,6 +18,7 @@ class DataManager {
 
     protected $dictionary = [];
     protected $rejectedColumns = [];
+    protected $acceptedColumns = [];
     protected $relationships = [];
     protected $layout = [];
     protected $restrictions = [];
@@ -41,6 +42,7 @@ class DataManager {
         foreach ( $args as $key => $value ) {
             $this->{$key} = $value;
         }
+        $this->base = strtolower($this->model->name);
     }
 
     /**
@@ -48,12 +50,11 @@ class DataManager {
      */
     public function process ($id = null) {
         $this->model->actions = ModelManager::getModelActions($this->model);
-        $this->base = strtolower($this->model->name);
 
         self::setReadDictionary($this->base, $this->model);
 
         $this->relationships[ $this->base ] = $this->model;
-        $this->relationships[ $this->base ]['form_layouts'] = PreferenceManager::getFormPreference(DataModel::class, $this->model->id);
+        $this->relationships[ $this->base ]['form_layouts'] = PreferenceManager::getFormPreference(md5(DataModel::class), $this->model->id);
 
         $this->tables[ $this->base ] = $this->model->table_name;
 
@@ -136,7 +137,7 @@ class DataManager {
         //add only those columns which are permitted for the user
         foreach ( $this->layout as $item ) {
             $name = $item['object'] . '.' . $item['column'];
-            if ( !in_array($name, $this->rejectedColumns) )
+            if ( in_array($name, $this->acceptedColumns) )
                 $columns[ $name ] = '`' . $item['object'] . '`.' . $item['column'];
         }
 
@@ -228,5 +229,8 @@ class DataManager {
 
         foreach ( $columns->restrictedIdentifiers as $item )
             array_push($this->rejectedColumns, $base . '.' . $item);
+
+        foreach ( $columns->allowedIdentifiers as $item )
+            array_push($this->acceptedColumns, $base . '.' . $item);
     }
 }

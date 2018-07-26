@@ -20,7 +20,7 @@ class SecurityRule extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function roles () {
-        return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', self::class);
+        return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**

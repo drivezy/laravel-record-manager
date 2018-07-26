@@ -86,7 +86,7 @@ class ModelManager {
         if ( strpos($model->allowed_permissions, $operation) === false ) return false;
 
         $roles = RoleAssignment::where('source_id', $model->id)
-            ->where('source_type', 'Model')
+            ->where('source_type', md5(DataModel::class))
             ->where('scope', 'like', '%' . $operation . '%')
             ->pluck('role_id')->toArray();
 
@@ -111,7 +111,7 @@ class ModelManager {
                 return false;
         }
 
-        return new ColumnManager(DataModel::class, $model->id, [
+        return new ColumnManager(md5(DataModel::class), $model->id, [
             'rules' => $securityRules,
             'data'  => $data,
         ]);

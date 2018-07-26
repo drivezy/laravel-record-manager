@@ -34,7 +34,7 @@ class Column extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function security_rules () {
-        return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', self::class);
+        return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**

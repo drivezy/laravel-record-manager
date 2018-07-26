@@ -80,7 +80,7 @@ class UIActionSeeder {
         ];
 
         foreach ( $records as $record ) {
-            $record['source_type'] = DataModel::class;
+            $record['source_type'] = md5(DataModel::class);
             $record['source_id'] = 0;
 
             UIAction::create($record);
@@ -91,6 +91,5 @@ class UIActionSeeder {
      *
      */
     public function drop () {
-        SystemScript::where('source_type', UIAction::class)->delete();
     }
 }
