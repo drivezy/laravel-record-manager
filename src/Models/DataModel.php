@@ -3,6 +3,8 @@
 namespace Drivezy\LaravelRecordManager\Models;
 
 use Drivezy\LaravelAccessManager\Models\RoleAssignment;
+use Drivezy\LaravelAdmin\Models\ClientScript;
+use Drivezy\LaravelAdmin\Models\UIAction;
 use Drivezy\LaravelRecordManager\Observers\ModelObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 

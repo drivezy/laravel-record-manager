@@ -4,13 +4,9 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelAccessManager\Models\RoleAssignment;
-use Drivezy\LaravelRecordManager\Controllers\BaseController;
-use Drivezy\LaravelRecordManager\Models\ClientScript;
-use Drivezy\LaravelRecordManager\Models\Column;
+use Drivezy\LaravelAdmin\Models\UIAction;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
-use Drivezy\LaravelRecordManager\Models\UIAction;
-use Drivezy\LaravelUtility\Models\BaseModel;
 
 /**
  * Class ModelManager
@@ -107,7 +103,7 @@ class ModelManager {
         //check if the security rule is applied at table level
         if ( isset($securityRules[ $model->table_name ]) ) {
             //check if all the security rules are valid for the model
-            if ( !self::evaluateSecurityRules($securityRules[ $model->table_name ]) )
+            if ( !SecurityRuleManager::evaluateSecurityRules($securityRules[ $model->table_name ], $data) )
                 return false;
         }
 

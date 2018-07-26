@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
+use Drivezy\LaravelAdmin\Models\UIAction;
 use Drivezy\LaravelRecordManager\Observers\ModelRelationshipObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 use Drivezy\LaravelUtility\Models\LookupValue;
