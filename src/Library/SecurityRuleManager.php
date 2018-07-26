@@ -3,7 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelAccessManager\Models\RoleAssignment;
-use Drivezy\LaravelRecordManager\Models\CustomForm;
+use Drivezy\LaravelAdmin\Models\CustomForm;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\SecurityRule;
 use Drivezy\LaravelRecordManager\Models\SystemScript;

@@ -3,9 +3,9 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelAccessManager\AccessManager;
+use Drivezy\LaravelAdmin\Library\ClientScriptManager;
 use Drivezy\LaravelRecordManager\Library\AdminResponseManager;
 use Drivezy\LaravelRecordManager\Library\ApiResponseManager;
-use Drivezy\LaravelRecordManager\Library\ClientScriptManager;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
 use Drivezy\LaravelRecordManager\Library\PreferenceManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
