@@ -69,6 +69,18 @@ class ColumnTypeSeeder {
                 'description'           => 'The column that gets serialized in inside',
                 'supported_identifiers' => '',
             ],
+            [
+                'id'                    => 10,
+                'name'                  => 'Script',
+                'description'           => 'Will create a script',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 11,
+                'name'                  => 'Form',
+                'description'           => 'CustomForm against that entity',
+                'supported_identifiers' => '',
+            ],
         ];
         foreach ( $columns as $column )
             ColumnDefinition::firstOrCreate($column);

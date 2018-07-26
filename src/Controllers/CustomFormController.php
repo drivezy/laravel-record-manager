@@ -36,9 +36,9 @@ class CustomFormController extends RecordController {
 
         return success_response([
             'dictionary'     => [
-                strtolower($form->identifier) => $columns->allowed,
+                strtolower('form_' . $form->id) => $columns->allowed,
             ],
-            'form_layouts'   => PreferenceManager::getFormPreference(CustomForm::class, $id),
+            'form_layouts'   => PreferenceManager::getFormPreference(md5(CustomForm::class), $id),
             'form'           => $form,
             'client_scripts' => ClientScriptManager::getClientScripts($form->identifier),
         ]);

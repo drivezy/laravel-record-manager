@@ -33,7 +33,7 @@ class AdminResponseManager {
 
         $records = ( new ListManager($this->model, [
             'includes'             => $request->has('includes') ? $request->get('includes') : false,
-            'list_layouts'         => self::getLayoutDefinition(),
+            'layout'               => self::getLayoutDefinition(),
             'stats'                => $request->has('stats') ? $request->get('stats') : false,
             'query'                => $request->has('query') ? $request->get('query') : false,
             'sqlCacheIdentifier'   => $request->has('request_identifier') ? $request->get('request_identifier') : false,
@@ -54,7 +54,7 @@ class AdminResponseManager {
 
         $records = ( new RecordManager($this->model, [
             'includes'           => $request->has('includes') ? $request->get('includes') : false,
-            'list_layouts'       => self::getLayoutDefinition(),
+            'layout'             => self::getLayoutDefinition(),
             'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
         ]) )->process($id);
 

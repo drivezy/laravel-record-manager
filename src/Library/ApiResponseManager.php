@@ -6,6 +6,7 @@ use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Drivezy\LaravelUtility\Models\BaseModel;
 use Illuminate\Http\Request;
+use JRApp\Libraries\Utility\RecordManagement;
 
 /**
  * Class ApiResponseManager
@@ -27,6 +28,7 @@ class ApiResponseManager {
      */
     public function __construct (Request $request, $model) {
         $this->model = $model;
+        RecordManagement::$model = $model;
         $this->dataModel = DataModel::where('model_hash', md5($this->model))->first();
 
         $this->request = $request;
@@ -36,6 +38,9 @@ class ApiResponseManager {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index () {
+
+        return fixed_response(RecordManagement::index($this->request));
+
         $model = $this->model;
 
         $query = $this->getEncodedQuery();
@@ -53,6 +58,8 @@ class ApiResponseManager {
      * @return \Illuminate\Http\JsonResponse
      */
     public function show ($id) {
+        return RecordManagement::show($id);
+
         $model = $this->model;
         $includes = $this->getQueryInclusions();
 

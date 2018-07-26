@@ -116,7 +116,7 @@ class DictionaryManager {
         $record = Column::firstOrNew([
             'name'        => $column,
             'source_id'   => $this->model->id,
-            'source_type' => DataModel::class,
+            'source_type' => md5(DataModel::class),
         ]);
         if ( $record->id ) return $record;
 
@@ -181,12 +181,12 @@ class DictionaryManager {
      * @return null
      */
     private function getModelMethodColumn ($method) {
-        $record = Column::where('source_type', DataModel::class)
+        $record = Column::where('source_type', md5(DataModel::class))
             ->where('source_id', $this->model->id)
             ->where('name', strtolower($method) . '_id')->first();
         if ( $record ) return $record->id;
 
-        $record = Column::where('source_type', DataModel::class)
+        $record = Column::where('source_type', md5(DataModel::class))
             ->where('source_id', $this->model->id)
             ->where('name', strtolower(preg_replace('/[A-Z]/', '_$0', $method)))->first();
         if ( $record ) return $record->id;
@@ -261,7 +261,7 @@ class DictionaryManager {
     private static function getModelColumns ($modelId, $relatedModel = false) {
         $includes = $relatedModel ? ['reference_model'] : [];
 
-        return Column::with($includes)->where('source_type', DataModel::class)
+        return Column::with($includes)->where('source_type', md5(DataModel::class))
             ->where('source_id', $modelId)->where('visibility', true)->get();
     }
 

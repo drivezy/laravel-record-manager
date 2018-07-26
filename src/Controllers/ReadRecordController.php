@@ -31,7 +31,7 @@ class ReadRecordController extends BaseController {
      * @param $id
      * @return mixed
      */
-    public function destroy ($id) {
+    public function destroy (Request $request, $id) {
         return Response::json(['success' => false, 'response' => 'invalid operation']);
     }
 }

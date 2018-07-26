@@ -60,7 +60,7 @@ class ModelRelationship extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function ui_actions () {
-        return $this->hasMany(UIAction::class, 'source_id')->where('source_type', self::class);
+        return $this->hasMany(UIAction::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**

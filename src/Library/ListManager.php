@@ -17,6 +17,7 @@ class ListManager extends DataManager {
      * @return array
      */
     public function process ($id = null) {
+        //validate if the cache is valid or not
         if ( !self::loadDataFromCache() ) {
             parent::process();
 
@@ -33,6 +34,8 @@ class ListManager extends DataManager {
             'relationship'       => $this->relationships,
             'dictionary'         => $this->dictionary,
             'request_identifier' => $this->sqlCacheIdentifier,
+            'model_class'        => $this->model->namespace . '\\' . $this->model->name,
+            'model_hash'         => $this->model->model_hash,
         ];
     }
 
@@ -53,7 +56,7 @@ class ListManager extends DataManager {
             foreach ( $relationships as $relationship ) {
                 $data = ModelRelationship::with(['reference_model', 'source_column', 'alias_column'])
                     ->where('model_id', $model->id)->where('name', $relationship)
-                    ->where('reference_type_id', 1)
+                    ->where('reference_type_id', 41)
                     ->first();
 
                 //relationship against that item is not found

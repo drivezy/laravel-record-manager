@@ -9,7 +9,6 @@ use Drivezy\LaravelRecordManager\Library\ClientScriptManager;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
 use Drivezy\LaravelRecordManager\Library\PreferenceManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
-use Drivezy\LaravelUtility\Models\BaseModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Response;
@@ -77,7 +76,7 @@ class BaseController extends Controller {
             'dictionary'     => [
                 strtolower($this->dataModel->name) => $columns->allowed,
             ],
-            'form_layouts'   => PreferenceManager::getFormPreference(DataModel::class, $this->dataModel->id),
+            'form_layouts'   => PreferenceManager::getFormPreference(md5(DataModel::class), $this->dataModel->id),
             'model'          => $this->dataModel,
             'client_scripts' => ClientScriptManager::getClientScripts($this->dataModel->table_name),
         ]);
@@ -130,7 +129,7 @@ class BaseController extends Controller {
             'dictionary'     => [
                 strtolower($this->dataModel->name) => $columns->allowed,
             ],
-            'form_layouts'   => PreferenceManager::getFormPreference(DataModel::class, $this->dataModel->id),
+            'form_layouts'   => PreferenceManager::getFormPreference(md5(DataModel::class), $this->dataModel->id),
             'model'          => $this->dataModel,
             'client_scripts' => ClientScriptManager::getClientScripts($this->dataModel->table_name),
         ]);
@@ -171,10 +170,11 @@ class BaseController extends Controller {
     }
 
     /**
+     * @param Request $request
      * @param $id
-     * @return mixed
+     * @return \Illuminate\Http\JsonResponse|mixed
      */
-    public function destroy ($id) {
+    public function destroy (Request $request, $id) {
         if ( !ModelManager::validateModelAccess($this->dataModel, ModelManager::DELETE) )
             return AccessManager::unauthorizedAccess();
 
