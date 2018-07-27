@@ -68,6 +68,8 @@ class SecurityRuleEvaluator {
         if ( !$this->rule->filter_condition ) return true;
 
         $data = $this->data;
+        $user = $this->auth;
+
         $answer = false;
 
         $validationString = 'if(' . $this->rule->filter_condition . ') $answer = true;';

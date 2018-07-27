@@ -33,4 +33,5 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('systemScript', 'SystemScriptController');
 
     Route::resource('securityRule', 'SecurityRuleController');
+    Route::resource('businessRule', 'BusinessRuleController');
 });

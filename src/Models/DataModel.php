@@ -65,6 +65,13 @@ class DataModel extends BaseModel {
     }
 
     /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function business_rules () {
+        return $this->hasMany(BusinessRule::class, 'model_id');
+    }
+
+    /**
      * Override the boot functionality to add up the observer
      */
     public static function boot () {
