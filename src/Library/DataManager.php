@@ -63,6 +63,8 @@ class DataManager {
             'join'  => null,
         ];
 
+        $this->setQueryRestriction($this->model, $this->base);
+
         array_push($this->restrictions, '`' . $this->base . '`.deleted_at is null');
     }
 
@@ -73,12 +75,14 @@ class DataManager {
      * @param $base
      */
     protected function setupColumnJoins ($model, $relationship, $base) {
+        //get the source model definition
         $source = (object) [
             'base'   => $base,
             'table'  => $model->table_name,
             'column' => $relationship->source_column ? $relationship->source_column->name : 'id',
         ];
 
+        //get the related model definition
         $alias = (object) [
             'base'   => $base . '.' . $relationship->name,
             'table'  => $relationship->reference_model->table_name,
@@ -86,6 +90,7 @@ class DataManager {
         ];
 
 
+        //get the default join condition
         $joinCondition = '`' . $source->base . '`.' . $source->column . ' = `' . $alias->base . '`.' . $alias->column;
 
         //check for additional join condition
@@ -103,6 +108,9 @@ class DataManager {
             'table' => $alias->table,
             'join'  => $joinCondition,
         ];
+
+        //added business rule related to query
+        $this->setQueryRestriction($relationship->reference_model, $alias->base);
     }
 
     /**
@@ -232,5 +240,17 @@ class DataManager {
 
         foreach ( $columns->allowedIdentifiers as $item )
             array_push($this->acceptedColumns, $base . '.' . $item);
+    }
+
+    /**
+     * @param $model
+     * @param $base
+     */
+    private function setQueryRestriction ($model, $base) {
+        $restrictions = BusinessRuleManager::getQueryStrings($model);
+        foreach ( $restrictions as $restriction ) {
+            $restriction = str_replace('current', '`' . $base . '`', $restriction);
+            array_push($this->restrictions, '(' . $restriction . ')');
+        }
     }
 }
