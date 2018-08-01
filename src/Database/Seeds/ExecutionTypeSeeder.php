@@ -2,6 +2,9 @@
 
 namespace Drivezy\LaravelRecordManager\Database\Seeds;
 
+use Drivezy\LaravelUtility\Models\LookupType;
+use Drivezy\LaravelUtility\Models\LookupValue;
+
 class ExecutionTypeSeeder {
     /**
      * Run the database seeds.

@@ -11,7 +11,6 @@ use Drivezy\LaravelRecordManager\Library\PreferenceManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Response;
 
 /**
  * Class RecordManager
@@ -104,10 +103,10 @@ class BaseController extends Controller {
 
         $data->save();
 
-        if ( !isset($data->errors) )
+        if ( !( isset($data->errors) || $data->abort ) )
             return success_response($data);
 
-        return Response::json(['success' => false, 'response' => $data, 'reason' => 'Validation error']);
+        return failure_message($data);
     }
 
     /**
@@ -163,10 +162,10 @@ class BaseController extends Controller {
 
         $data->save();
 
-        if ( !isset($data->errors) )
+        if ( !( isset($data->errors) || $data->abort ) )
             return success_response($data);
 
-        return Response::json(['success' => false, 'response' => $data, 'reason' => 'Validation error']);
+        return failure_message($data);
     }
 
     /**

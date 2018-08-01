@@ -26,6 +26,8 @@ class CreateDzBusinessRulesTable extends Migration {
             $table->unsignedInteger('script_id')->nullable();
             $table->unsignedInteger('filter_condition_id')->nullable();
 
+            $table->string('model_hash')->nullable();
+
             $table->boolean('on_query')->default(false);
             $table->boolean('on_insert')->default(false);
             $table->boolean('on_update')->default(false);
@@ -47,6 +49,8 @@ class CreateDzBusinessRulesTable extends Migration {
 
             $table->timestamps();
             $table->softDeletes();
+
+            $table->index(['model_hash', 'active']);
         });
 
         ( new ExecutionTypeSeeder() )->run();
