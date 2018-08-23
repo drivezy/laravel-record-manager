@@ -196,7 +196,7 @@ class BaseController extends Controller {
     private function convertToDbValue ($value) {
         if ( is_null($value) ) {
             $val = null;
-        } elseif ( $value === 0 || $value === "0" || $value === false || $value === "false" ) {
+        } elseif ( $value === 0 || $value === "0" || $value === false || $value === "false" || $value === 0.0 ) {
             $val = 0;
         } elseif ( empty($value) ) {
             $val = null;

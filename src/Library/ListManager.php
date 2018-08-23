@@ -96,15 +96,12 @@ class ListManager extends DataManager {
         if ( $this->query )
             $sql .= ' and (' . $this->query . ')';
 
-//        $sql .= ' and `' . $this->base . '`.deleted_at is null';
-
         if ( $this->order ) {
             $sql .= ' ORDER BY ' . $this->order;
         }
 
         $sql .= ' LIMIT ' . $this->limit . ' OFFSET ' . $this->limit * ( $this->page - 1 );
 
-        \Log::info($sql);
         $this->data = DB::select(DB::raw($sql));
     }
 

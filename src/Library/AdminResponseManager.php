@@ -73,6 +73,8 @@ class AdminResponseManager {
         $definition = json_decode($definition->column_definition, true);
 
         foreach ( $definition as $item ) {
+            if ( !isset($item['object']) ) continue;
+            
             array_push($columns, [
                 'object' => $item['object'],
                 'column' => $item['column'],
