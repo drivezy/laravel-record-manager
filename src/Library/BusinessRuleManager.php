@@ -42,7 +42,7 @@ class BusinessRuleManager {
      * @return array
      */
     public static function handleCreatingRules (Eloquent $model) {
-        $query = BusinessRule::where('model_hash', $model->model_hash)
+        $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 61)
             ->where('on_insert', true);
 
@@ -55,7 +55,7 @@ class BusinessRuleManager {
      * @param Eloquent $model
      */
     public static function handleCreatedRules (Eloquent $model) {
-        $query = BusinessRule::where('model_hash', $model->model_hash)
+        $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 62)
             ->where('on_insert', true);
 
@@ -69,7 +69,7 @@ class BusinessRuleManager {
      * @return array
      */
     public static function handleUpdatingRules (Eloquent $model) {
-        $query = BusinessRule::where('model_hash', $model->model_hash)
+        $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 61)
             ->where('on_update', true);
 
@@ -82,7 +82,7 @@ class BusinessRuleManager {
      * @param Eloquent $model
      */
     public static function handleUpdateRules (Eloquent $model) {
-        $query = BusinessRule::where('model_hash', $model->model_hash)
+        $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 62)
             ->where('on_update', true);
 
@@ -96,7 +96,7 @@ class BusinessRuleManager {
      * @return array
      */
     public static function handleDeletingRules (Eloquent $model) {
-        $query = BusinessRule::where('model_hash', $model->model_hash)
+        $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 61)
             ->where('on_delete', true);
 
@@ -109,7 +109,7 @@ class BusinessRuleManager {
      * @param Eloquent $model
      */
     public static function handleDeletedRules (Eloquent $model) {
-        $query = BusinessRule::where('model_hash', $model->model_hash)
+        $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 62)
             ->where('on_delete', true);
 

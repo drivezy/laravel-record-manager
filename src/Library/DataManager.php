@@ -3,7 +3,6 @@
 namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\DataModel;
-use Drivezy\LaravelUtility\Models\BaseModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 
@@ -145,7 +144,7 @@ class DataManager {
         //add only those columns which are permitted for the user
         foreach ( $this->layout as $item ) {
             $name = $item['object'] . '.' . $item['column'];
-            if ( in_array($name, $this->acceptedColumns) )
+            if ( !in_array($name, $this->rejectedColumns) )
                 $columns[ $name ] = '`' . $item['object'] . '`.' . $item['column'];
         }
 
