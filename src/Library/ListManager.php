@@ -5,6 +5,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Illuminate\Support\Facades\DB;
+use Message;
 
 /**
  * Class ListManager
@@ -59,12 +60,21 @@ class ListManager extends DataManager {
                     ->where('reference_type_id', 41)
                     ->first();
 
+
                 //relationship against that item is not found
-                if ( !$data ) break;
+                if ( !$data ) {
+                    Message::info('Relationship ' . $relationship . 'not found for one to one');
+                    break;
+                };
 
                 //user does not have access to the model
-                if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) )
+                if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) ) {
+                    $message = 'Access to reference model ' . $base . '.' . $relationship . ' : ' . $data->reference_model_id;
+                    $message .= $data->reference_model ? ' is prohibited ' : ' is not found';
+                    Message::warn($message);
+
                     break;
+                }
 
                 //set up the joins against the necessary columns
                 self::setupColumnJoins($model, $data, $base);

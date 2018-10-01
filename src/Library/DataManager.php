@@ -5,6 +5,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
+use Drivezy\LaravelUtility\Facade\Message;
 
 /**
  * Class DataManager
@@ -97,7 +98,7 @@ class DataManager {
             $join = str_replace('current', '`' . $source->base . '`', $relationship->join_definition);
             $join = str_replace('alias', '`' . $alias->base . '`', $join);
 
-            $joinCondition .= 'AND ' . $join;
+            $joinCondition .= ' AND ' . $join;
         }
 
         $join = '`' . $alias->base . '`.deleted_at is null';
@@ -144,8 +145,10 @@ class DataManager {
         //add only those columns which are permitted for the user
         foreach ( $this->layout as $item ) {
             $name = $item['object'] . '.' . $item['column'];
-            if ( !in_array($name, $this->rejectedColumns) )
+            if ( in_array($name, $this->acceptedColumns) )
                 $columns[ $name ] = '`' . $item['object'] . '`.' . $item['column'];
+            else
+                Message::info('Requested column ' . $name . ' cannot be served');
         }
 
         foreach ( $this->relationships as $key => $value ) {
