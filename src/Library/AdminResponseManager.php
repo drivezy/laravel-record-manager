@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ListPreference;
+use Drivezy\LaravelUtility\Facade\Message;
 use Illuminate\Http\Request;
 
 /**
@@ -41,6 +42,7 @@ class AdminResponseManager {
             'page'                 => $request->has('page') ? $request->get('page') : 1,
             'aggregation_column'   => $request->has('aggregation_column') ? $request->get('aggregation_column') : null,
             'aggregation_operator' => $request->has('aggregation_operator') ? $request->get('aggregation_operator') : null,
+            'order'                => $request->has('order') ? $request->get('order') : null,
         ]) )->process();
 
         return success_response($records);
@@ -70,11 +72,17 @@ class AdminResponseManager {
         if ( !$this->request->has('layout_id') ) return $columns;
 
         $definition = ListPreference::find($this->request->get('layout_id'));
+        if ( !$definition ) {
+            Message::warn('Layout ' . $this->request->get('layout_id') . ' not found');
+
+            return $columns;
+        }
+
         $definition = json_decode($definition->column_definition, true);
 
         foreach ( $definition as $item ) {
             if ( !isset($item['object']) ) continue;
-            
+
             array_push($columns, [
                 'object' => $item['object'],
                 'column' => $item['column'],

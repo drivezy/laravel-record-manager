@@ -9,6 +9,7 @@ use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Illuminate\Support\Facades\DB;
+use Message;
 
 class RecordManager extends DataManager {
     private $detailArray = [];
@@ -68,11 +69,20 @@ class RecordManager extends DataManager {
                     ->first();
 
                 //relationship against that item is not found
-                if ( !$data ) break;
+                if ( !$data ) {
+                    Message::info('Relationship ' . $relationship . ' not found');
+                    break;
+                };
 
                 //user does not have access to the model
-                if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) )
+                if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) ) {
+                    $message = 'Access to reference model ' . $base . '.' . $relationship . ' : ' . $data->reference_model_id;
+                    $message .= $data->reference_model ? ' is prohibited ' : ' is not found';
+                    Message::warn($message);
+
                     break;
+                }
+
 
                 if ( $first && $data->reference_type_id == 42 ) {
                     if ( !isset($this->detailArray[ $relationship ]) ) {
@@ -105,6 +115,8 @@ class RecordManager extends DataManager {
 
                     array_push($this->detailArray[ $relationship ]['includes'], str_replace($relationship . '.', '', $include));
                     break;
+                } else {
+                    Message::warn('Reference model ' . $data->reference_model->name . 'is not multiple related item so escaping it');
                 }
 
                 //set up the joins against the necessary columns
