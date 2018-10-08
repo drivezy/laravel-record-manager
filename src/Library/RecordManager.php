@@ -115,9 +115,10 @@ class RecordManager extends DataManager {
 
                     array_push($this->detailArray[ $relationship ]['includes'], str_replace($relationship . '.', '', $include));
                     break;
-                } else {
-                    Message::warn('Reference model ' . $data->reference_model->name . 'is not multiple related item so escaping it');
                 }
+
+
+                if ( !$first && $data->reference_type_id != 41 ) break;
 
                 //set up the joins against the necessary columns
                 self::setupColumnJoins($model, $data, $base);
@@ -125,9 +126,12 @@ class RecordManager extends DataManager {
                 //setting up the required documents
                 $base .= '.' . $relationship;
                 $model = $data->reference_model;
+                $first = false;
+
 
                 $this->relationships[ $base ] = $data;
                 $this->dictionary[ $base ] = Column::where('source_type', md5(DataModel::class))->where('source_id', $data->reference_model_id)->get();
+                $this->setReadDictionary($base, $model);
             }
         }
     }
