@@ -3,6 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Response;
 
 /**
  * Class ReadRecordController
