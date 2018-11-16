@@ -8,6 +8,7 @@ use Drivezy\LaravelRecordManager\Models\Column;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Message;
 
@@ -142,5 +143,9 @@ class RecordManager extends DataManager {
     private function loadResults () {
         $sql = 'SELECT ' . $this->sql['columns'] . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'] . ' AND `' . $this->base . '`.id = ' . $this->recordData->id;
         $this->data = DB::select(DB::raw($sql))[0];
+
+        //adding check for encrypted column
+        foreach ( $this->encryptedColumns as $item )
+            $this->data->{$item} = Crypt::decrypt($this->data->{$item});
     }
 }

@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
+use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Message;
 
@@ -95,6 +96,9 @@ class ListManager extends DataManager {
      * Load the results of the record as requested by the list condition
      */
     private function loadResults () {
+        if ( $this->grouping_column )
+            return self::setGroupingData();
+
         if ( $this->aggregation_column )
             return self::setAggregationData();
 
@@ -113,6 +117,15 @@ class ListManager extends DataManager {
         $sql .= ' LIMIT ' . $this->limit . ' OFFSET ' . $this->limit * ( $this->page - 1 );
 
         $this->data = DB::select(DB::raw($sql));
+
+        //check if there is any data that has to be modelled for special columns
+        $iterator = 0;
+        foreach ( $this->data as $item ) {
+            foreach ( $this->encryptedColumns as $column )
+                $this->data[ $iterator ]->{$column} = Crypt::decrypt($item->{$column});
+
+            ++$iterator;
+        }
     }
 
     /**
@@ -143,6 +156,59 @@ class ListManager extends DataManager {
 
         $sql .= ' and `' . $this->base . '`.deleted_at is null';
         $this->data = DB::select(DB::raw($sql));
+    }
+
+    /**
+     * Adding support to group data based on some column
+     */
+    private function setGroupingData () {
+        //get proper definition of the user column data
+        $columns = explode(',', $this->grouping_column);
+        $selects = '';
+        foreach ( $columns as $column ) {
+            if ( $selects )
+                $selects .= ', ' . $column . ' as \'' . str_replace('`', '', $column) . '\'';
+            else
+                $selects .= $column . ' as \'' . str_replace('`', '', $column) . '\'';
+        }
+
+        //see if the operator for grouping is defined
+        $grouper = $this->aggregation_operator ? $this->aggregation_operator . '(' . $this->aggregation_column . ')' . ' as ' . $this->aggregation_column : 'count(1) as count';
+
+        $sql = 'SELECT ' . $selects . ' , ' . $grouper . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
+        if ( $this->query )
+            $sql .= ' and (' . $this->query . ')';
+
+        $sql .= ' and `' . $this->base . '`.deleted_at is null group by ' . $this->grouping_column;
+
+        if ( $this->order ) {
+            $sql .= ' ORDER BY ' . $this->order;
+        }
+
+        $sql .= ' LIMIT ' . $this->limit . ' OFFSET ' . $this->limit * ( $this->page - 1 );
+
+        $this->data = DB::select(DB::raw($sql));
+
+        //setup the stats data against the grouping
+        $this->setGroupingDataStats();
+    }
+
+    /**
+     * Get the count of records for stats for grouped data
+     */
+    private function setGroupingDataStats () {
+        $sql = 'SELECT ' . $this->grouping_column . ' , count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
+        if ( $this->query )
+            $sql .= ' and (' . $this->query . ')';
+
+        $sql .= ' and `' . $this->base . '`.deleted_at is null group by ' . $this->grouping_column;
+
+        $sql = 'SELECT COUNT(1) count FROM (' . $sql . ') a';
+        $this->stats = [
+            'total'  => DB::select(DB::raw($sql))[0]->count,
+            'page'   => $this->page,
+            'record' => $this->limit,
+        ];
     }
 }
 

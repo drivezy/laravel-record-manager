@@ -19,11 +19,14 @@ class DataManager {
     protected $dictionary = [];
     protected $rejectedColumns = [];
     protected $acceptedColumns = [];
+    protected $encryptedColumns = [];
+
     protected $relationships = [];
     protected $layout = [];
     protected $restrictions = [];
     protected $tables = [];
     protected $sql = [];
+
     protected $aggregation_operator = null;
     protected $aggregation_column = null;
 
@@ -240,8 +243,12 @@ class DataManager {
         foreach ( $columns->restrictedIdentifiers as $item )
             array_push($this->rejectedColumns, $base . '.' . $item);
 
-        foreach ( $columns->allowedIdentifiers as $item )
+        foreach ( $columns->allowedIdentifiers as $item ) {
             array_push($this->acceptedColumns, $base . '.' . $item);
+
+            if ( in_array($item, $columns->encryptedColumns) )
+                array_push($this->encryptedColumns, $base . '.' . $item);
+        }
     }
 
     /**
