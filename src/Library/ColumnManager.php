@@ -17,6 +17,8 @@ class ColumnManager {
     public $allowed = [];
     public $allowedIdentifiers = [];
 
+    public $encryptedColumns = [];
+
     public function __construct ($type, $id, $obj = []) {
         $this->source_type = $type;
         $this->source_id = $id;
@@ -41,6 +43,10 @@ class ColumnManager {
             if ( SecurityRuleManager::evaluateSecurityRules($rules, $this->data) ) {
                 array_push($this->allowed, $column);
                 array_push($this->allowedIdentifiers, $column->name);
+
+                if ( $column->column_type_id == 18 )
+                    array_push($this->encryptedColumns, $column->name);
+
             } else {
                 array_push($this->restricted, $column);
                 array_push($this->restrictedIdentifiers, $column->name);

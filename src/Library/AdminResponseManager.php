@@ -43,6 +43,7 @@ class AdminResponseManager {
             'aggregation_column'   => $request->has('aggregation_column') ? $request->get('aggregation_column') : null,
             'aggregation_operator' => $request->has('aggregation_operator') ? $request->get('aggregation_operator') : null,
             'order'                => $request->has('order') ? $request->get('order') : null,
+            'grouping_column'      => $request->has('group_by') ? $request->get('group_by') : null,
         ]) )->process();
 
         return success_response($records);
