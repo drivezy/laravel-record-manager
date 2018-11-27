@@ -157,6 +157,7 @@ class DataManager {
         foreach ( $this->relationships as $key => $value ) {
             $columns[ $key . '.id' ] = '`' . $key . '`.id';
         }
+
         $this->layout = $columns;
     }
 

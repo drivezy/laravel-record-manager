@@ -59,6 +59,8 @@ class ColumnManager {
      */
     public function getDictionary () {
         return Column::with(['reference_model'])->where('source_type', $this->source_type)
-            ->where('source_id', $this->source_id)->get();
+            ->where('source_id', $this->source_id)
+            ->where('is_custom_column', false)
+            ->get();
     }
 }
