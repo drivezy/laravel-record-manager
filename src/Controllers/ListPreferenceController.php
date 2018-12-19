@@ -53,4 +53,35 @@ class ListPreferenceController extends RecordController {
 
         return Response::json(['success' => true, 'response' => $preference]);
     }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse|null
+     */
+    public function update (Request $request, $id) {
+        return invalid_operation();
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return \Illuminate\Http\JsonResponse|mixed
+     */
+    public function destroy (Request $request, $id) {
+        $record = ListPreference::find($id);
+
+        //if record is not found, return invalid operation
+        if ( !$record )
+            return invalid_operation();
+
+        //only user with permission form-configurator should be able to drop list preference for all
+        $isFormConfigurator = AccessManager::hasPermission('form-configurator');
+
+        //only user record or configurator should be able to drop the record
+        if ( $isFormConfigurator || $record->user_id == Auth::id() )
+            return parent::destroy($request, $id);
+
+        return invalid_operation();
+    }
 }
