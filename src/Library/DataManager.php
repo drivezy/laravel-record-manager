@@ -3,9 +3,9 @@
 namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelUtility\Facade\Message;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
-use Drivezy\LaravelUtility\Facade\Message;
 
 /**
  * Class DataManager
@@ -142,7 +142,8 @@ class DataManager {
     private function fixSelectItems () {
         $columns = [];
         foreach ( $this->dictionary[ $this->base ] as $item ) {
-            $columns[ $this->base . '.' . $item->name ] = '`' . $this->base . '`.' . $item->name;
+            if ( !$item->is_custom_column )
+                $columns[ $this->base . '.' . $item->name ] = '`' . $this->base . '`.' . $item->name;
         }
 
         //add only those columns which are permitted for the user
