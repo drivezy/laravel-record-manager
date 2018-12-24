@@ -174,6 +174,7 @@ class DataManager {
         if ( !$record ) return false;
 
         $this->sql = $record->sql;
+        $this->encryptedColumns = $record->sql['encrypted_columns'];
 
         return true;
     }
@@ -225,6 +226,7 @@ class DataManager {
         $this->sql['columns'] = self::getSelectItems();
         $this->sql['tables'] = self::getTableDefinitions();
         $this->sql['joins'] = self::getJoins() ? : ' 1 = 1';
+        $this->sql['encrypted_columns'] = $this->encryptedColumns;
 
         $this->sqlCacheIdentifier = md5($this->model->model_hash . '-' . microtime('true') . '-' . md5($this->includes));
         Cache::put($this->sqlCacheIdentifier, (object) [

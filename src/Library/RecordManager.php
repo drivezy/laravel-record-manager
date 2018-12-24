@@ -111,6 +111,7 @@ class RecordManager extends DataManager {
                             'ui_actions'        => UIActionManager::getObjectUIActions(md5(ModelRelationship::class), $data->id),
                             'model_class'       => $data->reference_model->namespace . '\\' . $data->reference_model->name,
                             'model_hash'        => $data->reference_model->model_hash,
+                            'alias_model_id'    => $data->reference_model_id,
                         ];
                     }
 
