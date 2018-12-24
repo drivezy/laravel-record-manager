@@ -36,31 +36,25 @@ class ModelManager {
      * @return array
      */
     public static function getModelActions ($model) {
+        $model = is_string($model) ? DataModel::with('roles')->where('model_hash', md5($model))->first() : $model;
         if ( !$model ) return [];
 
-        $permissions = str_split($model->allowed_permissions);
         $actions = [];
 
         //checking for read permission
-        if ( in_array(self::EDIT, $permissions) ) {
-            if ( self::validateModelAccess($model, self::EDIT) ) {
-                array_push($actions, UIAction::with('execution_script')->find(2));
-            }
+        if ( self::validateModelAccess($model, self::EDIT) ) {
+            array_push($actions, UIAction::with('execution_script')->find(2));
         }
 
         //check for addition permission
-        if ( in_array(self::ADD, $permissions) ) {
-            if ( self::validateModelAccess($model, self::ADD) ) {
-                array_push($actions, UIAction::with('execution_script')->find(1));
-                array_push($actions, UIAction::with('execution_script')->find(5));
-            }
+        if ( self::validateModelAccess($model, self::ADD) ) {
+            array_push($actions, UIAction::with('execution_script')->find(1));
+            array_push($actions, UIAction::with('execution_script')->find(5));
         }
 
-
-        if ( in_array(self::DELETE, $permissions) ) {
-            if ( self::validateModelAccess($model, self::DELETE) ) {
-                array_push($actions, UIAction::with('execution_script')->find(3));
-            }
+        //check for the delete permission
+        if ( self::validateModelAccess($model, self::DELETE) ) {
+            array_push($actions, UIAction::with('execution_script')->find(3));
         }
 
         if ( sizeof($actions) )
@@ -75,18 +69,43 @@ class ModelManager {
      * @return bool
      */
     public static function validateModelAccess ($model, $operation) {
-        $model = is_string($model) ? DataModel::where('model_hash', md5($model))->first() : $model;
-
+        $model = is_string($model) ? DataModel::with('roles')->where('model_hash', md5($model))->first() : $model;
         if ( !$model ) return false;
 
+        return sizeof($model->roles) ? self::validateRegulatedModel($model, $operation) : self::validateUnRegulatedModel($model, $operation);
+    }
+
+    /**
+     * Validate if the model without any roles attached is approachable or not
+     * @param $model
+     * @param $operation
+     * @return bool
+     */
+    private static function validateUnRegulatedModel ($model, $operation) {
+        //non internal users are allowed
+        if ( !AccessManager::hasRole(20) ) return false;
+
+        //only allow publicly allowed operation
         if ( strpos($model->allowed_permissions, $operation) === false ) return false;
 
+        return true;
+    }
+
+    /**
+     * validate if the model with role attached is regulated or not
+     * @param $model
+     * @param $operation
+     * @return bool
+     */
+    private static function validateRegulatedModel ($model, $operation) {
+        //find all roles matching the operation
         $roles = RoleAssignment::where('source_id', $model->id)
             ->where('source_type', md5(DataModel::class))
             ->where('scope', 'like', '%' . $operation . '%')
             ->pluck('role_id')->toArray();
 
-        return AccessManager::hasRole($roles) ? 'yes' : 'no';
+        //validate if the user has the role or not
+        return AccessManager::hasRole($roles) ? true : false;
     }
 
 
