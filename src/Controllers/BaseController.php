@@ -185,7 +185,10 @@ class BaseController extends Controller {
 
         $data->delete();
 
-        return success_response($data);
+        if ( !( isset($data->errors) || $data->abort ) )
+            return success_response($data);
+
+        return failure_message($data);
     }
 
     /**

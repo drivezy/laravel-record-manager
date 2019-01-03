@@ -58,10 +58,9 @@ class BusinessRuleEvaluator {
         $data = $this->data;
         $user = $this->auth;
 
-        $answer = false;
+        $answer = true;
 
-        $validationString = 'if(' . $this->rule->filter_condition . ') $answer = true;';
-        eval($validationString);
+        eval($this->rule->filter_condition->script);
 
         return $answer;
     }
