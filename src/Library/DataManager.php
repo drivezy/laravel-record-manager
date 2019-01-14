@@ -269,6 +269,7 @@ class DataManager {
         foreach ( $restrictions as $restriction ) {
             $restriction = str_replace('current', '`' . $base . '`', $restriction);
 
+            //add all current implementation of restrictions
             array_push($joins, '(' . $restriction . ')');
         }
 
