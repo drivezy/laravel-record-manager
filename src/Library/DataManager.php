@@ -66,7 +66,9 @@ class DataManager {
             'join'  => null,
         ];
 
-        $this->setQueryRestriction($this->model, $this->base);
+        //add all restrictions that is part of the parent
+        foreach ( $this->setQueryRestriction($this->model, $this->base) as $restriction )
+            array_push($this->restrictions, $restriction);
 
         array_push($this->restrictions, '`' . $this->base . '`.deleted_at is null');
     }
@@ -107,13 +109,13 @@ class DataManager {
         $join = '`' . $alias->base . '`.deleted_at is null';
         array_push($this->restrictions, $join);
 
+        foreach ( $this->setQueryRestriction($relationship->reference_model, $alias->base) as $item )
+            $joinCondition .= ' AND ' . $item;
+
         $this->tables[ $alias->base ] = [
             'table' => $alias->table,
             'join'  => $joinCondition,
         ];
-
-        //added business rule related to query
-        $this->setQueryRestriction($relationship->reference_model, $alias->base);
     }
 
     /**
@@ -258,12 +260,18 @@ class DataManager {
     /**
      * @param $model
      * @param $base
+     * @return array
      */
     private function setQueryRestriction ($model, $base) {
+        $joins = [];
+
         $restrictions = BusinessRuleManager::getQueryStrings($model);
         foreach ( $restrictions as $restriction ) {
             $restriction = str_replace('current', '`' . $base . '`', $restriction);
-            array_push($this->restrictions, '(' . $restriction . ')');
+
+            array_push($joins, '(' . $restriction . ')');
         }
+
+        return $joins;
     }
 }
