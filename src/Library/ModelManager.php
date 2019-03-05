@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelAccessManager\Models\RoleAssignment;
+use Drivezy\LaravelAdmin\Library\UIActionManager;
 use Drivezy\LaravelAdmin\Models\UIAction;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
@@ -60,7 +61,8 @@ class ModelManager {
         if ( sizeof($actions) )
             array_push($actions, UIAction::with('execution_script')->find(4));
 
-        return $actions;
+        //get the custom UI actions
+        return array_merge($actions, UIActionManager::getObjectUIActions(md5(DataModel::class), $model->id));
     }
 
     /**

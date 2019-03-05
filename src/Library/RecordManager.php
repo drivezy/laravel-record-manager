@@ -100,6 +100,7 @@ class RecordManager extends DataManager {
 
                         $this->detailArray[ $relationship ] = [
                             'id'                => $data->id,
+                            'default_ordering'  => $data->default_ordering,
                             'base'              => strtolower($data->reference_model->name),
                             'name'              => $data->display_name,
                             'includes'          => [],
