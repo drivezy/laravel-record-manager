@@ -56,15 +56,6 @@ class RecordManagement {
 
         $includes = self::getQueryInclusions();
         $response['response'] = $model::with($includes)->find($id);
-
-        if ( Input::has('dictionary') ) {
-            if ( Input::get('dictionary') == 'true' ) {
-                $model = self::$dictionary ? self::$dictionary : self::getDictionaryStarter();
-                $dictionary = MenuManagement::getModelDictionary($model, $includes);
-                $response['dictionary'] = $dictionary[0];
-                $response['relationship'] = $dictionary[1];
-            }
-        }
         $response['success'] = true;
 
         return $response;
@@ -184,16 +175,6 @@ class RecordManagement {
             ->get();
 
         $response['response'] = $data;
-
-        if ( Input::has('dictionary') ) {
-            if ( Input::get('dictionary') == 'true' ) {
-                $model = self::$dictionary ? self::$dictionary : self::getDictionaryStarter();
-                $dictionary = MenuManagement::getModelDictionary($model, $includes);
-                $response['dictionary'] = $dictionary[0];
-                $response['relationship'] = $dictionary[1];
-                $response['scopes'] = MenuManagement::getModelScopes($model);
-            }
-        }
 
         return $response;
     }
