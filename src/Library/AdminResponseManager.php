@@ -46,6 +46,7 @@ class AdminResponseManager {
             'aggregation_operator' => $request->has('aggregation_operator') ? $request->get('aggregation_operator') : null,
             'order'                => $request->has('order') ? $request->get('order') : null,
             'grouping_column'      => $request->has('group_by') ? $request->get('group_by') : null,
+            'trashed'              => ( $request->has('trashed') && ( $request->get('trashed') == 1 ) ) ? true : false,
         ]) )->process();
 
         $this->exportData($records, $request->has('export') && $request->get('export'), $request->get('layout_id'));

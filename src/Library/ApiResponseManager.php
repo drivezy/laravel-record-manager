@@ -38,7 +38,6 @@ class ApiResponseManager {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index () {
-
         return fixed_response(RecordManagement::index($this->request));
 
         $model = $this->model;
