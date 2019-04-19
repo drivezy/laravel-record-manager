@@ -34,7 +34,4 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
     Route::resource('securityRule', 'SecurityRuleController');
     Route::resource('businessRule', 'BusinessRuleController');
-
-    Route::resource('observerRule', 'ObserverRuleController');
-    Route::resource('observerAction', 'ObserverActionController');
 });

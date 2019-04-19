@@ -6,6 +6,8 @@ use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Drivezy\LaravelUtility\Facade\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use JRApp\Libraries\Utility\Utility;
 
 /**
  * Class AdminResponseManager
@@ -46,7 +48,32 @@ class AdminResponseManager {
             'grouping_column'      => $request->has('group_by') ? $request->get('group_by') : null,
         ]) )->process();
 
+        $this->exportData($records, $request->has('export') && $request->get('export'), $request->get('layout_id'));
+
         return success_response($records);
+    }
+
+    /**
+     * Sets job to export data if export is true
+     *
+     * @see https://justride.atlassian.net/browse/DD-4201
+     *
+     * @param $records
+     * @param $export
+     * @param $layoutId
+     */
+    private function exportData ($records, $export = false, $layoutId) {
+        if ( !$export ) return;
+
+        $userId = Auth::id();
+        $data = [
+            'data'     => $records['data'],
+            'base'     => strtoupper($records['base']),
+            'layoutId' => $layoutId,
+            'userId'   => $userId,
+        ];
+
+        Utility::setEvent('export.query.data', serialize($data), ['source' => 'USER_REQ_' . $userId]);
     }
 
     /**
