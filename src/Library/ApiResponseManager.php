@@ -2,11 +2,11 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
-use Drivezy\LaravelRecordManager\Libraries\RecordManagement;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Drivezy\LaravelUtility\Models\BaseModel;
 use Illuminate\Http\Request;
+use JRApp\Libraries\Utility\RecordManagement;
 
 /**
  * Class ApiResponseManager
@@ -38,7 +38,6 @@ class ApiResponseManager {
      * @return \Illuminate\Http\JsonResponse
      */
     public function index () {
-
         return fixed_response(RecordManagement::index($this->request));
 
         $model = $this->model;
