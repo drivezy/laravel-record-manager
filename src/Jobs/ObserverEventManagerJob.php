@@ -12,6 +12,7 @@ use Drivezy\LaravelUtility\Job\BaseJob;
  * @package Drivezy\LaravelRecordManager\Jobs
  */
 class ObserverEventManagerJob extends BaseJob {
+    public static $enabled = true;
 
     /**
      * ObserverEventManagerJob constructor.
@@ -28,6 +29,8 @@ class ObserverEventManagerJob extends BaseJob {
      */
     public function handle () {
         parent::handle();
+
+        if ( !self::$enabled ) return true;
 
         $object = unserialize($this->object);
         ( new AuditManager(unserialize($object->data)) )->process();

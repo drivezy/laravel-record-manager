@@ -11,11 +11,21 @@ use Illuminate\Support\Facades\Auth;
  * @package Drivezy\LaravelRecordManager\Library
  */
 class BusinessRuleManager {
+    public static $enabled = true;
+
+    private static function abortBusinessRuleProcessing ($model) {
+        if ( $model->abort_business_rule ) return true;
+
+        return !self::$enabled;
+    }
 
     /**
      * @param $model
      */
     public static function getQueryStrings ($model) {
+        //validate if the business rule is to be processed at the high level
+        if ( self::abortBusinessRuleProcessing($model) ) return [];
+
         $query = BusinessRule::where('model_id', $model->id)
             ->where('on_query', true);
         $rules = self::getRules($query);
@@ -42,6 +52,9 @@ class BusinessRuleManager {
      * @return array
      */
     public static function handleCreatingRules (Eloquent $model) {
+        //validate if the business rule is to be processed at the high level
+        if ( self::abortBusinessRuleProcessing($model) ) return $model;
+
         $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 61)
             ->where('on_insert', true);
@@ -55,6 +68,9 @@ class BusinessRuleManager {
      * @param Eloquent $model
      */
     public static function handleCreatedRules (Eloquent $model) {
+        //validate if the business rule is to be processed at the high level
+        if ( self::abortBusinessRuleProcessing($model) ) return $model;
+
         $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 62)
             ->where('on_insert', true);
@@ -69,6 +85,9 @@ class BusinessRuleManager {
      * @return array
      */
     public static function handleUpdatingRules (Eloquent $model) {
+        //validate if the business rule is to be processed at the high level
+        if ( self::abortBusinessRuleProcessing($model) ) return $model;
+
         $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 61)
             ->where('on_update', true);
@@ -82,6 +101,9 @@ class BusinessRuleManager {
      * @param Eloquent $model
      */
     public static function handleUpdateRules (Eloquent $model) {
+        //validate if the business rule is to be processed at the high level
+        if ( self::abortBusinessRuleProcessing($model) ) return $model;
+
         $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 62)
             ->where('on_update', true);
@@ -96,6 +118,9 @@ class BusinessRuleManager {
      * @return array
      */
     public static function handleDeletingRules (Eloquent $model) {
+        //validate if the business rule is to be processed at the high level
+        if ( self::abortBusinessRuleProcessing($model) ) return $model;
+
         $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 61)
             ->where('on_delete', true);
@@ -109,6 +134,9 @@ class BusinessRuleManager {
      * @param Eloquent $model
      */
     public static function handleDeletedRules (Eloquent $model) {
+        //validate if the business rule is to be processed at the high level
+        if ( self::abortBusinessRuleProcessing($model) ) return $model;
+
         $query = BusinessRule::where('model_hash', $model->hash)
             ->where('execution_type_id', 62)
             ->where('on_delete', true);

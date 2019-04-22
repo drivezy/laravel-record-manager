@@ -4,8 +4,13 @@ namespace Drivezy\LaravelRecordManager\Database\Seeds;
 
 use Drivezy\LaravelUtility\Models\LookupType;
 use Drivezy\LaravelUtility\Models\LookupValue;
+use Drivezy\LaravelUtility\src\Database\Seeds\BaseSeeder;
 
-class ScriptTypeSeeder {
+/**
+ * Class ScriptTypeSeeder
+ * @package Drivezy\LaravelRecordManager\Database\Seeds
+ */
+class ScriptTypeSeeder extends BaseSeeder {
     /**
      * Run the database seeds.
      *

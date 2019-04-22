@@ -9,11 +9,13 @@ use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Models\LookupType;
 use Drivezy\LaravelUtility\Models\LookupValue;
+use Drivezy\LaravelUtility\src\Database\Seeds\BaseSeeder;
 
 /**
- * Class DataModelSeeder
+ * Class ModelEventTypeSeeder
+ * @package Drivezy\LaravelRecordManager\Database\Seeds
  */
-class ModelEventTypeSeeder {
+class ModelEventTypeSeeder extends BaseSeeder {
     /**
      * Run the database seeds.
      *

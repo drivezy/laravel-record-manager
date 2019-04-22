@@ -4,6 +4,10 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\ObserverRule;
 
+/**
+ * Class ObserverEvaluator
+ * @package Drivezy\LaravelRecordManager\Library
+ */
 class ObserverEvaluator {
     private $event = null;
     private $data = null;
@@ -17,9 +21,7 @@ class ObserverEvaluator {
         $this->event = $event;
         $this->data = unserialize($event->data);
     }
-
-
-    /**
+     /**
      * check against all matching rules against the given observer event.
      * If rule found then validate the filter condition.
      */
