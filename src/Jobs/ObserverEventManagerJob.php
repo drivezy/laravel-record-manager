@@ -15,11 +15,11 @@ class ObserverEventManagerJob extends BaseJob {
 
     /**
      * ObserverEventManagerJob constructor.
-     * @param $id
+     * @param $object
      * @param null $eventId
      */
-    public function __construct ($id, $eventId = null) {
-        parent::__construct($id, $eventId);
+    public function __construct ($object, $eventId = null) {
+        parent::__construct(serialize($object), $eventId);
     }
 
     /**
@@ -29,10 +29,10 @@ class ObserverEventManagerJob extends BaseJob {
     public function handle () {
         parent::handle();
 
-        $event = ObserverEvent::with('data_model')->find($this->id);
+        $object = unserialize($this->object);
+        ( new AuditManager(unserialize($object->data)) )->process();
 
-        ( new AuditManager(unserialize($event->data)) )->setAuditRecord();
-        ( new ObserverEvaluator($event) )->process();
-
+        $object->data_model = DataModel::find($object->model_id);
+        ( new ObserverEvaluator($object) )->process();
     }
 }

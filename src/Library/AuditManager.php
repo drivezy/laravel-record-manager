@@ -45,14 +45,16 @@ class AuditManager {
         $this->model = $model;
 
         $this->hash = md5($model->getActualClassNameForMorph($model->getMorphClass()));
-        $this->restrictedFields = ['created_at', 'created_by', 'updated_at', 'updated_by'];
+        $this->restrictedFields = ['updated_at', 'updated_by', 'deleted_at'];
+        $this->auditFields = $model->auditEnabled;
+        $this->auditDisabled = $model->auditDisabled;
     }
 
     /**
      * @return bool
      * @throws \Exception
      */
-    public function setAuditRecord () {
+    public function process () {
 
         if ( !$this->isAuditable() ) {
             return false;
