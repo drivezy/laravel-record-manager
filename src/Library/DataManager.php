@@ -33,6 +33,7 @@ class DataManager {
     protected $stats, $order = false;
     protected $limit = 20;
     protected $page = 1;
+    protected $trashed = false;
 
     /**
      * DataManager constructor.
@@ -70,7 +71,8 @@ class DataManager {
         foreach ( $this->setQueryRestriction($this->model, $this->base) as $restriction )
             array_push($this->restrictions, $restriction);
 
-        array_push($this->restrictions, '`' . $this->base . '`.deleted_at is null');
+        if ( !$this->trashed )
+            array_push($this->restrictions, '`' . $this->base . '`.deleted_at is null');
     }
 
     /**
@@ -106,8 +108,10 @@ class DataManager {
             $joinCondition .= ' AND ' . $join;
         }
 
-        $join = '`' . $alias->base . '`.deleted_at is null';
-        array_push($this->restrictions, $join);
+        if ( !$this->trashed ) {
+            $join = '`' . $alias->base . '`.deleted_at is null';
+            array_push($this->restrictions, $join);
+        }
 
         foreach ( $this->setQueryRestriction($relationship->reference_model, $alias->base) as $item )
             $joinCondition .= ' AND ' . $item;

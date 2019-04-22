@@ -7,11 +7,13 @@ use Drivezy\LaravelRecordManager\Library\DictionaryManager;
 use Drivezy\LaravelRecordManager\Library\ModelScanner;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelUtility\LaravelUtility;
+use Drivezy\LaravelUtility\src\Database\Seeds\BaseSeeder;
 
 /**
  * Class DataModelSeeder
+ * @package Drivezy\LaravelRecordManager\Database\Seeds
  */
-class DataModelSeeder {
+class DataModelSeeder extends BaseSeeder {
     /**
      * Run the database seeds.
      *
@@ -30,9 +32,6 @@ class DataModelSeeder {
 
         foreach ( $records as $record )
             DataModel::create($record);
-
-        ModelScanner::loadModels(base_path('vendor/drivezy/laravel-utility/src/Models'), 'Drivezy\LaravelUtility\Models');
-        ModelScanner::loadModels(base_path('vendor/drivezy/laravel-access-manager/src/Models'), 'Drivezy\LaravelAccessManager\Models');
 
         $dataModels = DataModel::get();
         foreach ( $dataModels as $model ) {

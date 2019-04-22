@@ -134,10 +134,11 @@ class ListManager extends DataManager {
      */
     private function getStatsData () {
         $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
+
         if ( $this->query )
-            $sql .= ' and (' . $this->query . ') and `' . $this->base . '`.deleted_at is null';
-        else
-            $sql .= ' and `' . $this->base . '`.deleted_at is null';
+            $sql .= ' and (' . $this->query . ')';
+
+        $sql .= $this->deletedQuery();
 
         return [
             'total'  => DB::select(DB::raw($sql))[0]->count,
@@ -151,10 +152,12 @@ class ListManager extends DataManager {
      */
     private function setAggregationData () {
         $sql = 'SELECT ' . $this->aggregation_operator . '(' . $this->aggregation_column . ')' . ' as ' . $this->aggregation_column . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
+
         if ( $this->query )
             $sql .= ' and (' . $this->query . ')';
 
-        $sql .= ' and `' . $this->base . '`.deleted_at is null';
+        $sql .= $this->deletedQuery();
+
         $this->data = DB::select(DB::raw($sql));
     }
 
@@ -179,11 +182,11 @@ class ListManager extends DataManager {
         if ( $this->query )
             $sql .= ' and (' . $this->query . ')';
 
-        $sql .= ' and `' . $this->base . '`.deleted_at is null group by ' . $this->grouping_column;
+        $sql .= $this->deletedQuery();
+        $sql .= ' group by ' . $this->grouping_column;
 
-        if ( $this->order ) {
+        if ( $this->order )
             $sql .= ' ORDER BY ' . $this->order;
-        }
 
         $sql .= ' LIMIT ' . $this->limit . ' OFFSET ' . $this->limit * ( $this->page - 1 );
 
@@ -201,7 +204,8 @@ class ListManager extends DataManager {
         if ( $this->query )
             $sql .= ' and (' . $this->query . ')';
 
-        $sql .= ' and `' . $this->base . '`.deleted_at is null group by ' . $this->grouping_column;
+        $sql .= $this->deletedQuery();
+        $sql .= ' group by ' . $this->grouping_column;
 
         $sql = 'SELECT COUNT(1) count FROM (' . $sql . ') a';
         $this->stats = [
@@ -209,6 +213,17 @@ class ListManager extends DataManager {
             'page'   => $this->page,
             'record' => $this->limit,
         ];
+    }
+
+    /**
+     * Adds deleted_at query to the string if trashed is false
+     * @return string
+     */
+    private function deletedQuery () {
+        if ( !$this->trashed )
+            return ' and `' . $this->base . '`.deleted_at is null';
+
+        return '';
     }
 }
 
