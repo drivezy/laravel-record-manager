@@ -14,6 +14,9 @@ class Column extends BaseModel {
      * @var string
      */
     protected $table = 'dz_column_details';
+    /**
+     * @var array
+     */
     protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at', 'source_type', 'source_id'];
 
     /**
@@ -21,6 +24,13 @@ class Column extends BaseModel {
      */
     public function reference_model () {
         return $this->belongsTo(DataModel::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function reference_column () {
+        return $this->belongsTo(self::class);
     }
 
     /**

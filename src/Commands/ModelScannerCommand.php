@@ -37,11 +37,14 @@ class ModelScannerCommand extends Command {
      * @return mixed
      */
     public function handle () {
+        //get the path where drivezy packages are installed
+        $drivezyPackagePath = dirname(__DIR__, 3);
+
         //get all models defined under the required
-        ModelScanner::loadModels(base_path() . '/vendor/drivezy/laravel-utility/src/Models', 'Drivezy\LaravelUtility\Models');
-        ModelScanner::loadModels(base_path() . '/vendor/drivezy/laravel-access-manager/src/Models', 'Drivezy\LaravelAccessManager\Models');
-        ModelScanner::loadModels(base_path() . '/vendor/drivezy/laravel-record-manager/src/Models', 'Drivezy\LaravelRecordManager\Models');
-        ModelScanner::loadModels(base_path() . '/vendor/drivezy/laravel-admin/src/Models', 'Drivezy\LaravelAdmin\Models');
+        ModelScanner::loadModels($drivezyPackagePath . '/laravel-utility/src/Models', 'Drivezy\LaravelUtility\Models');
+        ModelScanner::loadModels($drivezyPackagePath . '/laravel-access-manager/src/Models', 'Drivezy\LaravelAccessManager\Models');
+        ModelScanner::loadModels($drivezyPackagePath . '/laravel-record-manager/src/Models', 'Drivezy\LaravelRecordManager\Models');
+        ModelScanner::loadModels($drivezyPackagePath . '/laravel-admin/src/Models', 'Drivezy\LaravelAdmin\Models');
 
         //scan and reload all the models defined in the system
         ModelScanner::scanModels();
