@@ -20,6 +20,7 @@ class DataManager {
     protected $rejectedColumns = [];
     protected $acceptedColumns = [];
     protected $encryptedColumns = [];
+    protected $sourceColumns = [];
 
     protected $relationships = [];
     protected $layout = [];
@@ -256,8 +257,14 @@ class DataManager {
         foreach ( $columns->allowedIdentifiers as $item ) {
             array_push($this->acceptedColumns, $base . '.' . $item);
 
+            //find all encrypted columns and act decrypt them before sending data to the user
             if ( in_array($item, $columns->encryptedColumns) )
                 array_push($this->encryptedColumns, $base . '.' . $item);
+
+            //find all the source columns and then change the source
+            // values before sending to the end user
+            if ( in_array($item, $columns->sourceColumns) )
+                array_push($this->sourceColumns, $base . '.' . $item);
         }
     }
 

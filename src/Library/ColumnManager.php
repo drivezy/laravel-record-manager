@@ -18,6 +18,7 @@ class ColumnManager {
     public $allowedIdentifiers = [];
 
     public $encryptedColumns = [];
+    public $sourceColumns = [];
 
     public function __construct ($type, $id, $obj = []) {
         $this->source_type = $type;
@@ -46,6 +47,11 @@ class ColumnManager {
 
                 if ( $column->column_type_id == 18 )
                     array_push($this->encryptedColumns, $column->name);
+
+                if ( $column->column_type_id == 20 ){
+                    array_push($this->sourceColumns, $column->name);
+                }
+
 
             } else {
                 array_push($this->restricted, $column);

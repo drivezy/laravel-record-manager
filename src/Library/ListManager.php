@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
+use Drivezy\LaravelRecordManager\Libraries\RecordManagement;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Illuminate\Support\Facades\Crypt;
@@ -121,8 +122,18 @@ class ListManager extends DataManager {
         //check if there is any data that has to be modelled for special columns
         $iterator = 0;
         foreach ( $this->data as $item ) {
+            //post process the encrypted record
             foreach ( $this->encryptedColumns as $column )
                 $this->data[ $iterator ]->{$column} = Crypt::decrypt($item->{$column});
+
+            //post process the source record
+            foreach ( $this->sourceColumns as $column ) {
+                $sourceId = str_replace(last(explode('.', $column)), 'source_id', $column);
+                $sourceRecord = RecordManagement::getSourceColumnValue($item->{$column}, $item->{$sourceId});
+
+                $this->data[ $iterator ]->{$column . '_record'} = 'Object-' . $sourceRecord[0];
+                $this->data[ $iterator ]->{$sourceId . '_record'} = 'Record-' . $sourceRecord[1];
+            }
 
             ++$iterator;
         }

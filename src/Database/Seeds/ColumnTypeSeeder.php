@@ -86,6 +86,61 @@ class ColumnTypeSeeder extends BaseSeeder {
                 'description'           => 'CustomForm against that entity',
                 'supported_identifiers' => '',
             ],
+            [
+                'id'                    => 12,
+                'name'                  => 'Upload',
+                'description'           => 'file upload column',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 13,
+                'name'                  => 'MultipleUpload',
+                'description'           => 'multiple file one',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 14,
+                'name'                  => 'Time',
+                'description'           => 'Just the time factor of the date time',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 15,
+                'name'                  => 'MultipleSelect',
+                'description'           => 'Selection of multiple records',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 16,
+                'name'                  => 'Text',
+                'description'           => 'Large input field',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 17,
+                'name'                  => 'Password',
+                'description'           => 'field wherein we dont want to show the input params',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 18,
+                'name'                  => 'Encrypted',
+                'description'           => 'field wherein data is encrypted',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 19,
+                'name'                  => 'Month',
+                'description'           => 'Just the Ym param of datetime',
+                'supported_identifiers' => '',
+            ],
+            [
+                'id'                    => 20,
+                'name'                  => 'SourceColumn',
+                'description'           => 'Generic source column which connected to data model one',
+                'supported_identifiers' => '',
+            ],
+
         ];
         foreach ( $columns as $column )
             ColumnDefinition::firstOrCreate($column);

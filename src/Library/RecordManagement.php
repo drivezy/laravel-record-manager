@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Libraries;
 
+use Drivezy\LaravelRecordManager\Models\DataModel;
 use Illuminate\Http\Request as Request;
 use Illuminate\Support\Facades\Auth;
 use JRApp\Libraries\Access\MenuManagement;
@@ -272,5 +273,27 @@ class RecordManagement {
         $response['response'] = $query->{Input::get('aggregation_operator')}(Input::get('aggregation_column'));
 
         return $response;
+    }
+
+    /**
+     * @param $sourceType
+     * @param $sourceId
+     * @return array
+     */
+    public static function getSourceColumnValue ($sourceType, $sourceId) {
+        //get the source against which hash is present
+        $model = DataModel::where('model_hash', $sourceType)->first();
+        //iterate only when the model is present
+        if ( $model && $model->display_column ) {
+            $className = $model->namespace . '\\' . $model->name;
+            $sourceId = $className::find($sourceId);
+
+            $sourceId = $sourceId->{$model->display_column};
+        }
+
+        $sourceType = $model ? $model->name : $sourceType;
+
+        //send as a array of both object
+        return [$sourceType, $sourceId];
     }
 }
