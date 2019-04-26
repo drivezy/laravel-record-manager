@@ -1,16 +1,15 @@
 <?php
 
-namespace Drivezy\LaravelRecordManager\Libraries;
+namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Illuminate\Http\Request as Request;
 use Illuminate\Support\Facades\Auth;
-use JRApp\Libraries\Access\MenuManagement;
 use Request as Input;
 
 /**
  * Class RecordManagement
- * @package JRApp\Libraries
+ * @package Drivezy\LaravelRecordManager\Library
  */
 class RecordManagement {
     public static $model;

@@ -7,7 +7,6 @@ use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Drivezy\LaravelUtility\Facade\Message;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use JRApp\Libraries\Utility\Utility;
 
 /**
  * Class AdminResponseManager
@@ -73,8 +72,8 @@ class AdminResponseManager {
             'layoutId' => $layoutId,
             'userId'   => $userId,
         ];
-
-        Utility::setEvent('export.query.data', serialize($data), ['source' => 'USER_REQ_' . $userId]);
+        //@todo give support for event setup in utility class
+//        LaravelUtility::setEvent('export.query.data', serialize($data), ['source' => 'USER_REQ_' . $userId]);
     }
 
     /**

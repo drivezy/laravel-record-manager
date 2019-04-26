@@ -2,7 +2,6 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
-use Drivezy\LaravelRecordManager\Libraries\RecordManagement;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Illuminate\Support\Facades\Crypt;
@@ -128,11 +127,11 @@ class ListManager extends DataManager {
 
             //post process the source record
             foreach ( $this->sourceColumns as $column ) {
-                $sourceId = str_replace(last(explode('.', $column)), 'source_id', $column);
+                $sourceId = str_replace(last(explode('.', $column)), explode('_', last(explode('.', $column)))[0] . '_id', $column);
                 $sourceRecord = RecordManagement::getSourceColumnValue($item->{$column}, $item->{$sourceId});
 
-                $this->data[ $iterator ]->{$column . '_record'} = 'Object-' . $sourceRecord[0];
-                $this->data[ $iterator ]->{$sourceId . '_record'} = 'Record-' . $sourceRecord[1];
+                $this->data[ $iterator ]->{$column} = 'Object-' . $sourceRecord[0];
+                $this->data[ $iterator ]->{$sourceId} = 'Record-' . $sourceRecord[1];
             }
 
             ++$iterator;

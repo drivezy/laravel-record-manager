@@ -11,7 +11,8 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('columnDefinition', 'ColumnDefinitionController');
     Route::resource('relationshipDefinition', 'RelationshipDefinitionController');
 
-    Route::resource('dataModel', 'DataModelController');;
+    Route::resource('dataModel', 'DataModelController');
+    Route::get('sourceColumnDetail', 'DataModelController@getSourceColumnDetails');
     Route::resource('column', 'ColumnController');
 
     Route::resource('modelColumn', 'ModelColumnController');
