@@ -149,5 +149,14 @@ class RecordManager extends DataManager {
         //adding check for encrypted column
         foreach ( $this->encryptedColumns as $item )
             $this->data->{$item} = Crypt::decrypt($this->data->{$item});
+
+        //post process the source record
+        foreach ( $this->sourceColumns as $column ) {
+            $sourceId = str_replace(last(explode('.', $column)), explode('_', last(explode('.', $column)))[0] . '_id', $column);
+            $sourceRecord = RecordManagement::getSourceColumnValue($this->data->{$column}, $this->data->{$sourceId});
+
+            $this->data->{$column} = 'Object-' . $sourceRecord[0];
+            $this->data->{$sourceId} = 'Record-' . $sourceRecord[1];
+        }
     }
 }
