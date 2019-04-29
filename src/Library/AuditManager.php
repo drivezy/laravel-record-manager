@@ -167,6 +167,9 @@ class AuditManager {
      * record the items on dynamo db
      */
     public function __destruct () {
+        //if no records to push to audit, then leave dont call the dynamo push job
+        if ( !sizeof($this->records) ) return;
+
         $table = LaravelUtility::getProperty('dynamo.audit.table', 'dz_audit_logs');
         DynamoManager::pushMultipleToDynamo($table, $this->records);
     }

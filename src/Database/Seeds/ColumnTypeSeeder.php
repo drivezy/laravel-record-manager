@@ -3,7 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Database\Seeds;
 
 use Drivezy\LaravelRecordManager\Models\ColumnDefinition;
-use Drivezy\LaravelUtility\src\Database\Seeds\BaseSeeder;
+use Drivezy\LaravelUtility\Database\Seeds\BaseSeeder;
 
 /**
  * Class ColumnTypeSeeder

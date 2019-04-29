@@ -2,12 +2,10 @@
 
 namespace Drivezy\LaravelRecordManager\Database\Seeds;
 
-use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Library\DictionaryManager;
-use Drivezy\LaravelRecordManager\Library\ModelScanner;
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelUtility\Database\Seeds\BaseSeeder;
 use Drivezy\LaravelUtility\LaravelUtility;
-use Drivezy\LaravelUtility\src\Database\Seeds\BaseSeeder;
 
 /**
  * Class DataModelSeeder
