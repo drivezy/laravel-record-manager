@@ -38,4 +38,24 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
     Route::resource('observerRule', 'ObserverRuleController');
     Route::resource('observerAction', 'ObserverActionController');
+
+    //routes related to server deployments and its prov
+    Route::resource('serverDeployment', 'ServerDeploymentController');
+    Route::resource('codeDeployment', 'CodeDeploymentController');
+    Route::resource('codeCommit', 'CodeCommitController');
+});
+
+
+Route::group(['namespace'  => 'Drivezy\LaravelRecordManager\Controllers',
+              'prefix'     => 'internal',
+              'middleware' => 'internal'], function () {
+
+    Route::post('codeDeployment', 'CodeDeploymentController@store');
+    Route::post('serverDeployment', 'ServerDeploymentController@store');
+});
+
+Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
+              'prefix'    => 'vendor'], function () {
+
+    Route::post('bitbucketCodePush/{key}', 'CodeCommitController@logBitBucketCommit');
 });
