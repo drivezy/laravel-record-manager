@@ -55,10 +55,7 @@ class AuditManager {
      * @throws \Exception
      */
     public function process () {
-
-        if ( !$this->isAuditable() ) {
-            return false;
-        }
+        if ( !$this->isAuditable() ) return false;
 
         if ( $this->isInsertOperation() ) return false;
 

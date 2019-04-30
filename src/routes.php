@@ -1,6 +1,4 @@
 <?php
-
-
 Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
               'prefix'    => 'api/record'], function () {
     Route::resource('property', 'PropertyController');
