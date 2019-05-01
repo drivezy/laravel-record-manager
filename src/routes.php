@@ -41,6 +41,21 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('serverDeployment', 'ServerDeploymentController');
     Route::resource('codeDeployment', 'CodeDeploymentController');
     Route::resource('codeCommit', 'CodeCommitController');
+
+    //routes related to notification
+    Route::resource('notification', 'NotificationController');
+    Route::resource('notificationRecipient', 'NotificationRecipientController');
+
+    Route::resource('smsNotification', 'SMSNotificationController');
+    Route::resource('pushNotification', 'PushNotificationController');
+    Route::resource('emailNotification', 'EmailNotificationController');
+
+    Route::resource('notificationSubscriber', 'NotificationSubscriberController');
+    Route::resource('notificationTrigger', 'NotificationTriggerController');
+
+    Route::resource('smsTemplate', 'SMSTemplateController');
+    Route::resource('deviceToken', 'DeviceTokenController');
+
 });
 
 
