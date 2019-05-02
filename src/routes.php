@@ -56,6 +56,7 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('smsTemplate', 'SMSTemplateController');
     Route::resource('deviceToken', 'DeviceTokenController');
 
+    Route::post('auditLog/{id}', 'AuditLogController@getAuditLog');
 });
 
 
