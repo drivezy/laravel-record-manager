@@ -1,6 +1,4 @@
 <?php
-
-
 Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
               'prefix'    => 'api/record'], function () {
     Route::resource('property', 'PropertyController');
@@ -38,4 +36,40 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
     Route::resource('observerRule', 'ObserverRuleController');
     Route::resource('observerAction', 'ObserverActionController');
+
+    //routes related to server deployments and its prov
+    Route::resource('serverDeployment', 'ServerDeploymentController');
+    Route::resource('codeDeployment', 'CodeDeploymentController');
+    Route::resource('codeCommit', 'CodeCommitController');
+
+    //routes related to notification
+    Route::resource('notification', 'NotificationController');
+    Route::resource('notificationRecipient', 'NotificationRecipientController');
+
+    Route::resource('smsNotification', 'SMSNotificationController');
+    Route::resource('pushNotification', 'PushNotificationController');
+    Route::resource('emailNotification', 'EmailNotificationController');
+
+    Route::resource('notificationSubscriber', 'NotificationSubscriberController');
+    Route::resource('notificationTrigger', 'NotificationTriggerController');
+
+    Route::resource('smsTemplate', 'SMSTemplateController');
+    Route::resource('deviceToken', 'DeviceTokenController');
+
+    Route::post('auditLog/{id}', 'AuditLogController@getAuditLog');
+});
+
+
+Route::group(['namespace'  => 'Drivezy\LaravelRecordManager\Controllers',
+              'prefix'     => 'internal',
+              'middleware' => 'internal'], function () {
+
+    Route::post('codeDeployment', 'CodeDeploymentController@store');
+    Route::post('serverDeployment', 'ServerDeploymentController@store');
+});
+
+Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
+              'prefix'    => 'vendor'], function () {
+
+    Route::post('bitbucketCodePush/{key}', 'CodeCommitController@logBitBucketCommit');
 });
