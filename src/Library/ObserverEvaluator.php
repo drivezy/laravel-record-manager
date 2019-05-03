@@ -2,42 +2,52 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
+use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ObserverRule;
+use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class ObserverEvaluator
  * @package Drivezy\LaravelRecordManager\Library
  */
 class ObserverEvaluator {
-    private $event = null;
-    private $data = null;
+    /**
+     * @var int
+     */
     private $operation = 72;
+    /**
+     * @var Eloquent|null
+     */
+    private $model = null;
 
     /**
      * ObserverEvaluator constructor.
-     * @param $event
+     * @param Eloquent $model
      */
-    public function __construct ($event) {
-        $this->event = $event;
-        $this->data = unserialize($event->data);
+    public function __construct (Eloquent $model) {
+        $this->model = $model;
     }
-     /**
+
+    /**
      * check against all matching rules against the given observer event.
      * If rule found then validate the filter condition.
      */
     public function process () {
-        if ( !$this->event->data_model ) return;
+        //get the data model against which event has triggered
+        $dataModel = DataModel::where('model_hash', $this->model->class_hash)->first();
+        if ( !$dataModel ) return;
 
-        $this->operation = $this->getOperationType();
-
+        //find all the rules which matches the given model and its given operation activity
+        //it also picks up all records wherein operation type is not defined
         $rules = ObserverRule::with('active_actions')->active()
             ->where(function ($q) {
-                $q->where('trigger_type_id', $this->operation)
+                $q->where('trigger_type_id', $this->getOperationType())
                     ->orWhereNull('trigger_type_id');
             })
-            ->where('model_id', $this->event->data_model->id)
+            ->where('model_id', $dataModel->id)
             ->get();
 
+        //process all rules individually
         foreach ( $rules as $rule )
             $this->processRule($rule);
     }
@@ -48,7 +58,7 @@ class ObserverEvaluator {
      * @return mixed|null|void
      */
     private function processRule ($rule) {
-        $data = $model = $this->data;
+        $data = $model = $this->model;
         $answer = false;
 
         $rule->filter_condition = $rule->filter_condition ? : true;
@@ -68,7 +78,7 @@ class ObserverEvaluator {
      * @param $action
      */
     private function processAction ($action) {
-        $data = $model = $this->data;
+        $data = $model = $this->model;
         try {
             eval($action->script->script);
         } catch ( \Exception $e ) {
@@ -80,12 +90,13 @@ class ObserverEvaluator {
      * @return int
      */
     private function getOperationType () {
-        $data = $this->data;
+        //check if it is a new record
+        if ( $this->model->isNewRecord() ) return 71;
 
-        if ( $data->isNewRecord() ) return 71;
+        //check if the record is in deleted state
+        if ( $this->model->isTrashed() ) return 73;
 
-        if ( $data->isTrashed() ) return 73;
-
+        //defaults to updating of record
         return 72;
     }
 
@@ -95,6 +106,9 @@ class ObserverEvaluator {
     public function devHandler ($data) {
     }
 
+    /**
+     *
+     */
     public function __destruct () {
 
     }

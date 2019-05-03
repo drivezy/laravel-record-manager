@@ -4,8 +4,6 @@ namespace Drivezy\LaravelRecordManager\Jobs;
 
 use Drivezy\LaravelRecordManager\Library\AuditManager;
 use Drivezy\LaravelRecordManager\Library\ObserverEvaluator;
-use Drivezy\LaravelRecordManager\Models\DataModel;
-use Drivezy\LaravelRecordManager\Models\ObserverEvent;
 use Drivezy\LaravelUtility\Job\BaseJob;
 
 /**
@@ -34,10 +32,12 @@ class ObserverEventManagerJob extends BaseJob {
         //validate if observer event processing is enabled or not
         if ( !self::$enabled ) return true;
 
-        $object = unserialize($this->object);
-        ( new AuditManager(unserialize($object->data)) )->process();
+        $model = unserialize($this->object);
 
-        $object->data_model = DataModel::find($object->model_id);
-        ( new ObserverEvaluator($object) )->process();
+        //record the audit log against the model activity
+        ( new AuditManager($model) )->process();
+
+        //find all activity registered against the given model activity
+        ( new ObserverEvaluator($model) )->process();
     }
 }
