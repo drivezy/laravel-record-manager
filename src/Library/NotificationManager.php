@@ -26,20 +26,22 @@ class NotificationManager extends NotificationRecipientManager {
     public function processNotification ($id = null) {
         if ( !$this->notification->active ) return false;
 
+        dd($this->notification);
+
         $result = $this->prepareNotificationData($id);
         if ( !$result['success'] ) return false;
 
         $this->notification_data = $result['data'];
-//        CustomLogging::info($this->notification_data);
+        CustomLogging::info($this->notification_data);
 
         if ( !$this->notification_data ) return false;
 
         if ( !$this->validateRunCondition($this->notification->run_condition) ) return false;
-//        CustomLogging::info('Successfully Passed Run Condition of Notification');
+        CustomLogging::info('Successfully Passed Run Condition of Notification');
 
         $this->default_users = $this->getNotificationUsers($this->notification->active_recipients);
-//        CustomLogging::info('Default Users');
-//        CustomLogging::info('Default Users Count : ' . sizeof($this->default_users));
+        CustomLogging::info('Default Users');
+        CustomLogging::info('Default Users Count : ' . sizeof($this->default_users));
 
         $this->processEmailNotifications();
         $this->processSmsNotifications();
@@ -77,7 +79,7 @@ class NotificationManager extends NotificationRecipientManager {
      * push email notification
      */
     private function processEmailNotifications () {
-//        CustomLogging::info('Starting processing of email notifications');
+        CustomLogging::info('Starting processing of email notifications');
 
         $emailNotifications = EmailNotification::with(['active_recipients.custom_query', 'active_recipients.run_condition', 'run_condition', 'body'])->where('notification_id', $this->notification->id)->get();
         foreach ( $emailNotifications as $emailNotification ) {
@@ -85,7 +87,7 @@ class NotificationManager extends NotificationRecipientManager {
                 if ( $emailNotification->active )
                     $this->processEmailNotification($emailNotification);
             } else {
-//                CustomLogging::info('Email Notification ' . $emailNotification->name . ' Failed Run Condition');
+                CustomLogging::info('Email Notification ' . $emailNotification->name . ' Failed Run Condition');
             }
         }
     }
@@ -95,11 +97,11 @@ class NotificationManager extends NotificationRecipientManager {
      * @param $emailNotification
      */
     private function processEmailNotification ($emailNotification) {
-//        CustomLogging::info('Processing Email Notification ' . $emailNotification->name);
+        CustomLogging::info('Processing Email Notification ' . $emailNotification->name);
         $users = $this->getTotalUsers($emailNotification->default_users, $emailNotification->active_recipients);
 
         $subject = LaravelUtility::parseBladeToString($emailNotification->subject, $this->notification_data);
-//        CustomLogging::info('Subject is ' . $subject);
+        CustomLogging::info('Subject is ' . $subject);
 
         $body = $emailNotification->body_id ? $emailNotification->body->script : '';
         $body = LaravelUtility::parseBladeToString($body, $this->notification_data);
@@ -108,14 +110,14 @@ class NotificationManager extends NotificationRecipientManager {
 
         foreach ( $users as $user ) {
             if ( !filter_var($user->email, FILTER_VALIDATE_EMAIL) ) {
-//                CustomLogging::info('Failed email for ' . $user->email);
+                CustomLogging::info('Failed email for ' . $user->email);
                 continue;
             }
 
             if ( !$this->validateSubscription($user, 'email') )
                 continue;
 
-//            CustomLogging::info('Sent email to ' . $user->email);
+            CustomLogging::info('Sent email to ' . $user->email);
             Mail::to($user)->send($mailable);
             ++$this->email_count;
         }
@@ -125,7 +127,7 @@ class NotificationManager extends NotificationRecipientManager {
      * process sms notification
      */
     private function processSmsNotifications () {
-//        CustomLogging::info('Starting processing of sms notifications');
+        CustomLogging::info('Starting processing of sms notifications');
 
         $smsNotifications = SMSNotification::with(['active_recipients.custom_query', 'active_recipients.run_condition', 'template.gateway', 'run_condition'])->where('notification_id', $this->notification->id)->get();
         foreach ( $smsNotifications as $smsNotification ) {
@@ -133,7 +135,7 @@ class NotificationManager extends NotificationRecipientManager {
                 if ( $smsNotification->active )
                     $this->processSmsNotification($smsNotification);
             } else {
-//                CustomLogging::info('Run condition failed for SMS notification ' . $smsNotification->name);
+                CustomLogging::info('Run condition failed for SMS notification ' . $smsNotification->name);
             }
         }
 
@@ -144,7 +146,7 @@ class NotificationManager extends NotificationRecipientManager {
      * @param $smsNotification
      */
     private function processSmsNotification ($smsNotification) {
-//        CustomLogging::info('processing sms notification ' . $smsNotification->name);
+        CustomLogging::info('processing sms notification ' . $smsNotification->name);
 
         $users = $this->getTotalUsers($smsNotification->default_users, $smsNotification->active_recipients);
 
@@ -155,17 +157,17 @@ class NotificationManager extends NotificationRecipientManager {
 //        SentryLogging::set('sms.notification.data.' . $smsNotification->id, $content);
         eval("\$content = \"$content\";");
 
-//        CustomLogging::info('Content is : ' . $content);
-//        CustomLogging::info('gateway is : ' . $gateway);
+        CustomLogging::info('Content is : ' . $content);
+        CustomLogging::info('gateway is : ' . $gateway);
 
         foreach ( $users as $user ) {
             if ( isset($user->id) ) {
                 SMSManager::sendSmsToUser($user, $content, $gateway);
-//                CustomLogging::info('processed sms for ' . $user->mobile);
+                CustomLogging::info('processed sms for ' . $user->mobile);
                 ++$this->sms_count;
             } elseif ( isset($user->mobile) ) {
                 SMSManager::sendSmsToMobile($user->mobile, $content, $gateway);
-//                CustomLogging::info('processed sms for ' . $user->mobile);
+                CustomLogging::info('processed sms for ' . $user->mobile);
                 ++$this->sms_count;
             }
 
@@ -177,7 +179,7 @@ class NotificationManager extends NotificationRecipientManager {
      * @return mixed
      */
     private function processPushNotifications () {
-//        CustomLogging::info('Starting to process push notifications');
+        CustomLogging::info('Starting to process push notifications');
 
         $pushNotifications = PushNotification::with(['active_recipients.custom_query', 'active_recipients.run_condition', 'run_condition', 'custom_query'])->where('notification_id', $this->notification->id)->get();
         foreach ( $pushNotifications as $pushNotification ) {
@@ -185,7 +187,7 @@ class NotificationManager extends NotificationRecipientManager {
                 if ( $pushNotification->active )
                     $this->processPushNotification($pushNotification);
             } else {
-//                CustomLogging::info('Push notification failed run condition ' . $pushNotification->name);
+                CustomLogging::info('Push notification failed run condition ' . $pushNotification->name);
             }
         }
     }
@@ -196,7 +198,7 @@ class NotificationManager extends NotificationRecipientManager {
      * @return mixed
      */
     private function processPushNotification ($pushNotification) {
-//        CustomLogging::info('Processing push notification ' . $pushNotification->name);
+        CustomLogging::info('Processing push notification ' . $pushNotification->name);
         $users = $this->getTotalUsers($pushNotification->default_users, $pushNotification->active_recipients);
         $devices = $this->getPushNotificationDevices($users, $pushNotification);
 
@@ -238,7 +240,7 @@ class NotificationManager extends NotificationRecipientManager {
 
         $this->push_count += sizeof($devices);
 
-//        CustomLogging::info('pushed to devices ' . sizeof($devices));
+        CustomLogging::info('pushed to devices ' . sizeof($devices));
 
         return FirebaseUtil::sendPushNotification($params);
     }
