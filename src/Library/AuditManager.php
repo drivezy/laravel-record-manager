@@ -183,10 +183,8 @@ class AuditManager {
         //if no records to push to audit, then leave dont call the dynamo push job
         if ( !sizeof($this->records) ) return;
 
-        dd($this->records);
-
         //get the table onto which audit logs are to be pushed to
         $table = LaravelUtility::getProperty('dynamo.audit.table', 'dz_audit_logs');
-//        DynamoManager::pushMultipleToDynamo($table, $this->records);
+        DynamoManager::pushMultipleToDynamo($table, $this->records);
     }
 }

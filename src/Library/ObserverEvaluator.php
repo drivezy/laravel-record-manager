@@ -33,6 +33,9 @@ class ObserverEvaluator {
      * If rule found then validate the filter condition.
      */
     public function process () {
+        //check if observer events is supposed to be run against it
+        if(!$this->model->observable) return false;
+
         //get the data model against which event has triggered
         $dataModel = DataModel::where('model_hash', $this->model->class_hash)->first();
         if ( !$dataModel ) return;
