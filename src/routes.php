@@ -53,6 +53,7 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('notificationSubscriber', 'NotificationSubscriberController');
     Route::resource('notificationTrigger', 'NotificationTriggerController');
 
+    Route::resource('smsMessage', "SMSMessageController");
     Route::resource('smsTemplate', 'SMSTemplateController');
     Route::resource('deviceToken', 'DeviceTokenController');
 

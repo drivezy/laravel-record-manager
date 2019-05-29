@@ -5,6 +5,7 @@ namespace Drivezy\LaravelRecordManager\Jobs;
 use Drivezy\LaravelRecordManager\Models\CodeCommit;
 use Drivezy\LaravelRecordManager\Models\ServerDeployment;
 use Drivezy\LaravelUtility\Job\BaseJob;
+use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Library\DateUtil;
 use Drivezy\LaravelUtility\Library\RemoteRequest;
 use Illuminate\Support\Facades\Crypt;
@@ -26,8 +27,8 @@ class CodeCommitSyncJob extends BaseJob {
         //if no servers are deployed against the deployment, then do nothing
         if ( !sizeof($servers) ) return false;
 
-        $url = Utility::getProperty('deployment.server.url');
-        $token = Utility::getProperty('deployment.server.access.key');
+        $url = LaravelUtility::getProperty('deployment.server.url');
+        $token = LaravelUtility::getProperty('deployment.server.access.key');
 
         //if properties are not setup do nothing
         if ( !( $url && $token ) ) return false;

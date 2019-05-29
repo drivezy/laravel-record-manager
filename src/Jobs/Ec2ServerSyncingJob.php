@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Jobs;
 
 use Drivezy\LaravelRecordManager\Models\ServerDeployment;
 use Drivezy\LaravelUtility\Job\BaseJob;
+use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Library\DateUtil;
 
 /**
@@ -12,9 +13,17 @@ use Drivezy\LaravelUtility\Library\DateUtil;
  */
 class Ec2ServerSyncingJob extends BaseJob {
     /**
+     * @var int
+     */
+    public $inactive_threshold = 5;
+
+    /**
      * @return bool|void
      */
     public function handle () {
+        //get the time for which if not responded server should be made inactive
+        $this->inactive_threshold = LaravelUtility::getProperty('server.inactive.threshold', 5);
+
         $client = \AWS::createClient('Ec2');
         $result = $client->describeInstances();
 
@@ -34,6 +43,10 @@ class Ec2ServerSyncingJob extends BaseJob {
                 $this->setServer($obj);
             }
         };
+
+        //any server which has not responded within 5 minutes should be made inactive
+        $this->setInactiveServer();
+
     }
 
     /**
@@ -43,9 +56,16 @@ class Ec2ServerSyncingJob extends BaseJob {
         $servers = ServerDeployment::where('private_ip', $record['private_ip'])->get();
 
         foreach ( $servers as $server ) {
-            $record['active'] = DateUtil::getDateTimeDifference($server->last_ping_time, DateUtil::getDateTime()) > 10 * 60 ? false : true;
+            $record['active'] = DateUtil::getDateTimeDifference($server->last_ping_time, DateUtil::getDateTime()) > $this->inactive_threshold * 60 ? false : true;
             $server->update($record);
         }
+    }
+
+    /**
+     * Inactivate all servers who have not responded in last 5 minutes
+     */
+    private function setInactiveServer () {
+        ServerDeployment::where('last_ping_time', '<', DateUtil::getPastTime($this->inactive_threshold))->update(['active' => false]);
     }
 
 }

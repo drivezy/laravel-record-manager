@@ -143,15 +143,16 @@ class ListManager extends DataManager {
      * @return array
      */
     private function getStatsData () {
-        $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
-
-        if ( $this->query )
-            $sql .= ' and (' . $this->query . ')';
-
-        $sql .= $this->deletedQuery();
+//        $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
+//
+//        if ( $this->query )
+//            $sql .= ' and (' . $this->query . ')';
+//
+//        $sql .= $this->deletedQuery();
 
         return [
-            'total'  => DB::select(DB::raw($sql))[0]->count,
+//            'total'  => DB::select(DB::raw($sql))[0]->count,
+            'total'  => 10000,
             'page'   => $this->page,
             'record' => $this->limit,
         ];

@@ -9,7 +9,7 @@ use Request as Input;
 
 /**
  * Class RecordManagement
- * @package Drivezy\LaravelRecordManager\Library
+ * @package JRApp\Libraries
  */
 class RecordManagement {
     public static $model;
@@ -287,7 +287,9 @@ class RecordManagement {
             $className = $model->namespace . '\\' . $model->name;
             $sourceId = $className::find($sourceId);
 
-            $sourceId = $sourceId->{$model->display_column};
+            //check if record is present or not
+            if ( $sourceId )
+                $sourceId = $sourceId->{$model->display_column};
         }
 
         $sourceType = $model ? $model->name : $sourceType;

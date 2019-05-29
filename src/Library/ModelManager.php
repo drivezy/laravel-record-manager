@@ -85,7 +85,7 @@ class ModelManager {
      */
     private static function validateUnRegulatedModel ($model, $operation) {
         //non internal users are allowed
-        if ( !AccessManager::hasRole(20) ) return false;
+        if ( !AccessManager::hasRole('internal') ) return false;
 
         //only allow publicly allowed operation
         if ( strpos($model->allowed_permissions, $operation) === false ) return false;

@@ -26,7 +26,7 @@ class AuditManager {
     /**
      * @var array
      */
-    private $restrictedFields = [];
+    private $restrictedFields = ['updated_at', 'updated_by', 'deleted_at'];
     /**
      * @var array|mixed
      */
@@ -43,11 +43,6 @@ class AuditManager {
      */
     public function __construct (Eloquent $model) {
         $this->model = $model;
-
-        $this->hash = md5($model->getActualClassNameForMorph($model->getMorphClass()));
-        $this->restrictedFields = ['updated_at', 'updated_by', 'deleted_at'];
-        $this->auditFields = $model->auditEnabled;
-        $this->auditDisabled = $model->auditDisabled;
     }
 
     /**
@@ -55,20 +50,30 @@ class AuditManager {
      * @throws \Exception
      */
     public function process () {
+        //check if auditing is enabled at the global level
         if ( !$this->isAuditable() ) return false;
 
+        //dont enable logging for the insert operation
         if ( $this->isInsertOperation() ) return false;
 
+        //iterate through each entity and find the columns that were updated
         foreach ( $this->model->getDirty() as $attribute => $value ) {
+            //check if we have disabled audit log for the given column
             if ( !$this->checkAuditConditions($attribute) ) continue;
 
+            //number fields are usually passed on as string and needs to be checked
+            //that they are actually the same number or else at times
+            //we create audit record for same data like 2 and 2.0
             if ( !$this->checkNumberField($attribute) ) continue;
 
-            $this->largeAuditLog($attribute);
+
+            //create audit log record against the item
+            $this->recordAuditLog($attribute);
         }
     }
 
     /**
+     * if id is present on the original record then its not an insert operation
      * @return bool
      */
     private function isInsertOperation () {
@@ -78,15 +83,21 @@ class AuditManager {
     }
 
     /**
+     * Check at high level if the model in itself is auditable or not
      * @return bool
      */
     private function isAuditable () {
+        //create audit record only on production instance
+        if ( !LaravelUtility::isInstanceProduction() ) return false;
+
+        //check if the model is auditable or not
         if ( $this->model->auditable ) return true;
 
         return false;
     }
 
     /**
+     * Check individually if the given column is to be audited or not
      * @param $attribute
      * @return bool
      */
@@ -111,6 +122,8 @@ class AuditManager {
     }
 
     /**
+     * Check if the given string is a number field and the number field is same
+     * to differentiate between 2.0 and 2 so that both the records are same
      * @param $attribute
      * @return bool
      */
@@ -126,10 +139,12 @@ class AuditManager {
     }
 
     /**
+     * create record entity for the audit log logging against the user.
+     * data is in particular for the dynamo-db standard
      * @param $attribute
      * @throws \Exception
      */
-    private function largeAuditLog ($attribute) {
+    private function recordAuditLog ($attribute) {
         $currentValue = $this->convertObjectToString($this->model->getAttribute($attribute)) ? : 'null';
         $originalValue = $this->convertObjectToString($this->model->getOriginal($attribute)) ? : 'null';
 
@@ -138,7 +153,7 @@ class AuditManager {
         $time = strtotime($this->model->updated_at) * 1000 + random_int(0, 999);
 
         $item = [
-            'model_hash' => ['S' => '' . $this->hash . '-' . $this->model->id . ''],
+            'model_hash' => ['S' => '' . $this->model->class_hash . '-' . $this->model->id . ''],
             'parameter'  => ['S' => '' . $attribute . ''],
             'old_value'  => ['S' => '' . $originalValue . ''],
             'new_value'  => ['S' => '' . $currentValue . ''],
@@ -150,6 +165,7 @@ class AuditManager {
     }
 
     /**
+     * if any given element is object, then convert it into string
      * @param $str
      * @return string
      */
@@ -161,12 +177,13 @@ class AuditManager {
     }
 
     /**
-     * record the items on dynamo db
+     * once the class makes its fall, insert all pending record into dynamo-db
      */
     public function __destruct () {
         //if no records to push to audit, then leave dont call the dynamo push job
         if ( !sizeof($this->records) ) return;
 
+        //get the table onto which audit logs are to be pushed to
         $table = LaravelUtility::getProperty('dynamo.audit.table', 'dz_audit_logs');
         DynamoManager::pushMultipleToDynamo($table, $this->records);
     }
