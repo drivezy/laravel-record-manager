@@ -100,6 +100,8 @@ class DataManager {
 
         //get the default join condition
         $joinCondition = '`' . $source->base . '`.' . $source->column . ' = `' . $alias->base . '`.' . $alias->column;
+        if ( !$this->trashed )
+            $joinCondition .= ' and `' . $alias->base . '`.deleted_at is null';
 
         //check for additional join condition
         if ( $relationship->join_definition ) {
@@ -107,11 +109,6 @@ class DataManager {
             $join = str_replace('alias', '`' . $alias->base . '`', $join);
 
             $joinCondition .= ' AND ' . $join;
-        }
-
-        if ( !$this->trashed ) {
-            $join = '`' . $alias->base . '`.deleted_at is null';
-            array_push($this->restrictions, $join);
         }
 
         foreach ( $this->setQueryRestriction($relationship->reference_model, $alias->base) as $item )
