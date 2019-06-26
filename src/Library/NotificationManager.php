@@ -3,6 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Library\Notification\NotificationMailMessage;
+use Drivezy\LaravelRecordManager\Library\Notification\SMSManager;
 use Drivezy\LaravelRecordManager\Models\EmailNotification;
 use Drivezy\LaravelRecordManager\Models\Notification;
 use Drivezy\LaravelRecordManager\Models\PushNotification;
@@ -30,7 +31,7 @@ class NotificationManager extends NotificationRecipientManager {
      * @param $id
      * @return bool|mixed
      */
-    public function processNotification ($id = null) {
+    public function process ($id = null) {
         if ( !$this->notification->active ) return false;
 
         //get the data required for the given notification
@@ -42,7 +43,7 @@ class NotificationManager extends NotificationRecipientManager {
 
         $this->default_users = $this->getNotificationUsers($this->notification->active_recipients);
 
-        $this->processEmailNotifications();
+//        $this->processEmailNotifications();
         $this->processSmsNotifications();
         $this->processPushNotifications();
 
@@ -55,7 +56,7 @@ class NotificationManager extends NotificationRecipientManager {
      * @return mixed
      */
     private function prepareNotificationData ($id) {
-        if ( !( $this->notification->model_id && $id ) ) return false;
+        if ( !( $this->notification->data_model_id && $id ) ) return false;
 
         $class = $this->notification->data_model->namespace . '\\' . $this->notification->data_model->name;
 
@@ -63,8 +64,6 @@ class NotificationManager extends NotificationRecipientManager {
         $data = $class::with($includes)->find($id);
 
         if ( !$data ) return false;
-
-        if ( !$this->validateRunCondition($this->notification->pre_run_condition, $data) ) return false;
 
         if ( $this->notification->custom_data_id ) {
             $script = $this->notification->custom_data->script;
@@ -138,18 +137,18 @@ class NotificationManager extends NotificationRecipientManager {
      * send individual sms notification to the targeted users
      * @param $smsNotification
      */
-    private function processSmsNotification ($smsNotification) {
+    private function processSmsNotification (SMSNotification $smsNotification) {
         $users = $this->getTotalUsers($smsNotification->default_users, $smsNotification->active_recipients);
 
-        $content = $smsNotification->template_id ? $smsNotification->template->content : $smsNotification->content;
-        $gateway = $smsNotification->template_id ? $smsNotification->template->gateway->description : null;
+        $content = $smsNotification->sms_template_id ? $smsNotification->template->content : $smsNotification->content;
+        $gateway = $smsNotification->sms_template_id ? ( $smsNotification->template->gateway_id ? $smsNotification->template->gateway->description : null ) : null;
 
         $data = $this->notification_data; //don't remove this
         eval("\$content = \"$content\";");
 
         foreach ( $users as $user ) {
             //check if the sms to be sent is a registered user
-            if ( isset($user->id) ) {
+            if ( isset($user->id) && $user->mobile ) {
                 SMSManager::sendSmsToUser($user, $content, ['gateway' => $gateway]);
                 ++$this->sms_count;
             } elseif ( isset($user->mobile) ) {
@@ -207,6 +206,7 @@ class NotificationManager extends NotificationRecipientManager {
         ];
 
         $this->push_count += sizeof($devices);
+
         return FirebaseUtil::sendPushNotification($params);
     }
 

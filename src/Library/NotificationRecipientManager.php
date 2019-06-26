@@ -2,12 +2,15 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
+use Drivezy\LaravelAccessManager\Models\UserGroup;
 use Drivezy\LaravelAccessManager\Models\UserGroupMember;
+use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\DeviceToken;
 use Drivezy\LaravelRecordManager\Models\NotificationSubscriber;
 use Drivezy\LaravelRecordManager\Models\NotificationTrigger;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Library\DateUtil;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
 class NotificationRecipientManager {
@@ -31,6 +34,7 @@ class NotificationRecipientManager {
         $this->trigger = NotificationTrigger::create([
             'notification_id' => $this->notification->id,
             'start_time'      => DateUtil::getDateTime(),
+            'log_file'        => 'ongoing',
         ]);
     }
 
@@ -153,10 +157,10 @@ class NotificationRecipientManager {
             $columnValue = $this->notification_data[ $column->column_name ];
             if ( !$columnValue ) continue;
 
-            if ( $column->referenced_model_id == 80 )
+            if ( $column->referenced_model_id == $this->getUserClassModelId() )
                 array_push($users, self::getUserObject($columnValue));
 
-            if ( $column->referenced_model_id == 81 )
+            if ( $column->referenced_model_id == $this->getUseGroupClassModelId() )
                 $users = array_merge($users, self::getGroupMemberUsers($columnValue));
         }
 
@@ -213,7 +217,9 @@ class NotificationRecipientManager {
         $obj = self::createRawTemplateForUser();
 
         if ( isset($user->id) )
-            $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)->where('user_id', $user->id)->first();
+            $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)
+                ->where('source_type', md5(LaravelUtility::getUserModelFullQualifiedName()))
+                ->where('source_id', $user->id)->first();
 
         if ( $user && isset($subscription) ) {
             $obj->email = $subscription->email ? $user->email : null;
@@ -361,6 +367,34 @@ class NotificationRecipientManager {
             ->count();
 
         return $count ? false : true;
+    }
+
+    private function getUserClassModelId () {
+        $identifier = 'dz_notification_details.user.class.id';
+        $id = Cache::get($identifier, false);
+        if ( !$id ) {
+            $record = DataModel::where('model_hash', md5(LaravelUtility::getUserModelFullQualifiedName()))->first();
+            if ( $record ) {
+                Cache::forever($identifier, $record->id);
+                $id = $record->id;
+            }
+        }
+
+        return $id;
+    }
+
+    private function getUseGroupClassModelId () {
+        $identifier = 'dz_notification_details.user.group.class.id';
+        $id = Cache::get($identifier, false);
+        if ( !$id ) {
+            $record = DataModel::where('model_hash', md5(UserGroup::class))->first();
+            if ( $record ) {
+                Cache::forever($identifier, $record->id);
+                $id = $record->id;
+            }
+        }
+
+        return $id;
     }
 
     /**

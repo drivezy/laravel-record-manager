@@ -41,7 +41,7 @@ class SMSNotification extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function template () {
-        return $this->belongsTo(SMSTemplate::class);
+        return $this->belongsTo(SMSTemplate::class, 'sms_template_id');
     }
 
     /**
