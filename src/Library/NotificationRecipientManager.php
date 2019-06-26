@@ -308,7 +308,7 @@ class NotificationRecipientManager {
             foreach ( $pushNotification->target_devices as $device )
                 array_push($targetDevices, $device->id);
 
-            $devices = $devices->whereIn('source', $targetDevices);
+            $devices = $devices->whereIn('token_source_id', $targetDevices);
         }
 
         $devices = $devices->pluck('token')->toArray();
