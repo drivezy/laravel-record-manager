@@ -102,9 +102,9 @@ class ListManager extends DataManager {
         if ( $this->aggregation_column )
             return self::setAggregationData();
 
-        if ( $this->stats ) {
-            $this->stats = self::getStatsData();
-        }
+        if ( $this->stats )
+            return self::getStatsData();
+
 
         $sql = 'SELECT ' . $this->sql['columns'] . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
         if ( $this->query )
@@ -140,19 +140,17 @@ class ListManager extends DataManager {
 
     /**
      * Get the stats data as part of the list condition
-     * @return array
      */
     private function getStatsData () {
-//        $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
-//
-//        if ( $this->query )
-//            $sql .= ' and (' . $this->query . ')';
-//
-//        $sql .= $this->deletedQuery();
+        $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
 
-        return [
-//            'total'  => DB::select(DB::raw($sql))[0]->count,
-            'total'  => 10000,
+        if ( $this->query )
+            $sql .= ' and (' . $this->query . ')';
+
+        $sql .= $this->deletedQuery();
+
+        $this->stats = [
+            'total'  => DB::select(DB::raw($sql))[0]->count,
             'page'   => $this->page,
             'record' => $this->limit,
         ];
