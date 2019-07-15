@@ -90,7 +90,9 @@ class RecordManager extends DataManager {
                         $sourceColumn = $data->source_column_id ? $data->source_column->name : 'id';
                         $aliasColumn = $data->alias_column_id ? $data->alias_column->name : 'id';
 
-                        $restrictedQuery = '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $this->recordData->{$sourceColumn};
+                        //checking the join condition with the string or numeric and accordingly setting up the alias
+                        $sourceColumnData = is_numeric($this->recordData->{$sourceColumn}) ? $this->recordData->{$sourceColumn} : '\'' . $this->recordData->{$sourceColumn} . '\'';
+                        $restrictedQuery = '`' . strtolower($data->reference_model->name) . '`.' . $aliasColumn . ' = ' . $sourceColumnData;
 
                         //added restricted query for join condition
                         if ( $data->join_definition ) {
