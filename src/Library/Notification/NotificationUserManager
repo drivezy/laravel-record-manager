@@ -1,49 +1,39 @@
 <?php
 
-namespace Drivezy\LaravelRecordManager\Library;
+namespace Drivezy\LaravelRecordManager\Library\Notification;
 
+use Drivezy\LaravelAccessManager\Models\UserGroup;
 use Drivezy\LaravelAccessManager\Models\UserGroupMember;
-use Drivezy\LaravelRecordManager\Models\DeviceToken;
+use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\NotificationSubscriber;
-use Drivezy\LaravelRecordManager\Models\NotificationTrigger;
 use Drivezy\LaravelUtility\LaravelUtility;
-use Drivezy\LaravelUtility\Library\DateUtil;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 
-class NotificationRecipientManager {
-    protected $notification_data = null;
-    protected $notification;
-    protected $default_users;
-
-    protected $fp;
-    private $log_file;
-
-    protected $trigger;
-
-    protected $sms_count = 0;
-    protected $email_count = 0;
-    protected $push_count = 0;
-
+/**
+ * Class NotificationUserManager
+ * @package Drivezy\LaravelRecordManager\Library\Notification
+ */
+class  NotificationUserManager {
     /**
-     * NotificationRecipientManager constructor.
+     * NotificationUserManager constructor.
+     * @param array $args
      */
-    public function __construct () {
-        $this->trigger = NotificationTrigger::create([
-            'notification_id' => $this->notification->id,
-            'start_time'      => DateUtil::getDateTime(),
-        ]);
+    public function __construct ($args = []) {
+        foreach ( $args as $key => $value )
+            $this->{$key} = $value;
     }
 
     /**
      * @param $recipients
      * @return array
      */
-    protected function getNotificationUsers ($recipients) {
+    public function getNotificationUsers ($recipients) {
         if ( !$recipients ) return [];
         $users = [];
 
         foreach ( $recipients as $recipient ) {
-            if ( $this->validateRunCondition($recipient->run_condition) )
+            if ( BaseNotification::validateCondition($recipient->run_condition, $this->data) )
                 $users = array_merge($users, self::prepareNotificationRecipient($recipient));
         }
 
@@ -55,7 +45,7 @@ class NotificationRecipientManager {
      * @param $recipients
      * @return array
      */
-    protected function getTotalUsers ($default, $recipients) {
+    public function getTotalUsers ($default, $recipients) {
         $users = !is_null($recipients) ? self::getNotificationUsers($recipients) : [];
         if ( $default )
             $users = self::getUniqueUserRecords(array_merge($users, $this->default_users));
@@ -121,7 +111,7 @@ class NotificationRecipientManager {
         if ( !$recipient->query_id ) return [];
         $users = [];
 
-        $data = $this->notification_data;
+        $data = $this->data;
         if ( isset($recipient->custom_query) ) {
             $query = $recipient->custom_query->script;
             eval("\$query = \"$query\";");
@@ -150,13 +140,13 @@ class NotificationRecipientManager {
         $users = [];
 
         foreach ( $recipient->fields as $column ) {
-            $columnValue = $this->notification_data[ $column->column_name ];
+            $columnValue = $this->data[ $column->column_name ];
             if ( !$columnValue ) continue;
 
-            if ( $column->referenced_model_id == 80 )
+            if ( $column->referenced_model_id == $this->getUserClassModelId() )
                 array_push($users, self::getUserObject($columnValue));
 
-            if ( $column->referenced_model_id == 81 )
+            if ( $column->referenced_model_id == $this->getUseGroupClassModelId() )
                 $users = array_merge($users, self::getGroupMemberUsers($columnValue));
         }
 
@@ -168,7 +158,7 @@ class NotificationRecipientManager {
      * @param $recipient
      * @return array
      */
-    protected function getUserFromDirectInsertions ($recipient) {
+    public function getUserFromDirectInsertions ($recipient) {
         if ( !$recipient->direct_users ) return [];
 
         $users = [];
@@ -213,7 +203,9 @@ class NotificationRecipientManager {
         $obj = self::createRawTemplateForUser();
 
         if ( isset($user->id) )
-            $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)->where('user_id', $user->id)->first();
+            $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)
+                ->where('source_type', md5(LaravelUtility::getUserModelFullQualifiedName()))
+                ->where('source_id', $user->id)->first();
 
         if ( $user && isset($subscription) ) {
             $obj->email = $subscription->email ? $user->email : null;
@@ -286,93 +278,36 @@ class NotificationRecipientManager {
     }
 
     /**
-     * Get registered device against push notification
-     * @param $users
-     * @param $pushNotification
      * @return mixed
      */
-    protected function getPushNotificationDevices ($users, $pushNotification) {
-        $data = $this->notification_data;
-
-        $arr = [];
-        foreach ( $users as $user ) {
-            if ( isset($user->id) ) {
-                if ( !$this->validateSubscription($user, 'push') ) continue;
-                array_push($arr, $user->id);
+    private function getUserClassModelId () {
+        $identifier = 'dz_notification_details.user.class.id';
+        $id = Cache::get($identifier, false);
+        if ( !$id ) {
+            $record = DataModel::where('model_hash', md5(LaravelUtility::getUserModelFullQualifiedName()))->first();
+            if ( $record ) {
+                Cache::forever($identifier, $record->id);
+                $id = $record->id;
             }
         }
 
-        $devices = DeviceToken::whereIn('user_id', $arr);
-        if ( $pushNotification->target_devices ) {
-            $targetDevices = [];
-            foreach ( $pushNotification->target_devices as $device )
-                array_push($targetDevices, $device->id);
+        return $id;
+    }
 
-            $devices = $devices->whereIn('source', $targetDevices);
-        }
-
-        $devices = $devices->pluck('token')->toArray();
-        if ( !$pushNotification->query ) return $devices;
-
-        if ( $pushNotification->query_id ) {
-            $query = $pushNotification->custom_query->script;
-            eval("\$query = \"$query\";");
-
-            $rows = DB::select(DB::raw($query));
-            foreach ( $rows as $row ) {
-                if ( !in_array($row->token, $devices) )
-                    array_push($devices, self::getUserObject($row->token));
+    /**
+     * @return mixed
+     */
+    private function getUseGroupClassModelId () {
+        $identifier = 'dz_notification_details.user.group.class.id';
+        $id = Cache::get($identifier, false);
+        if ( !$id ) {
+            $record = DataModel::where('model_hash', md5(UserGroup::class))->first();
+            if ( $record ) {
+                Cache::forever($identifier, $record->id);
+                $id = $record->id;
             }
         }
 
-        return $devices;
-    }
-
-    /**
-     * This would check if the given condition is correct or not
-     * @param string $condition
-     * @param object $data
-     * @return bool
-     */
-    protected function validateRunCondition ($condition, $data = null) {
-        if ( !( $condition && $condition->script ) ) return true;
-
-        $answer = false;
-        $data = $data ? : $this->notification_data;
-
-        eval($condition->script);
-
-        return $answer;
-    }
-
-    /**
-     * validate if the user has un-subscribed against the given subscription
-     * @param $user
-     * @param $type
-     * @return bool
-     */
-    protected function validateSubscription ($user, $type) {
-        if ( !isset($user->id) ) return true;
-
-        $count = NotificationSubscriber::where('notification_id', $this->notification->id)
-            ->where('source_type', md5(LaravelUtility::getUserModelFullQualifiedName()))
-            ->where('source_id', $user->id)
-            ->where($type, false)
-            ->count();
-
-        return $count ? false : true;
-    }
-
-    /**
-     * This would sum up the entire notification triggers
-     */
-    public function __destruct () {
-        $this->trigger->sms_notifications = $this->sms_count;
-        $this->trigger->push_notifications = $this->push_count;
-        $this->trigger->email_notifications = $this->email_count;
-
-        $this->trigger->log_file = 'test';
-        $this->trigger->end_time = DateUtil::getDateTime();
-        $this->trigger->save();
+        return $id;
     }
 }

@@ -13,7 +13,7 @@ class NotificationSubscriber extends BaseModel {
     /**
      * @var string
      */
-    protected $table = 'dz_notification_subscribers';
+    protected $table = 'dz_notification_subscriptions';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

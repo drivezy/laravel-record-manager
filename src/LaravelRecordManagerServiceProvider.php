@@ -7,7 +7,20 @@ use Drivezy\LaravelRecordManager\Commands\ModelScannerCommand;
 use Drivezy\LaravelRecordManager\Commands\ObserverEventCommand;
 use Illuminate\Support\ServiceProvider;
 
+/**
+ * Class LaravelRecordManagerServiceProvider
+ * @package Drivezy\LaravelRecordManager
+ */
 class LaravelRecordManagerServiceProvider extends ServiceProvider {
+
+    /**
+     * @var array
+     */
+    protected $listen = [
+        'Illuminate\Mail\Events\MessageSent' => [
+            'Drivezy\LaravelRecordManager\Library\Listeners\MailMessageListener',
+        ],
+    ];
 
     /**
      * Bootstrap services.

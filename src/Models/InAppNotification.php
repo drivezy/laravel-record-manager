@@ -2,19 +2,17 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
-use Drivezy\LaravelRecordManager\Observers\NotificationRecipientObserver;
+use Drivezy\LaravelRecordManager\Observers\InAppNotificationObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 
 /**
- * Class SMSNotification
- * @package Drivezy\LaravelRecordManager\Models
+ * Class InAppNotification
  */
-class SMSNotification extends BaseModel {
-
+class InAppNotification extends BaseModel {
     /**
      * @var string
      */
-    protected $table = 'dz_sms_notifications';
+    protected $table = 'dz_inapp_notifications';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -40,13 +38,6 @@ class SMSNotification extends BaseModel {
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function template () {
-        return $this->belongsTo(SMSTemplate::class, 'sms_template_id');
-    }
-
-    /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
-     */
     public function run_condition () {
         return $this->belongsTo(SystemScript::class);
     }
@@ -56,6 +47,7 @@ class SMSNotification extends BaseModel {
      */
     public static function boot () {
         parent::boot();
-        self::observe(new NotificationRecipientObserver());
+        self::observe(new InAppNotificationObserver());
     }
 }
+

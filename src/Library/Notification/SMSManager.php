@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivezy\LaravelRecordManager\Library;
+namespace Drivezy\LaravelRecordManager\Library\Notification;
 
 use Drivezy\LaravelRecordManager\Models\SMSMessage;
 use Drivezy\LaravelUtility\LaravelUtility;
@@ -25,7 +25,10 @@ class SMSManager {
         $message = self::setMessage($user->mobile, $content, $attributes);
 
         //find the gateway through which sms is to be processed
-        $gateway = isset($attributes['gateway']) ? $attributes['gateway'] : LaravelUtility::getProperty('sms.default.gateway');
+        $gateway = isset($attributes['gateway']) ? $attributes['gateway'] : LaravelUtility::getProperty('sms.default.gateway', null);
+
+        //if no gateway is defined use the file messaging
+        $gateway = $gateway ? : FileSMSMessaging::class;
 
         ( new $gateway($message) )->process();
     }

@@ -2,24 +2,24 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
-use Drivezy\LaravelRecordManager\Observers\NotificationTriggerObserver;
+use Drivezy\LaravelRecordManager\Observers\MailRecipientObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 
 /**
- * Class NotificationTrigger
+ * Class MailRecipient
  * @package Drivezy\LaravelRecordManager\Models
  */
-class NotificationTrigger extends BaseModel {
+class MailRecipient extends BaseModel {
     /**
      * @var string
      */
-    protected $table = 'dz_notification_triggers';
+    protected $table = 'dz_mail_recipients';
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function notification () {
-        return $this->belongsTo(Notification::class);
+    public function mail () {
+        return $this->belongsTo(MailLog::class);
     }
 
     /**
@@ -27,6 +27,6 @@ class NotificationTrigger extends BaseModel {
      */
     public static function boot () {
         parent::boot();
-        self::observe(new NotificationTriggerObserver());
+        self::observe(new MailRecipientObserver());
     }
 }
