@@ -16,7 +16,8 @@ class ListManager extends DataManager {
 
     /**
      * Get the data from the system and then return the result as list
-     * @return array
+     * @param null $id
+     * @return array|void
      */
     public function process ($id = null) {
         //validate if the cache is valid or not
