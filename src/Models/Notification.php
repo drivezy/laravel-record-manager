@@ -54,42 +54,56 @@ class Notification extends BaseModel {
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function sms_notifications () {
-        return $this->hasMany(SMSNotification::class, 'source_id')->where('source_type', md5(self::class));
+        return $this->hasMany(SMSNotification::class, 'notification_id');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function active_sms_notifications () {
-        return $this->hasMany(SMSNotification::class, 'source_id')->where('source_type', md5(self::class))->where('active', true);
+        return $this->hasMany(SMSNotification::class, 'notification_id')->where('active', true);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function email_notifications () {
-        return $this->hasMany(EmailNotification::class, 'source_id')->where('source_type', md5(self::class));
+        return $this->hasMany(EmailNotification::class, 'notification_id');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function active_email_notifications () {
-        return $this->hasMany(EmailNotification::class, 'source_id')->where('source_type', md5(self::class))->where('active', true);
+        return $this->hasMany(EmailNotification::class, 'notification_id')->where('active', true);
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function push_notifications () {
-        return $this->hasMany(PushNotification::class, 'source_id')->where('source_type', md5(self::class));
+        return $this->hasMany(PushNotification::class, 'notification_id');
     }
 
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function active_push_notifications () {
-        return $this->hasMany(PushNotification::class, 'source_id')->where('source_type', md5(self::class))->where('active', true);
+        return $this->hasMany(PushNotification::class, 'notification_id')->where('active', true);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function inapp_notifications () {
+        return $this->hasMany(InAppNotification::class, 'notification_id');
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function active_inapp_notifications () {
+        return $this->hasMany(InAppNotification::class, 'notification_id')->where('active', true);
     }
 
     /**

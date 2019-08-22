@@ -29,5 +29,4 @@ class NotificationTrigger extends BaseModel {
         parent::boot();
         self::observe(new NotificationTriggerObserver());
     }
-
 }

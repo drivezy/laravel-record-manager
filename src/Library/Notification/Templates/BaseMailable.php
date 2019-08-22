@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivezy\LaravelRecordManager\Library\Notification;
+namespace Drivezy\LaravelRecordManager\Library\Notification\Templates;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;

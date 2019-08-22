@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivezy\LaravelRecordManager\Library\Notification;
+namespace Drivezy\LaravelRecordManager\Library\Notification\Templates;
 
 /**
  * Class NotificationMailMessage

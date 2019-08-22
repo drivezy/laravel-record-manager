@@ -1,6 +1,6 @@
 <?php
 
-namespace Drivezy\LaravelRecordManager\Library\Notification;
+namespace Drivezy\LaravelRecordManager\Library\Notification\Templates;
 
 use Drivezy\LaravelRecordManager\Models\SMSMessage;
 use Illuminate\Support\Facades\Log;
