@@ -16,15 +16,15 @@ class CreateDzBusinessRulesTable extends Migration {
         Schema::create('dz_business_rules', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('name');
             $table->string('description')->nullable();
 
-            $table->unsignedInteger('model_id')->nullable();
-            $table->unsignedInteger('execution_type_id')->nullable();
-            $table->unsignedInteger('script_id')->nullable();
-            $table->unsignedInteger('filter_condition_id')->nullable();
+            $table->unsignedBigInteger('model_id')->nullable();
+            $table->unsignedBigInteger('execution_type_id')->nullable();
+            $table->unsignedBigInteger('script_id')->nullable();
+            $table->unsignedBigInteger('filter_condition_id')->nullable();
 
             $table->string('model_hash')->nullable();
 
@@ -36,8 +36,8 @@ class CreateDzBusinessRulesTable extends Migration {
             $table->boolean('active')->default(true);
             $table->integer('order')->default(100);
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('model_id')->references('id')->on('dz_model_details');
             $table->foreign('script_id')->references('id')->on('dz_system_scripts');

@@ -15,18 +15,18 @@ class AddDzDeviceTokensTable extends Migration {
         Schema::create('dz_device_tokens', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
-            $table->unsignedInteger('user_id')->nullable();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('user_id')->nullable();
 
             $table->string('token');
             $table->dateTime('last_access_time')->nullable();
             $table->string('version')->nullable();
 
-            $table->unsignedInteger('token_source_id')->nullable();
-            $table->unsignedInteger('platform_id')->nullable();
+            $table->unsignedBigInteger('token_source_id')->nullable();
+            $table->unsignedBigInteger('platform_id')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('user_id')->references('id')->on($userTable);
 

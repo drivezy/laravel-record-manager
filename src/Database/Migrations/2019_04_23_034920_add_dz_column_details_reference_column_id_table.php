@@ -12,7 +12,7 @@ class AddDzColumnDetailsReferenceColumnIdTable extends Migration {
      */
     public function up () {
         Schema::table('dz_column_details', function (Blueprint $table) {
-            $table->unsignedInteger('reference_column_id')->nullable();
+            $table->unsignedBigInteger('reference_column_id')->nullable();
             $table->foreign('reference_column_id')->references('id')->on('dz_column_details');
         });
     }

@@ -17,12 +17,12 @@ class CreateDzModelDetailsTable extends Migration {
             $userTable = LaravelUtility::getUserTable();
             $routeTable = ( new Route() )->getTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('name');
             $table->string('description')->nullable();
 
-            $table->unsignedInteger('route_id')->nullable();
+            $table->unsignedBigInteger('route_id')->nullable();
 
             $table->string('namespace')->nullable();
             $table->string('table_name')->nullable();
@@ -32,8 +32,8 @@ class CreateDzModelDetailsTable extends Migration {
             $table->string('model_hash');
             $table->string('route_name')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('route_id')->references('id')->on($routeTable);
             $table->foreign('created_by')->references('id')->on($userTable);

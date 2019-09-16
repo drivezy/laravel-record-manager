@@ -18,19 +18,19 @@ class CreateDzSmsNotificationsTable extends Migration {
         Schema::create('dz_sms_notifications', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('name');
 
-            $table->unsignedInteger('notification_id')->nullable();
-            $table->unsignedInteger('sms_template_id')->nullable();
-            $table->unsignedInteger('run_condition_id')->nullable();
+            $table->unsignedBigInteger('notification_id')->nullable();
+            $table->unsignedBigInteger('sms_template_id')->nullable();
+            $table->unsignedBigInteger('run_condition_id')->nullable();
 
             $table->boolean('default_users', true);
             $table->boolean('active', false);
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('notification_id')->references('id')->on('dz_notification_details');
             $table->foreign('sms_template_id')->references('id')->on('dz_sms_templates');

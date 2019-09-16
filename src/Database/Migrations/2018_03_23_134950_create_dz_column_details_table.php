@@ -15,10 +15,10 @@ class CreateDzColumnDetailsTable extends Migration {
         Schema::create('dz_column_details', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('source_type')->nullable();
-            $table->unsignedInteger('source_id')->nullable();
+            $table->unsignedBigInteger('source_id')->nullable();
 
             $table->string('name');
             $table->string('display_name');
@@ -28,10 +28,10 @@ class CreateDzColumnDetailsTable extends Migration {
             $table->boolean('required')->default(true);
             $table->boolean('nullable')->default(true);
 
-            $table->unsignedInteger('column_type_id')->nullable();
+            $table->unsignedBigInteger('column_type_id')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('column_type_id')->references('id')->on('dz_column_definitions');
 

@@ -12,7 +12,7 @@ class AddDzObserverActionsObserverRuleIdTable extends Migration {
      */
     public function up () {
         Schema::table('dz_observer_actions', function (Blueprint $table) {
-            $table->unsignedInteger('observer_rule_id')->nullable();
+            $table->unsignedBigInteger('observer_rule_id')->nullable();
             $table->foreign('observer_rule_id')->references('id')->on('dz_observer_rules');
         });
     }
