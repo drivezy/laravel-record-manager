@@ -5,7 +5,7 @@ namespace {{app}}\Observers\{{namespace}};
 use Drivezy\LaravelUtility\Observers\BaseObserver;
 
 /**
- * Class {{name}}
+ * Class {{name}}Observer
  * @package {{app}}\Observers\{{namespace}}
  */
  class {{name}}Observer extends BaseObserver {
