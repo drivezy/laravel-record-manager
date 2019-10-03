@@ -23,8 +23,8 @@ class AddDzMailRecipientsTable extends Migration {
             $table->string('name')->nullable();
             $table->string('email_id')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('mail_id')->references('id')->on('dz_mail_logs');
 

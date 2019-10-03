@@ -91,7 +91,7 @@ class CodeGeneratorCommand extends Command {
         $template = file_get_contents(__DIR__ . '/../Templates/MigrationTemplate.stub');
         unlink($migrationFile);
 
-        $contents = str_replace('$table->increments(\'id\');', $template, $contents);
+        $contents = str_replace('$table->bigIncrements(\'id\');', $template, $contents);
         file_put_contents($migrationFile, $contents);
 
         $this->info('Created Migration File : ' . str_replace(database_path(), '', $migrationFile));

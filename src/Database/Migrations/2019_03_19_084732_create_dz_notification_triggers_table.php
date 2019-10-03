@@ -15,9 +15,9 @@ class CreateDzNotificationTriggersTable extends Migration {
         Schema::create('dz_notification_triggers', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
-            $table->unsignedInteger('notification_id')->nullable();
+            $table->unsignedBigInteger('notification_id')->nullable();
 
             $table->dateTime('start_time')->nullable();
             $table->dateTime('end_time')->nullable();
@@ -28,8 +28,8 @@ class CreateDzNotificationTriggersTable extends Migration {
 
             $table->string('log_file');
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('notification_id')->references('id')->on('dz_notification_details');
 

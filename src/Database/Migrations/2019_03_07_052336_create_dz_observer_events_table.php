@@ -18,17 +18,17 @@ class CreateDzObserverEventsTable extends Migration {
         Schema::create('dz_observer_events', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('model_hash')->nullable();
-            $table->unsignedInteger('record_id');
+            $table->unsignedBigInteger('record_id');
 
             $table->longText('data')->nullable();
 
             $table->dateTime('processed_at')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('created_by')->references('id')->on($userTable);
             $table->foreign('updated_by')->references('id')->on($userTable);

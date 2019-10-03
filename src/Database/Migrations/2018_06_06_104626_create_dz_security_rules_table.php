@@ -15,23 +15,23 @@ class CreateDzSecurityRulesTable extends Migration {
         Schema::create('dz_security_rules', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('name');
             $table->string('description')->nullable();
 
             $table->string('source_type')->nullable();
-            $table->unsignedInteger('source_id')->nullable();
+            $table->unsignedBigInteger('source_id')->nullable();
 
             $table->char('operation', 1)->nullable();
             $table->string('filter_condition')->nullable();
 
-            $table->unsignedInteger('script_id')->nullable();
+            $table->unsignedBigInteger('script_id')->nullable();
 
             $table->boolean('active')->default(true);
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('script_id')->references('id')->on('dz_system_scripts');
 

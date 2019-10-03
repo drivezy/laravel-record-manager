@@ -15,9 +15,9 @@ class CreateDzSmsTriggersTable extends Migration {
         Schema::create('dz_sms_messages', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
-            $table->unsignedInteger('user_id')->nullable();
+            $table->unsignedBigInteger('user_id')->nullable();
 
             $table->string('mobile');
             $table->string('content', 1024)->nullable();
@@ -28,10 +28,10 @@ class CreateDzSmsTriggersTable extends Migration {
             $table->string('tracking_code')->nullable();
 
             $table->string('source_type')->nullable();
-            $table->unsignedInteger('source_id')->nullable();
+            $table->unsignedBigInteger('source_id')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('user_id')->references('id')->on($userTable);
 

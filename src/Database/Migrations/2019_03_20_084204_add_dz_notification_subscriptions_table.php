@@ -15,20 +15,20 @@ class AddDzNotificationSubscriptionsTable extends Migration {
         Schema::create('dz_notification_subscriptions', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
-            $table->unsignedInteger('notification_id')->nullable();
+            $table->unsignedBigInteger('notification_id')->nullable();
 
             $table->string('source_type')->nullable();
-            $table->unsignedInteger('source_id')->nullable();
+            $table->unsignedBigInteger('source_id')->nullable();
 
             $table->boolean('email', false);
             $table->boolean('sms', false);
             $table->boolean('push', false);
 
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('notification_id')->references('id')->on('dz_notification_details');
 

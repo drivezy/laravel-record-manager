@@ -24,21 +24,21 @@ class CreateDzModelRelationshipsTable extends Migration {
             $modelColumn = ( new Column() )->getTable();
             $relationshipTable = ( new LookupValue() )->getTable();
 
-            $table->increments('id');
-            $table->unsignedInteger('model_id')->nullable();
+            $table->bigIncrements('id');
+            $table->unsignedBigInteger('model_id')->nullable();
 
             $table->string('name');
             $table->string('display_name');
             $table->string('description')->nullable();
             $table->string('join_definition')->nullable();
 
-            $table->unsignedInteger('reference_type_id')->nullable();
-            $table->unsignedInteger('reference_model_id')->nullable();
-            $table->unsignedInteger('source_column_id')->nullable();
-            $table->unsignedInteger('alias_column_id')->nullable();
+            $table->unsignedBigInteger('reference_type_id')->nullable();
+            $table->unsignedBigInteger('reference_model_id')->nullable();
+            $table->unsignedBigInteger('source_column_id')->nullable();
+            $table->unsignedBigInteger('alias_column_id')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('model_id')->references('id')->on($modelTable);
 

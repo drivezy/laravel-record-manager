@@ -15,15 +15,15 @@ class CreateDzSmsTemplatesTable extends Migration {
         Schema::create('dz_sms_templates', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
             $table->string('name');
             $table->string('identifier')->unique();
 
             $table->text('content');
-            $table->unsignedInteger('gateway_id')->nullable();
+            $table->unsignedBigInteger('gateway_id')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('gateway_id')->references('id')->on('dz_lookup_values');
 

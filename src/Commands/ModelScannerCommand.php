@@ -6,7 +6,8 @@ use Drivezy\LaravelAccessManager\RouteManager;
 use Drivezy\LaravelRecordManager\Library\ModelScanner;
 use Illuminate\Console\Command;
 
-class ModelScannerCommand extends Command {
+class ModelScannerCommand extends Command
+{
 
     /**
      * The name and signature of the console command.
@@ -27,7 +28,8 @@ class ModelScannerCommand extends Command {
      *
      * @return void
      */
-    public function __construct () {
+    public function __construct ()
+    {
         parent::__construct();
     }
 
@@ -36,15 +38,21 @@ class ModelScannerCommand extends Command {
      *
      * @return mixed
      */
-    public function handle () {
+    public function handle ()
+    {
         //get the path where drivezy packages are installed
         $drivezyPackagePath = dirname(__DIR__, 3);
 
-        //get all models defined under the required
-        ModelScanner::loadModels($drivezyPackagePath . '/laravel-utility/src/Models', 'Drivezy\LaravelUtility\Models');
-        ModelScanner::loadModels($drivezyPackagePath . '/laravel-access-manager/src/Models', 'Drivezy\LaravelAccessManager\Models');
-        ModelScanner::loadModels($drivezyPackagePath . '/laravel-record-manager/src/Models', 'Drivezy\LaravelRecordManager\Models');
-        ModelScanner::loadModels($drivezyPackagePath . '/laravel-admin/src/Models', 'Drivezy\LaravelAdmin\Models');
+        //find all directories that are part of the drivezy packages
+        $packages = array_diff(scandir($drivezyPackagePath), array('..', '.'));
+        foreach ( $packages as $package ) {
+            //get the namespace of the given package
+            $namespace = implode('', array_map('ucfirst', explode('-', $package)));
+
+            echo 'processing Drivezy\\' . $namespace . '\\Models' . PHP_EOL;
+            ModelScanner::loadModels($drivezyPackagePath . '/' . $package . '/src/Models', 'Drivezy\\' . $namespace . '\\Models');
+
+        }
 
         //scan and reload all the models defined in the system
         ModelScanner::scanModels();

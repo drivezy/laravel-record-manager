@@ -1,27 +1,30 @@
 {
-  "name": "drivezy/laravel-record-manager",
-  "description": "To efficiently manage records & its audits",
-  "type": "library",
-  "license": "MIT",
-  "authors": [
-    {
-      "name": "Hemant Kumar Sah",
-      "email": "hemantanshu@gmail.com"
+    "name": "drivezy/laravel-record-manager",
+    "description": "To efficiently manage records & its audits",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Hemant Kumar Sah",
+            "email": "hemantanshu@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {
+        "doctrine/dbal": "^2.9",
+        "drivezy/laravel-access-manager": "^1.0",
+        "drivezy/laravel-utility": "^1.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Drivezy\\LaravelRecordManager\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Drivezy\\LaravelRecordManager\\LaravelRecordManagerServiceProvider"
+            ]
+        }
     }
-  ],
-  "minimum-stability": "stable",
-  "require-dev": {
-  },
-  "autoload": {
-    "psr-4": {
-      "Drivezy\\LaravelRecordManager\\": "src/"
-    }
-  },
-  "extra": {
-    "laravel": {
-      "providers": [
-        "Drivezy\\LaravelRecordManager\\LaravelRecordManagerServiceProvider"
-      ]
-    }
-  }
 }

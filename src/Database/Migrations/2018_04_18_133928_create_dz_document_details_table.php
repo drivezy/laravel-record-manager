@@ -19,19 +19,19 @@ class CreateDzDocumentDetailsTable extends Migration {
             $userTable = LaravelUtility::getUserTable();
             $lookupTable = ( new LookupValue() )->getTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('source_type')->nullable();
-            $table->unsignedInteger('source_id')->nullable();
+            $table->unsignedBigInteger('source_id')->nullable();
 
-            $table->unsignedInteger('document_type_id')->nullable();
+            $table->unsignedBigInteger('document_type_id')->nullable();
             $table->string('document_url');
 
             $table->boolean('restricted_access')->default(false);
             $table->date('expiry_date')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('document_type_id')->references('id')->on($lookupTable);
 

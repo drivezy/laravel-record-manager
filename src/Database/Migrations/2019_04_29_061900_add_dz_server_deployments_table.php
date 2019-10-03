@@ -15,7 +15,7 @@ class AddDzServerDeploymentsTable extends Migration {
         Schema::create('dz_server_deployments', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->increments('id');
+            $table->bigIncrements('id');
 
             $table->string('name')->nullable();
 
@@ -34,8 +34,8 @@ class AddDzServerDeploymentsTable extends Migration {
             $table->boolean('active')->default(true);
             $table->dateTime('last_ping_time')->nullable();
 
-            $table->unsignedInteger('created_by')->nullable();
-            $table->unsignedInteger('updated_by')->nullable();
+            $table->unsignedBigInteger('created_by')->nullable();
+            $table->unsignedBigInteger('updated_by')->nullable();
 
             $table->foreign('created_by')->references('id')->on($userTable);
             $table->foreign('updated_by')->references('id')->on($userTable);
