@@ -3,15 +3,16 @@
 namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelUtility\Library\EventQueueManager;
 use Illuminate\Http\Request as Request;
 use Illuminate\Support\Facades\Auth;
-use Request as Input;
 
 /**
  * Class RecordManagement
  * @package JRApp\Libraries
  */
-class RecordManagement {
+class RecordManagement
+{
     public static $model;
     public static $dictionary = null;
 
@@ -19,7 +20,8 @@ class RecordManagement {
      * @param $request
      * @return array
      */
-    public static function index ($request) {
+    public static function index ($request)
+    {
         $model = self::$model;
 
         if ( $request->has('export') && $request->get('export') ) {
@@ -40,7 +42,8 @@ class RecordManagement {
      * @param Request $request
      * @return mixed
      */
-    public static function store (Request $request) {
+    public static function store (Request $request)
+    {
         $model = self::$model;
         $data = $model::create($request->except('access_token'));
 
@@ -51,7 +54,8 @@ class RecordManagement {
      * @param $id
      * @return mixed
      */
-    public static function show ($id) {
+    public static function show ($id)
+    {
         $model = self::$model;
 
         $includes = self::getQueryInclusions();
@@ -67,7 +71,8 @@ class RecordManagement {
      * @param $id
      * @return null
      */
-    public static function update (Request $request, $id) {
+    public static function update (Request $request, $id)
+    {
         $model = self::$model;
 
         $data = $model::find($id);
@@ -87,7 +92,8 @@ class RecordManagement {
      * @param $id
      * @return mixed
      */
-    public static function destroy ($id) {
+    public static function destroy ($id)
+    {
         $model = self::$model;
 
         $data = $model::find($id);
@@ -102,7 +108,8 @@ class RecordManagement {
      * @param $query
      * @return array
      */
-    public static function getEncodedQuery ($query) {
+    public static function getEncodedQuery ($query)
+    {
         if ( !$query ) return array('query' => '1 < ?', 'value' => array('2'));
 
         $splits = explode(',', $query);
@@ -126,7 +133,8 @@ class RecordManagement {
      * @param $formQuery
      * @return array
      */
-    public static function getRecordDataWithQuery ($query, $formQuery) {
+    public static function getRecordDataWithQuery ($query, $formQuery)
+    {
         $encodedQuery = self::getEncodedQuery($formQuery);
         $query = $query->whereRaw($encodedQuery['query'], $encodedQuery['value']);
 
@@ -137,31 +145,32 @@ class RecordManagement {
      * @param $query
      * @return array
      */
-    public static function getRecordData ($query) {
+    public static function getRecordData ($query)
+    {
         $response = [];
         $query = self::addQueryParams($query);
 
-        if ( Input::has('aggregation_column') )
+        if ( \Illuminate\Support\Facades\Request::has('aggregation_column') )
             return self::handleAggregation($query);
 
         $includes = self::getQueryInclusions();
-        $limit = Input::has('limit') ? intval(Input::get('limit')) : 20;
+        $limit = \Illuminate\Support\Facades\Request::has('limit') ? intval(\Illuminate\Support\Facades\Request::get('limit')) : 20;
 
-        $offset = Input::has('offset') ? intval(Input::get('offset')) : 0;
-        $offset = Input::has('page') ? ( Input::get('page') - 1 ) * $limit : $offset;
+        $offset = \Illuminate\Support\Facades\Request::has('offset') ? intval(\Illuminate\Support\Facades\Request::get('offset')) : 0;
+        $offset = \Illuminate\Support\Facades\Request::has('page') ? ( \Illuminate\Support\Facades\Request::get('page') - 1 ) * $limit : $offset;
         $offset = $offset > 0 ? $offset : 0;
 
-        if ( Input::has('order') ) {
-            $splits = explode(',', Input::get('order'));
-            $order = Input::has('order') ? $splits[0] : 'id';
+        if ( \Illuminate\Support\Facades\Request::has('order') ) {
+            $splits = explode(',', \Illuminate\Support\Facades\Request::get('order'));
+            $order = \Illuminate\Support\Facades\Request::has('order') ? $splits[0] : 'id';
             $orderingOrder = isset($splits[1]) ? $splits[1] : 'ASC';
         } else {
             $order = 'id';
             $orderingOrder = 'ASC';
         }
 
-        if ( Input::has('stats') ) {
-            if ( Input::get('stats') == 'true' ) {
+        if ( \Illuminate\Support\Facades\Request::has('stats') ) {
+            if ( \Illuminate\Support\Facades\Request::get('stats') == 'true' ) {
                 $count = $query->count();
                 $stats = array('records' => $count, 'count' => $limit, 'offset' => $offset);
                 $response['stats'] = $stats;
@@ -182,7 +191,8 @@ class RecordManagement {
     /**
      * @return mixed
      */
-    private static function getDictionaryStarter () {
+    private static function getDictionaryStarter ()
+    {
         $splits = explode('\\', self::$model);
 
         return end($splits);
@@ -192,15 +202,14 @@ class RecordManagement {
      * @param $request
      * @return array
      */
-    private static function setRequestForExport ($request) {
+    private static function setRequestForExport ($request)
+    {
         $data['payload'] = $request->only('query', 'in', 'not_in', 'export_columns', 'export_comment', 'export_name', 'order');
         $data['user_id'] = Auth::id();
         $data['model'] = self::$model;
 
 
-        return ["success" => true, "response" => Utility::setEvent('export.query.data', serialize($data), [
-            'source' => 'USER_REQ_' . Auth::id(),
-        ])];
+        return ["success" => true, "response" => EventQueueManager::setEvent('export.query.data', serialize($data))];
     }
 
     /**
@@ -208,7 +217,8 @@ class RecordManagement {
      * @param $value
      * @return int|null
      */
-    public static function convertToDbValue ($value) {
+    public static function convertToDbValue ($value)
+    {
         if ( is_null($value) ) {
             $val = null;
         } elseif ( $value === 0 || $value === "0" || $value === false || $value === "false" ) {
@@ -224,8 +234,9 @@ class RecordManagement {
     /**
      * @return array
      */
-    private static function getQueryInclusions () {
-        $includes = Input::get('includes');
+    private static function getQueryInclusions ()
+    {
+        $includes = \Illuminate\Support\Facades\Request::get('includes');
         if ( !$includes ) return [];
 
         if ( $includes == 'null' ) return [];
@@ -237,24 +248,25 @@ class RecordManagement {
      * @param $query
      * @return mixed
      */
-    private static function addQueryParams ($query) {
-        if ( Input::has('scopes') ) {
-            $scopes = explode(',', Input::get('scopes'));
+    private static function addQueryParams ($query)
+    {
+        if ( \Illuminate\Support\Facades\Request::has('scopes') ) {
+            $scopes = explode(',', \Illuminate\Support\Facades\Request::get('scopes'));
             foreach ( $scopes as $scope ) {
                 $query->{$scope}();
             }
         }
 
-        if ( Input::has('in') ) {
-            $ins = explode("and", Input::get('in'));
+        if ( \Illuminate\Support\Facades\Request::has('in') ) {
+            $ins = explode("and", \Illuminate\Support\Facades\Request::get('in'));
             foreach ( $ins as $in ) {
                 $x = explode('=', $in);
                 $query->whereIn(trim($x[0]), explode(',', trim($x[1])));
             }
         }
 
-        if ( Input::has('not_in') ) {
-            $ins = explode("and", Input::get('not_in'));
+        if ( \Illuminate\Support\Facades\Request::has('not_in') ) {
+            $ins = explode("and", \Illuminate\Support\Facades\Request::get('not_in'));
             foreach ( $ins as $in ) {
                 $x = explode('=', $in);
                 $query->whereNotIn(trim($x[0]), explode(',', trim($x[1])));
@@ -268,8 +280,9 @@ class RecordManagement {
      * @param $query
      * @return mixed
      */
-    private static function handleAggregation ($query) {
-        $response['response'] = $query->{Input::get('aggregation_operator')}(Input::get('aggregation_column'));
+    private static function handleAggregation ($query)
+    {
+        $response['response'] = $query->{\Illuminate\Support\Facades\Request::get('aggregation_operator')}(\Illuminate\Support\Facades\Request::get('aggregation_column'));
 
         return $response;
     }
@@ -279,7 +292,8 @@ class RecordManagement {
      * @param $sourceId
      * @return array
      */
-    public static function getSourceColumnValue ($sourceType, $sourceId) {
+    public static function getSourceColumnValue ($sourceType, $sourceId)
+    {
         //get the source against which hash is present
         $model = DataModel::where('model_hash', $sourceType)->first();
         //iterate only when the model is present

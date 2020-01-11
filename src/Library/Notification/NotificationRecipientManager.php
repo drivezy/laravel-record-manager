@@ -2,16 +2,8 @@
 
 namespace Drivezy\LaravelRecordManager\Library\Notification;
 
-use Drivezy\LaravelAccessManager\Models\UserGroup;
-use Drivezy\LaravelAccessManager\Models\UserGroupMember;
-use Drivezy\LaravelRecordManager\Models\DataModel;
-use Drivezy\LaravelRecordManager\Models\DeviceToken;
-use Drivezy\LaravelRecordManager\Models\NotificationSubscriber;
 use Drivezy\LaravelRecordManager\Models\NotificationTrigger;
-use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Library\DateUtil;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class NotificationRecipientManager {
     protected $notification_data = null;

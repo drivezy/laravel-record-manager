@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
 use Message;
 
-class RecordManager extends DataManager {
+class RecordManager extends DataManager
+{
     private $detailArray = [];
     private $recordData = null;
 
@@ -21,7 +22,8 @@ class RecordManager extends DataManager {
      * @param $id
      * @return array
      */
-    public function process ($id = null) {
+    public function process ($id = null)
+    {
         $className = $this->model->namespace . '\\' . $this->model->name;
         $this->recordData = $className::find($id);
 
@@ -52,7 +54,8 @@ class RecordManager extends DataManager {
      * Differentiate the multiple includes to single and tabs and create data accordingly
      * @return bool
      */
-    private function segregateIncludes () {
+    private function segregateIncludes ()
+    {
         if ( !$this->includes ) return true;
 
         $includes = explode(',', $this->includes);
@@ -144,13 +147,19 @@ class RecordManager extends DataManager {
     /**
      * Load the results of the record as requested by the record condition
      */
-    private function loadResults () {
+    private function loadResults ()
+    {
         $sql = 'SELECT ' . $this->sql['columns'] . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'] . ' AND `' . $this->base . '`.id = ' . $this->recordData->id;
         $this->data = DB::select(DB::raw($sql))[0];
 
-        //adding check for encrypted column
-        foreach ( $this->encryptedColumns as $item )
-            $this->data->{$item} = Crypt::decrypt($this->data->{$item});
+        //adding check for encrypted column. if decryption fails then set to some logical value
+        foreach ( $this->encryptedColumns as $item ) {
+            try {
+                $this->data->{$item} = Crypt::decrypt($this->data->{$item});
+            } catch ( \Exception $e ) {
+                $this->data->{$item} = 'Invalid Account Number';
+            }
+        }
 
         //post process the source record
         foreach ( $this->sourceColumns as $column ) {

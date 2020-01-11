@@ -7,13 +7,13 @@ use Drivezy\LaravelRecordManager\Models\ColumnDefinition;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
-use Drivezy\LaravelUtility\Models\LookupValue;
 
 /**
  * Class DictionaryManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class DictionaryManager {
+class DictionaryManager
+{
 
     /**
      * @var DataModel|null
@@ -41,14 +41,16 @@ class DictionaryManager {
      * DictionaryManager constructor.
      * @param DataModel $model
      */
-    public function __construct (DataModel $model) {
+    public function __construct (DataModel $model)
+    {
         $this->model = $model;
     }
 
     /**
      *
      */
-    public function process () {
+    public function process ()
+    {
         self::loadModelColumns();
         self::loadModelMethods();
     }
@@ -56,37 +58,45 @@ class DictionaryManager {
     /**
      *
      */
-    private function loadModelColumns () {
+    private function loadModelColumns ()
+    {
         $this->loadColumnMappings();
 
         $className = $this->model->namespace . '\\' . $this->model->name;
         $model = new $className();
 
-        $schema = $model->getConnection()->getSchemaBuilder();
-        $columns = $schema->getColumnListing($model->getTable());
+        //try to get all columns as part of the connection
+        try {
+            $schema = $model->getConnection()->getSchemaBuilder();
+            $columns = $schema->getColumnListing($model->getTable());
 
-        foreach ( $columns as $column ) {
-            if ( in_array($column, $this->userColumns) ) {
-                self::attachModelColumn($column, '', [
-                    'reference_model_id' => 1,
-                    'column_type_id'     => 6,
-                ]);
-                continue;
+            foreach ( $columns as $column ) {
+                if ( in_array($column, $this->userColumns) ) {
+                    self::attachModelColumn($column, '', [
+                        'reference_model_id' => 1,
+                        'column_type_id'     => 6,
+                    ]);
+                    continue;
+                }
+
+                if ( substr($column, -3) == '_id' )
+                    self::attachModelColumn($column, '', [
+                        'column_type_id' => 6,
+                    ]);
+                else
+                    self::attachModelColumn($column, $schema->getColumnType($model->getTable(), $column));
             }
-
-            if ( substr($column, -3) == '_id' )
-                self::attachModelColumn($column, '', [
-                    'column_type_id' => 6,
-                ]);
-            else
-                self::attachModelColumn($column, $schema->getColumnType($model->getTable(), $column));
+        } catch ( \Exception $e ) {
+            echo "failed to load columns against class " . $className . PHP_EOL;
         }
+
     }
 
     /**
      *
      */
-    private function loadModelMethods () {
+    private function loadModelMethods ()
+    {
         $className = $this->model->namespace . '\\' . $this->model->name;
 
         $class = new \ReflectionClass($className);
@@ -112,7 +122,8 @@ class DictionaryManager {
      * @param array $arr
      * @return mixed
      */
-    private function attachModelColumn ($column, $type, $arr = []) {
+    private function attachModelColumn ($column, $type, $arr = [])
+    {
         $record = Column::firstOrNew([
             'name'        => $column,
             'source_id'   => $this->model->id,
@@ -136,7 +147,8 @@ class DictionaryManager {
      * @param array $arr
      * @return mixed
      */
-    private function attachModelRelationship ($method, $arr = []) {
+    private function attachModelRelationship ($method, $arr = [])
+    {
         $record = ModelRelationship::firstOrNew([
             'name'     => $method,
             'model_id' => $this->model->id,
@@ -158,7 +170,8 @@ class DictionaryManager {
     /**
      *
      */
-    private function loadColumnMappings () {
+    private function loadColumnMappings ()
+    {
         $records = ColumnDefinition::get();
         foreach ( $records as $record ) {
             $items = explode(',', $record->supported_identifiers);
@@ -172,7 +185,8 @@ class DictionaryManager {
      * @param $type
      * @return null
      */
-    private function getColumnMapping ($type) {
+    private function getColumnMapping ($type)
+    {
         return isset($this->columnMappings[ $type ]) ? $this->columnMappings[ $type ] : null;
     }
 
@@ -180,7 +194,8 @@ class DictionaryManager {
      * @param $method
      * @return null
      */
-    private function getModelMethodColumn ($method) {
+    private function getModelMethodColumn ($method)
+    {
         $record = Column::where('source_type', md5(DataModel::class))
             ->where('source_id', $this->model->id)
             ->where('name', strtolower($method) . '_id')->first();
@@ -198,7 +213,8 @@ class DictionaryManager {
      * @param $method
      * @return int
      */
-    private function getMethodRelationshipType ($method) {
+    private function getMethodRelationshipType ($method)
+    {
         if ( substr($method, 0, 5) == 'scope' ) return 43;
 
         if ( substr($method, -1) == 's' ) return 42;
@@ -211,7 +227,8 @@ class DictionaryManager {
      * @param $includes
      * @return array
      */
-    public static function getModelDictionary ($className, $includes) {
+    public static function getModelDictionary ($className, $includes)
+    {
         $models = [];
 
         $splits = explode('\\', $className);
@@ -258,7 +275,8 @@ class DictionaryManager {
      * @param bool $relatedModel
      * @return \Illuminate\Database\Eloquent\Collection|static[]
      */
-    private static function getModelColumns ($modelId, $relatedModel = false) {
+    private static function getModelColumns ($modelId, $relatedModel = false)
+    {
         $includes = $relatedModel ? ['reference_model'] : [];
 
         return Column::with($includes)->where('source_type', md5(DataModel::class))
@@ -270,7 +288,8 @@ class DictionaryManager {
      * @param $alias
      * @return \Illuminate\Database\Eloquent\Model|null|static
      */
-    private static function getModelAlias ($modelId, $alias) {
+    private static function getModelAlias ($modelId, $alias)
+    {
         return ModelRelationship::with(array('reference_type', 'reference_model'))->where('model_id', $modelId)->where('name', $alias)->first();
     }
 

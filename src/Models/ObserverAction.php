@@ -9,7 +9,8 @@ use Drivezy\LaravelUtility\Models\BaseModel;
  * Class ObserverAction
  * @package Drivezy\LaravelRecordManager\Models
  */
-class ObserverAction extends BaseModel {
+class ObserverAction extends BaseModel
+{
     /**
      * @var string
      */
@@ -18,22 +19,33 @@ class ObserverAction extends BaseModel {
     /**
      * @return mixed
      */
-    public function observer_rule () {
+    public function observer_rule ()
+    {
         return $this->belongsTo(ObserverRule::class);
     }
 
     /**
      * @return mixed
      */
-    public function script () {
+    public function script ()
+    {
         return $this->belongsTo(SystemScript::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function notification ()
+    {
+        return $this->belongsTo(Notification::class);
     }
 
 
     /**
      * Override the boot functionality to add up the observer
      */
-    public static function boot () {
+    public static function boot ()
+    {
         parent::boot();
         self::observe(new ObserverActionObserver());
     }

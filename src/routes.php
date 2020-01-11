@@ -13,7 +13,6 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::get('sourceColumnDetail', 'DataModelController@getSourceColumnDetails');
     Route::resource('column', 'ColumnController');
 
-    Route::resource('modelColumn', 'ModelColumnController');
     Route::resource('modelRelationship', 'ModelRelationshipController');
 
     Route::resource('role', 'RoleController');
@@ -49,6 +48,8 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('smsNotification', 'SMSNotificationController');
     Route::resource('pushNotification', 'PushNotificationController');
     Route::resource('emailNotification', 'EmailNotificationController');
+    Route::resource('inAppNotification', 'InAppNotificationController');
+    Route::resource('whatsAppNotification', 'WhatsAppNotificationController');
 
     Route::resource('notificationSubscriber', 'NotificationSubscriberController');
     Route::resource('notificationTrigger', 'NotificationTriggerController');
@@ -56,6 +57,11 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
     Route::resource('smsMessage', "SMSMessageController");
     Route::resource('smsTemplate', 'SMSTemplateController');
     Route::resource('deviceToken', 'DeviceTokenController');
+
+    Route::resource('whatsAppMessage', 'WhatsAppMessageController');
+    Route::resource('whatsAppTemplate', 'WhatsAppTemplateController');
+
+    Route::resource('inAppMessage', 'InAppMessageController');
 
     Route::post('auditLog/{id}', 'AuditLogController@getAuditLog');
 });
@@ -73,4 +79,8 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
               'prefix'    => 'vendor'], function () {
 
     Route::post('bitbucketCodePush/{key}', 'CodeCommitController@logBitBucketCommit');
+});
+
+Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers'], function () {
+    Route::get('whatsAppCallback/{id}', 'WhatsAppMessageController@handleCallbackUrl');
 });

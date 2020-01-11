@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Library\Notification;
 
+use Drivezy\LaravelRecordManager\Library\Notification\Templates\FileSMSMessaging;
 use Drivezy\LaravelRecordManager\Models\SMSMessage;
 use Drivezy\LaravelUtility\LaravelUtility;
 
@@ -9,56 +10,70 @@ use Drivezy\LaravelUtility\LaravelUtility;
  * Class SMSManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class SMSManager {
+class SMSManager
+{
+    /**
+     * @var null
+     */
+    private $user = null;
+    /**
+     * @var bool|string
+     */
+    private $live = false;
 
     /**
+     * SMSManager constructor.
      * @param $user
+     */
+    public function __construct ($user)
+    {
+        $this->user = $user;
+        $this->live = LaravelUtility::getProperty('sms.live.enable', false);
+
+        $this->setUserData();
+    }
+
+    /**
+     * @param $gateway
      * @param $content
      * @param array $attributes
      */
-    public static function sendSmsToUser ($user, $content, $attributes = []) {
+    public function process ($gateway, $content, $attributes = [])
+    {
+        //if a user is found, assign it to the message
+        if ( isset($this->user->id) ) $attributes['user_id'] = $this->user->id;
+        $attributes['gateway'] = $gateway;
+
+        $message = $this->setMessage($content, $attributes);
+
+        //check if we have enabled sms live on this environment
+        if ( !( $this->live && class_exists($gateway) ) )
+            return ( new FileSMSMessaging($message) )->process();
+
+        ( new $gateway($message) )->process();
+    }
+
+    /**
+     *
+     */
+    private function setUserData ()
+    {
         //create user out of the user attribute.
         //if integer then create user object out of it
-        $user = is_numeric($user) ? LaravelUtility::getUserModelFullQualifiedName()::find($user) : $user;
-
-        //create message content in our db for transactional purpose
-        $message = self::setMessage($user->mobile, $content, $attributes);
-
-        //find the gateway through which sms is to be processed
-        $gateway = isset($attributes['gateway']) ? $attributes['gateway'] : LaravelUtility::getProperty('sms.default.gateway', null);
-
-        //if no gateway is defined use the file messaging
-        $gateway = $gateway ? : FileSMSMessaging::class;
-
-        ( new $gateway($message) )->process();
+        $userModel = LaravelUtility::getUserModelFullQualifiedName();
+        $this->user = is_numeric($this->user) ? $userModel::find($this->user) : $this->user;
     }
 
     /**
-     * send sms to the mobile no directly without directly associating it with the user
-     * @param $mobile
-     * @param $content
-     * @param array $attributes
-     */
-    public static function sendSmsToMobile ($mobile, $content, $attributes = []) {
-        //create message content in our db for transactional purpose
-        $message = self::setMessage($mobile, $content, $attributes);
-
-        //find the gateway through which sms is to be processed
-        $gateway = isset($attributes['gateway']) ? $attributes['gateway'] : LaravelUtility::getProperty('sms.default.gateway');
-
-        ( new $gateway($message) )->process();
-    }
-
-    /**
-     * @param $mobile
      * @param $content
      * @param array $attributes
      * @return SMSMessage
      */
-    public static function setMessage ($mobile, $content, $attributes = []) {
+    public function setMessage ($content, $attributes = [])
+    {
         $sms = new SMSMessage();
 
-        $sms->mobile = $mobile;
+        $sms->mobile = $this->user->mobile;
         $sms->content = $content;
 
         foreach ( $attributes as $key => $value ) {

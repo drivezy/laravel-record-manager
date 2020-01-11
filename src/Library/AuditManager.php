@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
+use Drivezy\LaravelRecordManager\Models\AuditLog;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
@@ -9,7 +10,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * Class AuditManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class AuditManager {
+class AuditManager
+{
     /**
      * @var Eloquent|null
      */
@@ -38,18 +40,29 @@ class AuditManager {
     private $records = [];
 
     /**
+     * @var array
+     */
+    private $keys = [];
+
+    private $doubleAuditEnabled = [];
+
+    /**
      * AuditManager constructor.
      * @param Eloquent $model
      */
-    public function __construct (Eloquent $model) {
+    public function __construct (Eloquent $model)
+    {
         $this->model = $model;
+        $this->doubleAuditEnabled = ModelManager::getDoubleAuditColumns($model->class_hash);
+
     }
 
     /**
      * @return bool
      * @throws \Exception
      */
-    public function process () {
+    public function process ()
+    {
         //check if auditing is enabled at the global level
         if ( !$this->isAuditable() ) return false;
 
@@ -76,7 +89,8 @@ class AuditManager {
      * if id is present on the original record then its not an insert operation
      * @return bool
      */
-    private function isInsertOperation () {
+    private function isInsertOperation ()
+    {
         if ( $this->model->getOriginal('id') != $this->model->getAttribute('id') ) return true;
 
         return false;
@@ -86,7 +100,8 @@ class AuditManager {
      * Check at high level if the model in itself is auditable or not
      * @return bool
      */
-    private function isAuditable () {
+    private function isAuditable ()
+    {
         //create audit record only on production instance
         if ( !LaravelUtility::isInstanceProduction() ) return false;
 
@@ -101,7 +116,8 @@ class AuditManager {
      * @param $attribute
      * @return bool
      */
-    private function checkAuditConditions ($attribute) {
+    private function checkAuditConditions ($attribute)
+    {
         //check if the columns fall under the restricted one
         if ( in_array($attribute, $this->restrictedFields) )
             return false;
@@ -127,7 +143,8 @@ class AuditManager {
      * @param $attribute
      * @return bool
      */
-    private function checkNumberField ($attribute) {
+    private function checkNumberField ($attribute)
+    {
         $currentValue = $this->model->getAttribute($attribute);
         $originalValue = $this->model->getOriginal($attribute);
 
@@ -144,14 +161,16 @@ class AuditManager {
      * @param $attribute
      * @throws \Exception
      */
-    private function recordAuditLog ($attribute) {
+    private function recordAuditLog ($attribute)
+    {
         $currentValue = $this->convertObjectToString($this->model->getAttribute($attribute)) ? : 'null';
         $originalValue = $this->convertObjectToString($this->model->getOriginal($attribute)) ? : 'null';
 
         $updatedBy = $this->model->updated_by ? : 'null';
 
-        $time = strtotime($this->model->updated_at) * 1000 + random_int(0, 999);
+        $time = $this->getTime();
 
+        //create record for the dynamodb record
         $item = [
             'model_hash' => ['S' => '' . $this->model->class_hash . '-' . $this->model->id . ''],
             'parameter'  => ['S' => '' . $attribute . ''],
@@ -160,16 +179,30 @@ class AuditManager {
             'created_at' => ['N' => '' . $time . ''],
             'created_by' => ['S' => '' . $updatedBy . ''],
         ];
-
         array_push($this->records, $item);
+
+        //see if audit for transactional db is enabled or not
+        if ( !in_array($attribute, $this->doubleAuditEnabled) ) return;
+
+        //create a db record in transactional db
+        AuditLog::create([
+            'model_hash' => $this->model->class_hash,
+            'model_id'   => $this->model->id,
+            'parameter'  => $attribute,
+            'old_value'  => $originalValue,
+            'new_value'  => $currentValue,
+            'created_by' => $updatedBy,
+        ]);
     }
+
 
     /**
      * if any given element is object, then convert it into string
      * @param $str
      * @return string
      */
-    private function convertObjectToString ($str) {
+    private function convertObjectToString ($str)
+    {
         if ( is_array($str) || is_object($str) )
             return serialize($str);
 
@@ -177,9 +210,29 @@ class AuditManager {
     }
 
     /**
+     * @return bool|float|int
+     * @throws \Exception
+     */
+    private function getTime ()
+    {
+        $masterKey = $this->model->class_hash . '-' . $this->model->id;
+        while ( true ) {
+            $time = strtotime($this->model->updated_at) * 1000 + random_int(0, 999);
+            if ( in_array($masterKey . '-' . $time, $this->keys) ) continue;
+
+            array_push($this->keys, $masterKey . '-' . $time);
+
+            return $time;
+        }
+
+        return false;
+    }
+
+    /**
      * once the class makes its fall, insert all pending record into dynamo-db
      */
-    public function __destruct () {
+    public function __destruct ()
+    {
         //if no records to push to audit, then leave dont call the dynamo push job
         if ( !sizeof($this->records) ) return;
 

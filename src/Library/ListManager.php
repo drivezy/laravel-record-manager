@@ -12,14 +12,16 @@ use Message;
  * Class ListManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class ListManager extends DataManager {
+class ListManager extends DataManager
+{
 
     /**
      * Get the data from the system and then return the result as list
      * @param null $id
      * @return array|void
      */
-    public function process ($id = null) {
+    public function process ($id = null)
+    {
         //validate if the cache is valid or not
         if ( !self::loadDataFromCache() ) {
             parent::process();
@@ -46,7 +48,8 @@ class ListManager extends DataManager {
      * Get the includes and check their necessary joins and segregate the data
      * @return bool
      */
-    private function processIncludes () {
+    private function processIncludes ()
+    {
         if ( !$this->includes ) return true;
 
         $includes = explode(',', $this->includes);
@@ -96,7 +99,8 @@ class ListManager extends DataManager {
     /**
      * Load the results of the record as requested by the list condition
      */
-    private function loadResults () {
+    private function loadResults ()
+    {
         if ( $this->grouping_column )
             return self::setGroupingData();
 
@@ -122,9 +126,14 @@ class ListManager extends DataManager {
         //check if there is any data that has to be modelled for special columns
         $iterator = 0;
         foreach ( $this->data as $item ) {
-            //post process the encrypted record
-            foreach ( $this->encryptedColumns as $column )
-                $this->data[ $iterator ]->{$column} = Crypt::decrypt($item->{$column});
+            //adding check for encrypted column. if decryption fails then set to some logical value
+            foreach ( $this->encryptedColumns as $column ) {
+                try {
+                    $this->data[ $iterator ]->{$column} = Crypt::decrypt($item->{$column});
+                } catch ( \Exception $e ) {
+                    $this->data[ $iterator ]->{$column} = 'Invalid Account Number';
+                }
+            }
 
             //post process the source record
             foreach ( $this->sourceColumns as $column ) {
@@ -142,7 +151,8 @@ class ListManager extends DataManager {
     /**
      * Get the stats data as part of the list condition
      */
-    private function getStatsData () {
+    private function getStatsData ()
+    {
         $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
 
         if ( $this->query )
@@ -160,7 +170,8 @@ class ListManager extends DataManager {
     /**
      * If aggregation operation has been requested then do the same
      */
-    private function setAggregationData () {
+    private function setAggregationData ()
+    {
         $sql = 'SELECT ' . $this->aggregation_operator . '(' . $this->aggregation_column . ')' . ' as ' . $this->aggregation_column . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
 
         if ( $this->query )
@@ -174,7 +185,8 @@ class ListManager extends DataManager {
     /**
      * Adding support to group data based on some column
      */
-    private function setGroupingData () {
+    private function setGroupingData ()
+    {
         //get proper definition of the user column data
         $columns = explode(',', $this->grouping_column);
         $selects = '';
@@ -209,7 +221,8 @@ class ListManager extends DataManager {
     /**
      * Get the count of records for stats for grouped data
      */
-    private function setGroupingDataStats () {
+    private function setGroupingDataStats ()
+    {
         $sql = 'SELECT ' . $this->grouping_column . ' , count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
         if ( $this->query )
             $sql .= ' and (' . $this->query . ')';
@@ -229,7 +242,8 @@ class ListManager extends DataManager {
      * Adds deleted_at query to the string if trashed is false
      * @return string
      */
-    private function deletedQuery () {
+    private function deletedQuery ()
+    {
         if ( !$this->trashed )
             return ' and `' . $this->base . '`.deleted_at is null';
 

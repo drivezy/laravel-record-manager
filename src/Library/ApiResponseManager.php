@@ -11,7 +11,8 @@ use Illuminate\Http\Request;
  * Class ApiResponseManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class ApiResponseManager {
+class ApiResponseManager
+{
 
     private $model = null;
     private $dataModel = null;
@@ -25,7 +26,8 @@ class ApiResponseManager {
      * @param Request $request
      * @param $model
      */
-    public function __construct (Request $request, $model) {
+    public function __construct (Request $request, $model)
+    {
         $this->model = $model;
         RecordManagement::$model = $model;
         $this->dataModel = DataModel::where('model_hash', md5($this->model))->first();
@@ -36,7 +38,8 @@ class ApiResponseManager {
     /**
      * @return \Illuminate\Http\JsonResponse
      */
-    public function index () {
+    public function index ()
+    {
         return fixed_response(RecordManagement::index($this->request));
 
         $model = $this->model;
@@ -55,7 +58,8 @@ class ApiResponseManager {
      * @param $id
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show ($id) {
+    public function show ($id)
+    {
         return RecordManagement::show($id);
 
         $model = $this->model;
@@ -67,7 +71,8 @@ class ApiResponseManager {
     /**
      * @return array
      */
-    private function getEncodedQuery () {
+    private function getEncodedQuery ()
+    {
         $query = $this->request->get('query');
         if ( !$this->request->has('query') ) return array('query' => '1 < ?', 'value' => array('2'));
 
@@ -91,7 +96,8 @@ class ApiResponseManager {
      * @param $query
      * @return mixed
      */
-    private function addQueryParams ($query) {
+    private function addQueryParams ($query)
+    {
         $request = $this->request;
 
         if ( $request->has('scopes') ) {
@@ -124,7 +130,8 @@ class ApiResponseManager {
      * @param $query
      * @return array|mixed
      */
-    public function getRecordData ($query) {
+    public function getRecordData ($query)
+    {
         $request = $this->request;
 
         $response = [];
@@ -171,7 +178,8 @@ class ApiResponseManager {
      * @param $query
      * @return mixed
      */
-    private function handleAggregation ($query) {
+    private function handleAggregation ($query)
+    {
         $request = $this->request;
         $response['response'] = $query->{$request->get('aggregation_operator')}($request->get('aggregation_column'));
 
@@ -181,7 +189,8 @@ class ApiResponseManager {
     /**
      * @return array
      */
-    private function getQueryInclusions () {
+    private function getQueryInclusions ()
+    {
         $includes = $this->request->get('includes');
         if ( !$includes ) return [];
 

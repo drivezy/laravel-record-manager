@@ -6,14 +6,17 @@ use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelAccessManager\Models\RoleAssignment;
 use Drivezy\LaravelAdmin\Library\UIActionManager;
 use Drivezy\LaravelAdmin\Models\UIAction;
+use Drivezy\LaravelRecordManager\Models\Column;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class ModelManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class ModelManager {
+class ModelManager
+{
 
     /**
      *
@@ -36,7 +39,8 @@ class ModelManager {
      * @param $model
      * @return array
      */
-    public static function getModelActions ($model) {
+    public static function getModelActions ($model)
+    {
         $model = is_string($model) ? DataModel::with('roles')->where('model_hash', md5($model))->first() : $model;
         if ( !$model ) return [];
 
@@ -70,7 +74,8 @@ class ModelManager {
      * @param $operation
      * @return bool
      */
-    public static function validateModelAccess ($model, $operation) {
+    public static function validateModelAccess ($model, $operation)
+    {
         $model = is_string($model) ? DataModel::with('roles')->where('model_hash', md5($model))->first() : $model;
         if ( !$model ) return false;
 
@@ -83,7 +88,8 @@ class ModelManager {
      * @param $operation
      * @return bool
      */
-    private static function validateUnRegulatedModel ($model, $operation) {
+    private static function validateUnRegulatedModel ($model, $operation)
+    {
         //non internal users are allowed
         if ( !AccessManager::hasRole('internal') ) return false;
 
@@ -99,7 +105,8 @@ class ModelManager {
      * @param $operation
      * @return bool
      */
-    private static function validateRegulatedModel ($model, $operation) {
+    private static function validateRegulatedModel ($model, $operation)
+    {
         //find all roles matching the operation
         $roles = RoleAssignment::where('source_id', $model->id)
             ->where('source_type', md5(DataModel::class))
@@ -117,7 +124,8 @@ class ModelManager {
      * @param null $data
      * @return bool|ColumnManager
      */
-    public static function getModelDictionary ($model, $operation, $data = null) {
+    public static function getModelDictionary ($model, $operation, $data = null)
+    {
         //get all security rules attached to this model
         $securityRules = SecurityRuleManager::getModelSecurityRules($model, $operation);
 
@@ -132,5 +140,33 @@ class ModelManager {
             'rules' => $securityRules,
             'data'  => $data,
         ]);
+    }
+
+    /**
+     * @param $modelHash
+     * @return array
+     */
+    public static function getDoubleAuditColumns ($modelHash)
+    {
+        $key = 'column-audit-double-' . $modelHash;
+
+        //check if cache is available
+        $enabled = Cache::get($key, null);
+        if ( $enabled ) return $enabled;
+
+        //get the model against which data is to be fetched
+        $model = DataModel::where('model_hash', $modelHash)->first();
+        if ( !$model ) return [];
+
+        $enabled = [];
+        $columns = Column::where('source_type', '07b76506c43824b152745fe7df768486')->where('source_id', $model->id)->where('is_double_audit_enabled', true)->get();
+        foreach ( $columns as $column )
+            array_push($enabled, $column->name);
+
+        //set the cache so as to get the value quickly next time
+        Cache::put($key, $enabled, 15 * 60);
+
+        return $enabled;
+
     }
 }
