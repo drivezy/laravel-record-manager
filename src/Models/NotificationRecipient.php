@@ -46,6 +46,7 @@ class NotificationRecipient extends BaseModel {
      */
     public function getFieldsAttribute ($str) {
         if ( !$str ) return null;
+        
 
         return Column::whereIn('id', explode(',', $str))->get();
     }

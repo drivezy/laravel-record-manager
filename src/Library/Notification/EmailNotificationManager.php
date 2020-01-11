@@ -37,7 +37,7 @@ class EmailNotificationManager extends BaseNotification {
     private function processEmailNotification ($emailNotification) {
         $users = ( new NotificationUserManager($this->user_request_object) )->getTotalUsers($emailNotification->default_users, $emailNotification->active_recipients);
 
-        $subject = LaravelUtility::parseBladeToString($emailNotification->subject, $this->notification_data);
+        $subject = LaravelUtility::parseBladeToString($emailNotification->subject, $this->data);
 
         $body = $emailNotification->body_id ? $emailNotification->body->script : '';
         $body = LaravelUtility::parseBladeToString($body, $this->data);
@@ -53,7 +53,6 @@ class EmailNotificationManager extends BaseNotification {
                 continue;
 
             Mail::to($user)->send($mailable);
-            ++$this->email_count;
         }
     }
 }

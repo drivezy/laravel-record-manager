@@ -2,7 +2,9 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
+use Drivezy\LaravelRecordManager\Library\Notification\NotificationManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Drivezy\LaravelRecordManager\Models\ObserverAction;
 use Drivezy\LaravelRecordManager\Models\ObserverRule;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
@@ -10,11 +12,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * Class ObserverEvaluator
  * @package Drivezy\LaravelRecordManager\Library
  */
-class ObserverEvaluator {
-    /**
-     * @var int
-     */
-    private $operation = 72;
+class ObserverEvaluator
+{
     /**
      * @var Eloquent|null
      */
@@ -24,7 +23,8 @@ class ObserverEvaluator {
      * ObserverEvaluator constructor.
      * @param Eloquent $model
      */
-    public function __construct (Eloquent $model) {
+    public function __construct (Eloquent $model)
+    {
         $this->model = $model;
     }
 
@@ -32,9 +32,11 @@ class ObserverEvaluator {
      * check against all matching rules against the given observer event.
      * If rule found then validate the filter condition.
      */
-    public function process () {
+    public function process ()
+    {
         //check if observer events is supposed to be run against it
-        if(!$this->model->observable) return false;
+        //@todo bring in this feature. right now commenting it
+//        if ( !$this->model->observable ) return false;
 
         //get the data model against which event has triggered
         $dataModel = DataModel::where('model_hash', $this->model->class_hash)->first();
@@ -60,10 +62,12 @@ class ObserverEvaluator {
      * @param $rule
      * @return mixed|null|void
      */
-    private function processRule ($rule) {
+    private function processRule ($rule)
+    {
         $data = $model = $this->model;
         $answer = false;
 
+        //see if there is any filter condition defined under this action
         $rule->filter_condition = $rule->filter_condition ? : true;
 
         $validationString = 'if(' . $rule->filter_condition . ') $answer = true;';
@@ -71,16 +75,24 @@ class ObserverEvaluator {
 
         if ( !$answer ) return;
 
+        //process actions against the validated rule
         foreach ( $rule->active_actions as $action ) {
+            //run the script if any attached as part of the action
             if ( $action->script_id )
                 $this->processAction($action);
+
+            //run the notification if any attached as part of the action
+            if ( $action->notification_id )
+                $this->processNotification($action);
         }
     }
 
     /**
-     * @param $action
+     * eval the script that is going as part of this action
+     * @param ObserverAction $action
      */
-    private function processAction ($action) {
+    private function processAction (ObserverAction $action)
+    {
         $data = $model = $this->model;
         try {
             eval($action->script->script);
@@ -90,9 +102,19 @@ class ObserverEvaluator {
     }
 
     /**
+     * process the notification against the given action
+     * @param ObserverAction $action
+     */
+    private function processNotification (ObserverAction $action)
+    {
+        ( new NotificationManager($action->notification_id) )->process($this->model->id);
+    }
+
+    /**
      * @return int
      */
-    private function getOperationType () {
+    private function getOperationType ()
+    {
         //check if it is a new record
         if ( $this->model->isNewRecord() ) return 71;
 
@@ -101,18 +123,5 @@ class ObserverEvaluator {
 
         //defaults to updating of record
         return 72;
-    }
-
-    /**
-     * @param $data
-     */
-    public function devHandler ($data) {
-    }
-
-    /**
-     *
-     */
-    public function __destruct () {
-
     }
 }

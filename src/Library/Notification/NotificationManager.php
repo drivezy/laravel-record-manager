@@ -3,19 +3,22 @@
 namespace Drivezy\LaravelRecordManager\Library\Notification;
 
 use Drivezy\LaravelRecordManager\Models\Notification;
+use Drivezy\LaravelUtility\Library\DateUtil;
 
 /**
  * Class NotificationManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class NotificationManager {
+class NotificationManager
+{
     private $notification;
 
     /**
      * NotificationManager constructor.
      * @param $notificationId
      */
-    public function __construct ($notificationId) {
+    public function __construct ($notificationId)
+    {
         $this->notification = Notification::with(['custom_data', 'data_model', 'run_condition'])->find($notificationId);
     }
 
@@ -24,7 +27,13 @@ class NotificationManager {
      * @param $id
      * @return bool|mixed
      */
-    public function process ($id = null) {
+    public function process ($id = null)
+    {
+        \Log::info('i am here : ' . DateUtil::getDateTime());
+        //validate if the notification is present or not
+        if ( !$this->notification ) return false;
+
+        //validate if we have disabled the given notification
         if ( !$this->notification->active ) return false;
 
         //get the data required for the given notification
@@ -48,6 +57,7 @@ class NotificationManager {
 
         //sending notifications to all segments
         ( new SMSNotificationManager($args) )->process();
+        ( new WhatsAppNotificationManager($args) )->process();
         ( new EmailNotificationManager($args) )->process();
         ( new PushNotificationManager($args) )->process();
         ( new InAppNotificationManager($args) )->process();
@@ -60,7 +70,8 @@ class NotificationManager {
      * @param $id
      * @return mixed
      */
-    private function prepareNotificationData ($id) {
+    private function prepareNotificationData ($id)
+    {
         if ( !( $this->notification->data_model_id && $id ) ) return false;
 
         $class = $this->notification->data_model->namespace . '\\' . $this->notification->data_model->name;
@@ -84,18 +95,12 @@ class NotificationManager {
      * @param $arr
      * @return array
      */
-    private function sanitizeIncludes ($arr) {
+    private function sanitizeIncludes ($arr)
+    {
         $sanitized = [];
         foreach ( $arr as $item )
             array_push($sanitized, trim($item));
 
         return $sanitized;
-    }
-
-    /**
-     *
-     */
-    public function __destruct () {
-        parent::__destruct();
     }
 }

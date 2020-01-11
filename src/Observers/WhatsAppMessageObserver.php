@@ -5,13 +5,16 @@ namespace Drivezy\LaravelRecordManager\Observers;
 use Drivezy\LaravelUtility\Observers\BaseObserver;
 
 /**
- * Class InAppNotificationObserver
+ * Class WhatsAppMessageObserver
+ * @package Drivezy\LaravelRecordManager\Observers
  */
-class InAppNotificationObserver extends BaseObserver {
+class WhatsAppMessageObserver extends BaseObserver
+{
     /**
      * @var array
      */
     protected $rules = [
+        'mobile'  => 'required',
         'content' => 'required',
     ];
 }

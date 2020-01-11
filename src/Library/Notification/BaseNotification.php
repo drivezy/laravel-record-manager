@@ -40,7 +40,7 @@ class BaseNotification {
      * @return bool
      */
     protected function validateRunCondition($condition, $data = null){
-        $data = $data ? : $this->notification_data;
+        $data = $data ? : $this->data;
         return self::validateCondition($condition, $data);
     }
 

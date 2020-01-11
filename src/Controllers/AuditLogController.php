@@ -12,14 +12,16 @@ use Illuminate\Routing\Controller;
  * Class AuditLogController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class AuditLogController extends Controller {
+class AuditLogController extends Controller
+{
 
     /**
      * @param $id
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse
      */
-    public function getAuditLog ($id, Request $request) {
+    public function getAuditLog ($id, Request $request)
+    {
         $model = DataModel::find($id);
         if ( !$model ) return invalid_operation();
 
@@ -53,11 +55,12 @@ class AuditLogController extends Controller {
         foreach ( $iterator as $item ) {
 
             $log = [
-                'time'       => DateUtil::getDateTime($item['created_at']['N'] / 1000),
-                'parameter'  => $item['parameter']['S'],
-                'old_value'  => $item['old_value']['S'],
-                'new_value'  => $item['new_value']['S'],
-                'created_by' => $userClass::find($item['created_by']['S']),
+                'created_at'   => DateUtil::getDateTime($item['created_at']['N'] / 1000),
+                'parameter'    => $item['parameter']['S'],
+                'old_value'    => $item['old_value']['S'],
+                'new_value'    => $item['new_value']['S'],
+                'created_by'   => $item['created_by']['S'],
+                'created_user' => $userClass::find($item['created_by']['S']),
             ];
             array_push($logs, $log);
         }

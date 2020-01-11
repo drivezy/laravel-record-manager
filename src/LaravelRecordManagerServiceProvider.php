@@ -5,29 +5,27 @@ namespace Drivezy\LaravelRecordManager;
 use Drivezy\LaravelRecordManager\Commands\CodeGeneratorCommand;
 use Drivezy\LaravelRecordManager\Commands\ModelScannerCommand;
 use Drivezy\LaravelRecordManager\Commands\ObserverEventCommand;
+use Drivezy\LaravelRecordManager\Library\Listeners\EventQueueListener;
+use Drivezy\LaravelUtility\Events\EventQueueRaised;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\ServiceProvider;
 
 /**
  * Class LaravelRecordManagerServiceProvider
  * @package Drivezy\LaravelRecordManager
  */
-class LaravelRecordManagerServiceProvider extends ServiceProvider {
-
-    /**
-     * @var array
-     */
-    protected $listen = [
-        'Illuminate\Mail\Events\MessageSent' => [
-            'Drivezy\LaravelRecordManager\Library\Listeners\MailMessageListener',
-        ],
-    ];
+class LaravelRecordManagerServiceProvider extends ServiceProvider
+{
 
     /**
      * Bootstrap services.
      *
      * @return void
      */
-    public function boot () {
+    public function boot ()
+    {
+        Event::listen(EventQueueRaised::class, EventQueueListener::class);
+
         //load routes defined out here
         $this->loadRoutesFrom(__DIR__ . '/routes.php');
 
@@ -49,7 +47,8 @@ class LaravelRecordManagerServiceProvider extends ServiceProvider {
      *
      * @return void
      */
-    public function register () {
+    public function register ()
+    {
 
     }
 }
