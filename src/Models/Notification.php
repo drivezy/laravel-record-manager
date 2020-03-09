@@ -5,6 +5,8 @@ namespace Drivezy\LaravelRecordManager\Models;
 use Drivezy\LaravelRecordManager\Observers\NotificationObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 use Drivezy\LaravelUtility\Models\EventDetail;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Notification
@@ -18,7 +20,16 @@ class Notification extends BaseModel
     protected $table = 'dz_notification_details';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Override the boot functionality to add up the observer
+     */
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new NotificationObserver());
+    }
+
+    /**
+     * @return BelongsTo
      */
     public function data_model ()
     {
@@ -26,7 +37,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function custom_data ()
     {
@@ -34,7 +45,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function run_condition ()
     {
@@ -42,7 +53,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function recipients ()
     {
@@ -50,7 +61,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function active_recipients ()
     {
@@ -58,7 +69,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function sms_notifications ()
     {
@@ -66,7 +77,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function active_sms_notifications ()
     {
@@ -74,7 +85,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function email_notifications ()
     {
@@ -82,7 +93,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function active_email_notifications ()
     {
@@ -90,7 +101,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function push_notifications ()
     {
@@ -98,7 +109,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function active_push_notifications ()
     {
@@ -106,7 +117,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function inapp_notifications ()
     {
@@ -114,7 +125,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function active_inapp_notifications ()
     {
@@ -122,7 +133,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function whatsapp_notifications ()
     {
@@ -130,7 +141,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function active_whatsapp_notifications ()
     {
@@ -138,7 +149,7 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function triggers ()
     {
@@ -146,21 +157,11 @@ class Notification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function event_details ()
     {
         return $this->hasMany(EventDetail::class);
-    }
-
-
-    /**
-     * Override the boot functionality to add up the observer
-     */
-    public static function boot ()
-    {
-        parent::boot();
-        self::observe(new NotificationObserver());
     }
 
 }

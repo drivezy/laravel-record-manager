@@ -6,7 +6,8 @@ namespace Drivezy\LaravelRecordManager\Library\Notification\Templates;
  * Class NotificationMailMessage
  * @package Drivezy\LaravelRecordManager\Library\Notification
  */
-class NotificationMailMessage extends BaseMailable {
+class NotificationMailMessage extends BaseMailable
+{
     /**
      * @var
      */
@@ -32,7 +33,8 @@ class NotificationMailMessage extends BaseMailable {
      * @param string $body
      * @param array $data
      */
-    public function __construct ($template, string $subject, string $body, $data = []) {
+    public function __construct ($template, string $subject, string $body, $data = [])
+    {
         $this->template = $template;
         $this->subject = $subject;
         $this->body = $body;
@@ -43,7 +45,8 @@ class NotificationMailMessage extends BaseMailable {
     /**
      * @return NotificationMailMessage
      */
-    public function build () {
+    public function build ()
+    {
         return $this->view($this->template)
             ->subject($this->subject);
     }

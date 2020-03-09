@@ -2,5 +2,6 @@
 
 namespace Drivezy\LaravelRecordManager\Controllers;
 
-class RecordController extends BaseController {
+class RecordController extends BaseController
+{
 }

@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\ColumnDefinition;
  * Class ColumnDefinitionController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class ColumnDefinitionController extends RecordController {
+class ColumnDefinitionController extends RecordController
+{
     /**
      * @var string
      */

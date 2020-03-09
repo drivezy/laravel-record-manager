@@ -10,13 +10,15 @@ use Drivezy\LaravelUtility\Models\LookupValue;
  * Class ModelEventTypeSeeder
  * @package Drivezy\LaravelRecordManager\Database\Seeds
  */
-class ModelEventTypeSeeder extends BaseSeeder {
+class ModelEventTypeSeeder extends BaseSeeder
+{
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run () {
+    public function run ()
+    {
         //create client script against the record
         LookupType::firstOrCreate([
             'id'          => 7,
@@ -55,7 +57,8 @@ class ModelEventTypeSeeder extends BaseSeeder {
     /**
      * Drop the records that were created as part of the migration
      */
-    public function drop () {
+    public function drop ()
+    {
         //delete the records of the lookup value
         $records = LookupValue::where('lookup_type_id', 7)->get();
         foreach ( $records as $record )

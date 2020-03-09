@@ -3,6 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelRecordManager\Models\SystemScript;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -10,7 +11,8 @@ use Illuminate\Support\Facades\Response;
  * Class SystemScriptController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class SystemScriptController extends RecordController {
+class SystemScriptController extends RecordController
+{
     /**
      * @var string
      */
@@ -19,9 +21,10 @@ class SystemScriptController extends RecordController {
     /**
      * reattach the data to the existing model
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
-    public function store (Request $request) {
+    public function store (Request $request)
+    {
         $object = SystemScript::firstOrNew([
             'source_type'   => $request->source_type,
             'source_id'     => $request->source_id,

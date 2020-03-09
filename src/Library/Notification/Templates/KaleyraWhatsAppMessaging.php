@@ -6,6 +6,7 @@ use Drivezy\LaravelRecordManager\Models\WhatsAppMessage;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Library\DateUtil;
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 
@@ -41,12 +42,35 @@ class KaleyraWhatsAppMessaging
         $this->message->gateway = self::class;
     }
 
+    /**
+     * set up the defaults for the whatsapp
+     * to be initialized only once so that each time this is not repeated
+     */
+    private static function init ()
+    {
+        //check if the key and from is already set for the session
+        if ( self::$key && self::$from ) return;
+
+        //fetch the key and from the property table
+        self::$key = LaravelUtility::getProperty('notification.whatsApp.key', false);
+        self::$from = LaravelUtility::getProperty('notification.whatsApp.from.mobile', false);
+
+        //if either of them is missing then dont do anything
+        if ( !( self::$key && self::$from ) ) return;
+
+        //decrypt the values against the params
+        self::$key = Crypt::decrypt(self::$key);
+        self::$from = Crypt::decrypt(self::$from);
+
+        //get the default country code of the user
+        self::$country_code = LaravelUtility::getProperty('notification.whatsApp.country.code', '91');
+    }
 
     /**
      * @param $template
      * @param $params
      * @return WhatsAppMessage|void
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     public function process ($template, $params)
     {
@@ -58,24 +82,10 @@ class KaleyraWhatsAppMessaging
     }
 
     /**
-     * @param Request $request
-     * @return WhatsAppMessage
-     */
-    public function callback (Request $request)
-    {
-        //check if status is present in the request object
-        if ( !$request->has('status') ) return [];
-
-        $this->message->{strtolower($request->status)} = DateUtil::getDateTime($request->timestamp);
-
-        return $this->message->tracking_code;
-    }
-
-    /**
      * @param $template
      * @param $params
      * @return bool
-     * @throws \GuzzleHttp\Exception\GuzzleException
+     * @throws GuzzleException
      */
     private function sendTextWhatsAppMessage ($template, $params)
     {
@@ -123,34 +133,24 @@ class KaleyraWhatsAppMessaging
     }
 
     /**
+     * @param Request $request
+     * @return WhatsAppMessage
+     */
+    public function callback (Request $request)
+    {
+        //check if status is present in the request object
+        if ( !$request->has('status') ) return [];
+
+        $this->message->{strtolower($request->status)} = DateUtil::getDateTime($request->timestamp);
+
+        return $this->message->tracking_code;
+    }
+
+    /**
      * save the final version of the message before logging out of the system
      */
     public function __destruct ()
     {
         $this->message->save();
-    }
-
-    /**
-     * set up the defaults for the whatsapp
-     * to be initialized only once so that each time this is not repeated
-     */
-    private static function init ()
-    {
-        //check if the key and from is already set for the session
-        if ( self::$key && self::$from ) return;
-
-        //fetch the key and from the property table
-        self::$key = LaravelUtility::getProperty('notification.whatsApp.key', false);
-        self::$from = LaravelUtility::getProperty('notification.whatsApp.from.mobile', false);
-
-        //if either of them is missing then dont do anything
-        if ( !( self::$key && self::$from ) ) return;
-
-        //decrypt the values against the params
-        self::$key = Crypt::decrypt(self::$key);
-        self::$from = Crypt::decrypt(self::$from);
-
-        //get the default country code of the user
-        self::$country_code = LaravelUtility::getProperty('notification.whatsApp.country.code', '91');
     }
 }

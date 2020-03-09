@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class ColumnObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class ColumnObserver extends BaseObserver {
+class ColumnObserver extends BaseObserver
+{
     /**
      * @var array
      */

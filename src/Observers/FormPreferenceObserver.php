@@ -2,15 +2,14 @@
 
 namespace Drivezy\LaravelRecordManager\Observers;
 
-use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelUtility\Observers\BaseObserver;
-use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
  * Class FormPreferenceObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class FormPreferenceObserver extends BaseObserver {
+class FormPreferenceObserver extends BaseObserver
+{
 
     /**
      * @var array

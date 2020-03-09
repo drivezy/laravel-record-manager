@@ -17,12 +17,12 @@ class CreateDzWhatsappNotificationsTable extends Migration
         Schema::create('dz_whatsapp_notifications', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->string('name');
 
             $table->unsignedInteger('notification_id')->nullable();
-            $table->unsignedBigInteger('template_id')->nullable();
+            $table->unsignedInteger('template_id')->nullable();
 
             $table->unsignedInteger('run_condition_id')->nullable();
 

@@ -8,7 +8,8 @@ use Drivezy\LaravelAccessManager\Models\UserGroup;
  * Class UserGroupController
  * @package Drivezy\LaravelRecordManager\Controller
  */
-class UserGroupController extends RecordController {
+class UserGroupController extends RecordController
+{
     /**
      * @var string
      */

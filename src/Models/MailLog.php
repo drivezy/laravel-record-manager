@@ -4,29 +4,33 @@ namespace Drivezy\LaravelRecordManager\Models;
 
 use Drivezy\LaravelRecordManager\Observers\MailLogObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class MailLog
  * @package Drivezy\LaravelRecordManager\Models
  */
-class MailLog extends BaseModel {
+class MailLog extends BaseModel
+{
     /**
      * @var string
      */
     protected $table = 'dz_mail_logs';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Override the boot functionality to add up the observer
      */
-    public function mail_recipients () {
-        return $this->hasMany(MailRecipient::class, 'mail_id');
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new MailLogObserver());
     }
 
     /**
-     * Override the boot functionality to add up the observer
+     * @return HasMany
      */
-    public static function boot () {
-        parent::boot();
-        self::observe(new MailLogObserver());
+    public function mail_recipients ()
+    {
+        return $this->hasMany(MailRecipient::class, 'mail_id');
     }
 }

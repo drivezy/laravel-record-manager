@@ -17,7 +17,7 @@ class CreateDzWhatsappTemplatesTable extends Migration
         Schema::create('dz_whatsapp_templates', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->string('name');
             $table->string('identifier');

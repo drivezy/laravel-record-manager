@@ -5,29 +5,33 @@ namespace Drivezy\LaravelRecordManager\Models;
 use Drivezy\LaravelRecordManager\Observers\DocumentManagerObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
 use Drivezy\LaravelUtility\Models\LookupValue;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class DocumentManager
  * @package Drivezy\LaravelRecordManager\Models
  */
-class DocumentManager extends BaseModel {
+class DocumentManager extends BaseModel
+{
     /**
      * @var string
      */
     protected $table = 'dz_document_details';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Override the boot functionality to add up the observer
      */
-    public function type () {
-        return $this->belongsTo(LookupValue::class, 'document_type_id');
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new DocumentManagerObserver());
     }
 
     /**
-     * Override the boot functionality to add up the observer
+     * @return BelongsTo
      */
-    public static function boot () {
-        parent::boot();
-        self::observe(new DocumentManagerObserver());
+    public function type ()
+    {
+        return $this->belongsTo(LookupValue::class, 'document_type_id');
     }
 }

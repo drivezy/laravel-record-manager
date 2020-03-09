@@ -12,7 +12,8 @@ use Illuminate\Support\Facades\Auth;
  * Class AdminResponseManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class AdminResponseManager {
+class AdminResponseManager
+{
 
     private $request = null;
     private $model = null;
@@ -22,7 +23,8 @@ class AdminResponseManager {
      * @param Request $request
      * @param DataModel $model
      */
-    public function __construct (Request $request, DataModel $model) {
+    public function __construct (Request $request, DataModel $model)
+    {
         $this->request = $request;
         $this->model = $model;
     }
@@ -30,7 +32,8 @@ class AdminResponseManager {
     /**
      *
      */
-    public function index () {
+    public function index ()
+    {
         $request = $this->request;
 
         $records = ( new ListManager($this->model, [
@@ -54,48 +57,11 @@ class AdminResponseManager {
     }
 
     /**
-     * Sets job to export data if export is true
-     *
-     * @see https://justride.atlassian.net/browse/DD-4201
-     *
-     * @param $records
-     * @param $export
-     * @param $layoutId
-     */
-    private function exportData ($records, $export = false, $layoutId) {
-        if ( !$export ) return;
-
-        $userId = Auth::id();
-        $data = [
-            'data'     => $records['data'],
-            'base'     => strtoupper($records['base']),
-            'layoutId' => $layoutId,
-            'userId'   => $userId,
-        ];
-        //@todo give support for event setup in utility class
-//        LaravelUtility::setEvent('export.query.data', serialize($data), ['source' => 'USER_REQ_' . $userId]);
-    }
-
-    /**
-     * @param $id
-     */
-    public function show ($id) {
-        $request = $this->request;
-
-        $records = ( new RecordManager($this->model, [
-            'includes'           => $request->has('includes') ? $request->get('includes') : false,
-            'layout'             => self::getLayoutDefinition(),
-            'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
-        ]) )->process($id);
-
-        return success_response($records);
-    }
-
-    /**
      * @param Request $request
      * @return array
      */
-    private function getLayoutDefinition () {
+    private function getLayoutDefinition ()
+    {
         $columns = [];
         if ( !$this->request->has('layout_id') ) return $columns;
 
@@ -118,5 +84,45 @@ class AdminResponseManager {
         }
 
         return $columns;
+    }
+
+    /**
+     * Sets job to export data if export is true
+     *
+     * @see https://justride.atlassian.net/browse/DD-4201
+     *
+     * @param $records
+     * @param $export
+     * @param $layoutId
+     */
+    private function exportData ($records, $export = false, $layoutId)
+    {
+        if ( !$export ) return;
+
+        $userId = Auth::id();
+        $data = [
+            'data'     => $records['data'],
+            'base'     => strtoupper($records['base']),
+            'layoutId' => $layoutId,
+            'userId'   => $userId,
+        ];
+        //@todo give support for event setup in utility class
+//        LaravelUtility::setEvent('export.query.data', serialize($data), ['source' => 'USER_REQ_' . $userId]);
+    }
+
+    /**
+     * @param $id
+     */
+    public function show ($id)
+    {
+        $request = $this->request;
+
+        $records = ( new RecordManager($this->model, [
+            'includes'           => $request->has('includes') ? $request->get('includes') : false,
+            'layout'             => self::getLayoutDefinition(),
+            'sqlCacheIdentifier' => $request->has('request_identifier') ? $request->get('request_identifier') : false,
+        ]) )->process($id);
+
+        return success_response($records);
     }
 }

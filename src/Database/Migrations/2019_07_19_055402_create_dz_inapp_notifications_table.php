@@ -1,25 +1,27 @@
 <?php
 
 use Drivezy\LaravelUtility\LaravelUtility;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateDzInappNotificationsTable extends Migration {
+class CreateDzInappNotificationsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_inapp_notifications', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('name')->nullable();
 
-            $table->unsignedBigInteger('notification_id')->nullable();
-            $table->unsignedBigInteger('platform_id')->nullable();
+            $table->unsignedInteger('notification_id')->nullable();
+            $table->unsignedInteger('platform_id')->nullable();
 
             $table->string('content', 1024)->nullable();
             $table->text('description')->nullable();
@@ -27,13 +29,13 @@ class CreateDzInappNotificationsTable extends Migration {
             $table->string('deep_link_url', 1024)->nullable();
             $table->integer('offset_end_time')->nullable();
 
-            $table->unsignedBigInteger('run_condition_id')->nullable();
+            $table->unsignedInteger('run_condition_id')->nullable();
 
             $table->boolean('default_users')->default(true);
             $table->boolean('active')->default(true);
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('notification_id')->references('id')->on('dz_notification_details');
             $table->foreign('platform_id')->references('id')->on('dz_lookup_values');
@@ -52,7 +54,8 @@ class CreateDzInappNotificationsTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::dropIfExists('dz_inapp_notifications');
     }
 }

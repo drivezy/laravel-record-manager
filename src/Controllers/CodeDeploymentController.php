@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\CodeDeployment;
  * Class CodeDeploymentController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class CodeDeploymentController extends RecordController {
+class CodeDeploymentController extends RecordController
+{
     /**
      * @var string
      */

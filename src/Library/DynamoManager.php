@@ -2,13 +2,15 @@
 
 namespace Drivezy\LaravelRecordManager\Library;
 
+use AWS;
 use Drivezy\LaravelUtility\LaravelUtility;
 
 /**
  * Class DynamoManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class DynamoManager {
+class DynamoManager
+{
     /**
      * DynamoDB client.
      *
@@ -17,22 +19,14 @@ class DynamoManager {
     private static $client = null;
 
     /**
-     * Initializes DynamoDb client.
-     *
-     * This methods should be invoked in every public methods.
-     */
-    private static function init () {
-        if ( self::$client === null ) self::$client = \AWS::createClient("DynamoDb");
-    }
-
-    /**
      * Writes to DynamoDB table.
      *
      * @param string $table the table name
      * @param array $item data to be written
      * @return bool status
      */
-    public static function pushToDynamo ($table, $item) {
+    public static function pushToDynamo ($table, $item)
+    {
         if ( !LaravelUtility::isInstanceProduction() ) return false;
 
         self::init();
@@ -47,11 +41,22 @@ class DynamoManager {
     }
 
     /**
+     * Initializes DynamoDb client.
+     *
+     * This methods should be invoked in every public methods.
+     */
+    private static function init ()
+    {
+        if ( self::$client === null ) self::$client = AWS::createClient("DynamoDb");
+    }
+
+    /**
      * @param $table
      * @param $items
      * @return bool
      */
-    public static function pushMultipleToDynamo ($table, $items) {
+    public static function pushMultipleToDynamo ($table, $items)
+    {
         if ( !LaravelUtility::isInstanceProduction() ) return false;
 
         self::init();

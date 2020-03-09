@@ -9,7 +9,8 @@ use Drivezy\LaravelUtility\Models\BaseModel;
  * Class SystemScript
  * @package Drivezy\LaravelRecordManager\Models
  */
-class SystemScript extends BaseModel {
+class SystemScript extends BaseModel
+{
     /**
      * @var string
      */
@@ -19,7 +20,8 @@ class SystemScript extends BaseModel {
     /**
      * Override the boot functionality to add up the observer
      */
-    public static function boot () {
+    public static function boot ()
+    {
         parent::boot();
         self::observe(new SystemScriptObserver());
     }

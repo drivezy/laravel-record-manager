@@ -9,12 +9,14 @@ use Illuminate\Database\Eloquent\Model;
  * Class ModelScanner
  * @package Drivezy\LaravelRecordManager\Library
  */
-class ModelScanner {
+class ModelScanner
+{
 
     /**
      *
      */
-    public static function scanModels () {
+    public static function scanModels ()
+    {
         self::loadModels(app_path() . '/Models', config('utility.app_namespace') . '\\Models');
     }
 
@@ -23,7 +25,8 @@ class ModelScanner {
      * @param $namespace
      * @return string
      */
-    public static function loadModels ($path, $namespace) {
+    public static function loadModels ($path, $namespace)
+    {
         $files = self::getDirectoryListings($path);
         foreach ( $files as $file ) {
             $strippedFile = str_replace('.php', '', $file);
@@ -60,7 +63,8 @@ class ModelScanner {
      * @param $directory
      * @return array
      */
-    private static function getDirectoryListings ($directory) {
+    private static function getDirectoryListings ($directory)
+    {
         return array_values(array_diff(scandir($directory), array('..', '.')));
 
     }

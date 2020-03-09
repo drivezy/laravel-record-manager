@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Storage;
  * Class MailMessageListener
  * @package Drivezy\LaravelRecordManager\Library\Listeners
  */
-class MailMessageListener {
+class MailMessageListener
+{
 
     /**
      * @param MessageSent $messageSent
      */
-    public function handle (MessageSent $messageSent) {
+    public function handle (MessageSent $messageSent)
+    {
         $users = [];
         $primaryUser = null;
         foreach ( $messageSent->message->getTo() as $key => $item ) {

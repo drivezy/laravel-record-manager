@@ -34,6 +34,18 @@ class WhatsAppManager
     }
 
     /**
+     * get user record is numeric value is passed against the user
+     * and then set user record against the data.
+     */
+    private function setUserData ()
+    {
+        //create user out of the user attribute.
+        //if integer then create user object out of it
+        $userModel = LaravelUtility::getUserModelFullQualifiedName();
+        $this->user = is_numeric($this->user) ? $userModel::find($this->user) : $this->user;
+    }
+
+    /**
      * @param $template
      * @param $params
      * @param array $attributes
@@ -54,18 +66,6 @@ class WhatsAppManager
         //if not then send it to the whatsapp gateway
 
         ( new $gateway($message) )->process($template->identifier, $params);
-    }
-
-    /**
-     * get user record is numeric value is passed against the user
-     * and then set user record against the data.
-     */
-    private function setUserData ()
-    {
-        //create user out of the user attribute.
-        //if integer then create user object out of it
-        $userModel = LaravelUtility::getUserModelFullQualifiedName();
-        $this->user = is_numeric($this->user) ? $userModel::find($this->user) : $this->user;
     }
 
     /**

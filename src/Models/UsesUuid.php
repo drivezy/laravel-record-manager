@@ -6,14 +6,16 @@ use Webpatser\Uuid\Uuid;
 
 /**
  * Trait UsesUuid
- * @package JRApp\Models
+ * @package Drivezy\Models
  */
-trait UsesUuid {
+trait UsesUuid
+{
 
     /**
      *
      */
-    protected static function bootUsesUuid () {
+    protected static function bootUsesUuid ()
+    {
         static::creating(function ($model) {
             $model->uuid = (string) Uuid::generate();
         });

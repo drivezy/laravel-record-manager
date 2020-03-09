@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\SMSTemplate;
  * Class SMSTemplateController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class SMSTemplateController extends RecordController {
+class SMSTemplateController extends RecordController
+{
     /**
      * @var string
      */

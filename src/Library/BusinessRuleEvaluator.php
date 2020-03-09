@@ -4,15 +4,17 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelRecordManager\Models\BusinessRule;
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Support\Facades\Auth;
 
 /**
  * Class BusinessRuleEvaluator
  * @package Drivezy\LaravelRecordManager\Library
  */
-class BusinessRuleEvaluator {
+class BusinessRuleEvaluator
+{
     /**
-     * @var bool|\Illuminate\Contracts\Auth\Authenticatable|null
+     * @var bool|Authenticatable|null
      */
     private $auth = false;
     /**
@@ -29,7 +31,8 @@ class BusinessRuleEvaluator {
      * @param BusinessRule $rule
      * @param null $data
      */
-    public function __construct (BusinessRule $rule, $data = null) {
+    public function __construct (BusinessRule $rule, $data = null)
+    {
         $this->auth = Auth::user();
 
         $this->rule = $rule;
@@ -39,7 +42,8 @@ class BusinessRuleEvaluator {
     /**
      * @return bool
      */
-    public function process () {
+    public function process ()
+    {
         if ( !$this->evaluateFilterCondition() )
             return false;
 
@@ -52,7 +56,8 @@ class BusinessRuleEvaluator {
     /**
      * @return bool
      */
-    private function evaluateFilterCondition () {
+    private function evaluateFilterCondition ()
+    {
         if ( !$this->rule->filter_condition ) return true;
 
         $data = $this->data;
@@ -68,7 +73,8 @@ class BusinessRuleEvaluator {
     /**
      * @return bool
      */
-    private function evaluateRole () {
+    private function evaluateRole ()
+    {
         $roles = $this->rule->roles;
 
         //check if there were any role attached to the rule

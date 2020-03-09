@@ -2,16 +2,14 @@
 
 namespace Drivezy\LaravelRecordManager\Observers;
 
-use Drivezy\LaravelAccessManager\AccessManager;
 use Drivezy\LaravelUtility\Observers\BaseObserver;
-use Illuminate\Database\Eloquent\Model as Eloquent;
-use Illuminate\Support\Facades\Auth;
 
 /**
  * Class ListPreferenceObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class ListPreferenceObserver extends BaseObserver {
+class ListPreferenceObserver extends BaseObserver
+{
     /**
      * @var array
      */

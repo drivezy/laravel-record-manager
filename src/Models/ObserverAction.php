@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Models;
 
 use Drivezy\LaravelRecordManager\Observers\ObserverActionObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class ObserverAction
@@ -15,6 +16,15 @@ class ObserverAction extends BaseModel
      * @var string
      */
     protected $table = 'dz_observer_actions';
+
+    /**
+     * Override the boot functionality to add up the observer
+     */
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new ObserverActionObserver());
+    }
 
     /**
      * @return mixed
@@ -33,20 +43,10 @@ class ObserverAction extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function notification ()
     {
         return $this->belongsTo(Notification::class);
-    }
-
-
-    /**
-     * Override the boot functionality to add up the observer
-     */
-    public static function boot ()
-    {
-        parent::boot();
-        self::observe(new ObserverActionObserver());
     }
 }

@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\AuditLog;
 use Drivezy\LaravelUtility\LaravelUtility;
+use Exception;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
@@ -59,7 +60,7 @@ class AuditManager
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function process ()
     {
@@ -86,17 +87,6 @@ class AuditManager
     }
 
     /**
-     * if id is present on the original record then its not an insert operation
-     * @return bool
-     */
-    private function isInsertOperation ()
-    {
-        if ( $this->model->getOriginal('id') != $this->model->getAttribute('id') ) return true;
-
-        return false;
-    }
-
-    /**
      * Check at high level if the model in itself is auditable or not
      * @return bool
      */
@@ -107,6 +97,17 @@ class AuditManager
 
         //check if the model is auditable or not
         if ( $this->model->auditable ) return true;
+
+        return false;
+    }
+
+    /**
+     * if id is present on the original record then its not an insert operation
+     * @return bool
+     */
+    private function isInsertOperation ()
+    {
+        if ( $this->model->getOriginal('id') != $this->model->getAttribute('id') ) return true;
 
         return false;
     }
@@ -159,7 +160,7 @@ class AuditManager
      * create record entity for the audit log logging against the user.
      * data is in particular for the dynamo-db standard
      * @param $attribute
-     * @throws \Exception
+     * @throws Exception
      */
     private function recordAuditLog ($attribute)
     {
@@ -211,7 +212,7 @@ class AuditManager
 
     /**
      * @return bool|float|int
-     * @throws \Exception
+     * @throws Exception
      */
     private function getTime ()
     {

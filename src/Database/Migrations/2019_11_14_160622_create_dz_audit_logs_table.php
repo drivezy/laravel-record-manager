@@ -14,7 +14,7 @@ class CreateDzAuditLogsTable extends Migration
     public function up ()
     {
         Schema::create('dz_audit_logs', function (Blueprint $table) {
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->char('model_hash', 32)->nullable();
             $table->unsignedInteger('model_id')->nullable();

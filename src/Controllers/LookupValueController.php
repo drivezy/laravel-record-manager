@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Models\LookupValue;
  * Class LookupValueController
  * @package Drivezy\LaravelRecordManager\Controller
  */
-class LookupValueController extends RecordController {
+class LookupValueController extends RecordController
+{
     /**
      * @var string
      */

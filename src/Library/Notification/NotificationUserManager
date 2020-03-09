@@ -14,21 +14,38 @@ use Illuminate\Support\Facades\DB;
  * Class NotificationUserManager
  * @package Drivezy\LaravelRecordManager\Library\Notification
  */
-class  NotificationUserManager {
+class  NotificationUserManager
+{
     /**
      * NotificationUserManager constructor.
      * @param array $args
      */
-    public function __construct ($args = []) {
+    public function __construct ($args = [])
+    {
         foreach ( $args as $key => $value )
             $this->{$key} = $value;
+    }
+
+    /**
+     * @param $default
+     * @param $recipients
+     * @return array
+     */
+    public function getTotalUsers ($default, $recipients)
+    {
+        $users = !is_null($recipients) ? self::getNotificationUsers($recipients) : [];
+        if ( $default )
+            $users = self::getUniqueUserRecords(array_merge($users, $this->default_users));
+
+        return $users;
     }
 
     /**
      * @param $recipients
      * @return array
      */
-    public function getNotificationUsers ($recipients) {
+    public function getNotificationUsers ($recipients)
+    {
         if ( !$recipients ) return [];
         $users = [];
 
@@ -41,23 +58,11 @@ class  NotificationUserManager {
     }
 
     /**
-     * @param $default
-     * @param $recipients
-     * @return array
-     */
-    public function getTotalUsers ($default, $recipients) {
-        $users = !is_null($recipients) ? self::getNotificationUsers($recipients) : [];
-        if ( $default )
-            $users = self::getUniqueUserRecords(array_merge($users, $this->default_users));
-
-        return $users;
-    }
-
-    /**
      * @param $recipient
      * @return array
      */
-    private function prepareNotificationRecipient ($recipient) {
+    private function prepareNotificationRecipient ($recipient)
+    {
         if ( !$recipient ) return [];
 
         $users = [];
@@ -75,7 +80,8 @@ class  NotificationUserManager {
      * @param $recipient
      * @return array
      */
-    private function getUsersFromUser ($recipient) {
+    private function getUsersFromUser ($recipient)
+    {
         $users = [];
         if ( is_null($recipient->users) ) return $users;
 
@@ -87,11 +93,53 @@ class  NotificationUserManager {
     }
 
     /**
+     * create user object against a user model object
+     * @param $user
+     * @return object
+     */
+    private function getUserObjectFromUser ($user)
+    {
+        $obj = self::createRawTemplateForUser();
+
+        if ( isset($user->id) )
+            $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)
+                ->where('source_type', md5(LaravelUtility::getUserModelFullQualifiedName()))
+                ->where('source_id', $user->id)->first();
+
+        if ( $user && isset($subscription) ) {
+            $obj->email = $subscription->email ? $user->email : null;
+            $obj->mobile = $subscription->sms ? $user->mobile : null;
+            $obj->name = 'Rider';
+        } else {
+            $obj->email = isset($user->email) ? $user->email : null;
+            $obj->mobile = isset($user->mobile) ? $user->mobile : null;
+            $obj->id = isset($user->id) ? $user->id : null;
+            $obj->name = 'Rider';
+        }
+
+        return $obj;
+    }
+
+    /**
+     * @return object
+     */
+    private function createRawTemplateForUser ()
+    {
+        return (object) [
+            'email'  => null,
+            'mobile' => null,
+            'id'     => null,
+            'name'   => null,
+        ];
+    }
+
+    /**
      * get user record from the multiple group defined in the system
      * @param $recipient
      * @return array
      */
-    private function getUsersFromGroup ($recipient) {
+    private function getUsersFromGroup ($recipient)
+    {
         $users = [];
         if ( is_null($recipient->user_groups) ) return $users;
 
@@ -103,11 +151,122 @@ class  NotificationUserManager {
     }
 
     /**
+     * get group members against a group
+     * @param $groupId
+     * @return array
+     */
+    private function getGroupMemberUsers ($groupId)
+    {
+        $users = [];
+        $members = UserGroupMember::with('user')->where('group_id', $groupId)->get();
+        foreach ( $members as $member ) {
+            $obj = self::createRawTemplateForUser();
+
+            $obj->email = $member->user->email;
+            $obj->mobile = $member->user->mobile;
+            $obj->id = $member->user->id;
+            $obj->name = 'Rider';
+
+            array_push($users, $obj);
+        }
+
+        return $users;
+    }
+
+    /**
+     * Get user object from the column in the object model
+     * @param $recipient
+     * @return array
+     */
+    private function getUsersFromFields ($recipient)
+    {
+        if ( !$recipient->fields ) return [];
+        $users = [];
+
+        foreach ( $recipient->fields as $column ) {
+            $columnValue = $this->data[ $column->column_name ];
+            if ( !$columnValue ) continue;
+
+            if ( $column->referenced_model_id == $this->getUserClassModelId() )
+                array_push($users, self::getUserObject($columnValue));
+
+            if ( $column->referenced_model_id == $this->getUseGroupClassModelId() )
+                $users = array_merge($users, self::getGroupMemberUsers($columnValue));
+        }
+
+        return $users;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getUserClassModelId ()
+    {
+        $identifier = 'dz_notification_details.user.class.id';
+        $id = Cache::get($identifier, false);
+        if ( !$id ) {
+            $record = DataModel::where('model_hash', md5(LaravelUtility::getUserModelFullQualifiedName()))->first();
+            if ( $record ) {
+                Cache::forever($identifier, $record->id);
+                $id = $record->id;
+            }
+        }
+
+        return $id;
+    }
+
+    /**
+     * create user object from user id
+     * @param $id
+     * @return object
+     */
+    private function getUserObject ($id)
+    {
+        $userClass = LaravelUtility::getUserModelFullQualifiedName();
+        $user = $userClass::find($id);
+        $obj = self::createRawTemplateForUser();
+
+        $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)->where('source_type', md5($userClass))->first();
+        if ( $subscription ) {
+            $obj->email = $subscription->email ? $user->email : null;
+            $obj->mobile = $subscription->sms ? $user->mobile : null;
+            $obj->id = $subscription->push ? $id : null;
+            $obj->name = 'Rider';
+        } else {
+            $obj->email = $user->email;
+            $obj->mobile = $user->mobile;
+            $obj->id = $id;
+            $obj->name = 'Rider';
+        }
+
+        return $obj;
+    }
+
+    /**
+     * @return mixed
+     */
+    private function getUseGroupClassModelId ()
+    {
+        $identifier = 'dz_notification_details.user.group.class.id';
+        $id = Cache::get($identifier, false);
+        if ( !$id ) {
+            $record = DataModel::where('model_hash', md5(UserGroup::class))->first();
+            if ( $record ) {
+                Cache::forever($identifier, $record->id);
+                $id = $record->id;
+            }
+        }
+
+        return $id;
+    }
+
+    /**
      * get user object from the query
      * @param $recipient
      * @return array
      */
-    private function getUsersFromQuery ($recipient) {
+    private function getUsersFromQuery ($recipient)
+    {
         if ( !$recipient->query_id ) return [];
         $users = [];
 
@@ -131,34 +290,12 @@ class  NotificationUserManager {
     }
 
     /**
-     * Get user object from the column in the object model
-     * @param $recipient
-     * @return array
-     */
-    private function getUsersFromFields ($recipient) {
-        if ( !$recipient->fields ) return [];
-        $users = [];
-
-        foreach ( $recipient->fields as $column ) {
-            $columnValue = $this->data[ $column->column_name ];
-            if ( !$columnValue ) continue;
-
-            if ( $column->referenced_model_id == $this->getUserClassModelId() )
-                array_push($users, self::getUserObject($columnValue));
-
-            if ( $column->referenced_model_id == $this->getUseGroupClassModelId() )
-                $users = array_merge($users, self::getGroupMemberUsers($columnValue));
-        }
-
-        return $users;
-    }
-
-    /**
      * get users from direct user insertions
      * @param $recipient
      * @return array
      */
-    public function getUserFromDirectInsertions ($recipient) {
+    public function getUserFromDirectInsertions ($recipient)
+    {
         if ( !$recipient->direct_users ) return [];
 
         $users = [];
@@ -169,98 +306,12 @@ class  NotificationUserManager {
     }
 
     /**
-     * create user object from user id
-     * @param $id
-     * @return object
-     */
-    private function getUserObject ($id) {
-        $userClass = LaravelUtility::getUserModelFullQualifiedName();
-        $user = $userClass::find($id);
-        $obj = self::createRawTemplateForUser();
-
-        $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)->where('source_type', md5($userClass))->first();
-        if ( $subscription ) {
-            $obj->email = $subscription->email ? $user->email : null;
-            $obj->mobile = $subscription->sms ? $user->mobile : null;
-            $obj->id = $subscription->push ? $id : null;
-            $obj->name = 'Rider';
-        } else {
-            $obj->email = $user->email;
-            $obj->mobile = $user->mobile;
-            $obj->id = $id;
-            $obj->name = 'Rider';
-        }
-
-        return $obj;
-    }
-
-    /**
-     * create user object against a user model object
-     * @param $user
-     * @return object
-     */
-    private function getUserObjectFromUser ($user) {
-        $obj = self::createRawTemplateForUser();
-
-        if ( isset($user->id) )
-            $subscription = NotificationSubscriber::where('notification_id', $this->notification->id)
-                ->where('source_type', md5(LaravelUtility::getUserModelFullQualifiedName()))
-                ->where('source_id', $user->id)->first();
-
-        if ( $user && isset($subscription) ) {
-            $obj->email = $subscription->email ? $user->email : null;
-            $obj->mobile = $subscription->sms ? $user->mobile : null;
-            $obj->name = 'Rider';
-        } else {
-            $obj->email = isset($user->email) ? $user->email : null;
-            $obj->mobile = isset($user->mobile) ? $user->mobile : null;
-            $obj->id = isset($user->id) ? $user->id : null;
-            $obj->name = 'Rider';
-        }
-
-        return $obj;
-    }
-
-    /**
-     * get group members against a group
-     * @param $groupId
-     * @return array
-     */
-    private function getGroupMemberUsers ($groupId) {
-        $users = [];
-        $members = UserGroupMember::with('user')->where('group_id', $groupId)->get();
-        foreach ( $members as $member ) {
-            $obj = self::createRawTemplateForUser();
-
-            $obj->email = $member->user->email;
-            $obj->mobile = $member->user->mobile;
-            $obj->id = $member->user->id;
-            $obj->name = 'Rider';
-
-            array_push($users, $obj);
-        }
-
-        return $users;
-    }
-
-    /**
-     * @return object
-     */
-    private function createRawTemplateForUser () {
-        return (object) [
-            'email'  => null,
-            'mobile' => null,
-            'id'     => null,
-            'name'   => null,
-        ];
-    }
-
-    /**
      * get unique user record
      * @param $users
      * @return array
      */
-    private function getUniqueUserRecords ($users) {
+    private function getUniqueUserRecords ($users)
+    {
         $processedIds = [];
         $uniqueUsers = [];
 
@@ -275,39 +326,5 @@ class  NotificationUserManager {
         }
 
         return $uniqueUsers;
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getUserClassModelId () {
-        $identifier = 'dz_notification_details.user.class.id';
-        $id = Cache::get($identifier, false);
-        if ( !$id ) {
-            $record = DataModel::where('model_hash', md5(LaravelUtility::getUserModelFullQualifiedName()))->first();
-            if ( $record ) {
-                Cache::forever($identifier, $record->id);
-                $id = $record->id;
-            }
-        }
-
-        return $id;
-    }
-
-    /**
-     * @return mixed
-     */
-    private function getUseGroupClassModelId () {
-        $identifier = 'dz_notification_details.user.group.class.id';
-        $id = Cache::get($identifier, false);
-        if ( !$id ) {
-            $record = DataModel::where('model_hash', md5(UserGroup::class))->first();
-            if ( $record ) {
-                Cache::forever($identifier, $record->id);
-                $id = $record->id;
-            }
-        }
-
-        return $id;
     }
 }

@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\DocumentManager;
  * Class DocumentController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class DocumentController extends RecordController {
+class DocumentController extends RecordController
+{
     /**
      * @var string
      */

@@ -10,7 +10,8 @@ use Illuminate\Support\Facades\Auth;
  * Class SecurityRuleEvaluator
  * @package Drivezy\LaravelRecordManager\Library
  */
-class SecurityRuleEvaluator {
+class SecurityRuleEvaluator
+{
 
     private $auth = false;
     private $rule = null;
@@ -21,7 +22,8 @@ class SecurityRuleEvaluator {
      * @param SecurityRule $rule
      * @param $data the current state of the model onto which the rule is being processed
      */
-    public function __construct ($rule, $data = null) {
+    public function __construct ($rule, $data = null)
+    {
         $this->auth = Auth::user();
 
         $this->rule = $rule;
@@ -32,7 +34,8 @@ class SecurityRuleEvaluator {
      * validate if the security rule is being passed by the system
      * If any one of the rule fails, the rule is passed void
      */
-    public function process () {
+    public function process ()
+    {
         if ( !self::evaluateRole() ) return false;
 
         if ( !self::evaluateFilterCondition() ) return false;
@@ -46,7 +49,8 @@ class SecurityRuleEvaluator {
      * Check if the user has necessary roles
      * @return bool
      */
-    private function evaluateRole () {
+    private function evaluateRole ()
+    {
         $roles = $this->rule->roles;
 
         //check if there were any role attached to the rule
@@ -64,7 +68,8 @@ class SecurityRuleEvaluator {
     /**
      * @return bool
      */
-    private function evaluateFilterCondition () {
+    private function evaluateFilterCondition ()
+    {
         if ( !$this->rule->filter_condition ) return true;
 
         $data = $this->data;
@@ -81,7 +86,8 @@ class SecurityRuleEvaluator {
     /**
      * @return bool
      */
-    private function evaluateAdvancedCondition () {
+    private function evaluateAdvancedCondition ()
+    {
         if ( !$this->rule->script_id ) return true;
 
         $user = $this->auth;

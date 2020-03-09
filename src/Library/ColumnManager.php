@@ -4,24 +4,24 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\Column;
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
-class ColumnManager {
+class ColumnManager
+{
 
+    public $columns = [];
+    public $restricted = [];
+    public $restrictedIdentifiers = [];
+    public $allowed = [];
+    public $allowedIdentifiers = [];
+    public $encryptedColumns = [];
+    public $sourceColumns = [];
     private $rules = [];
     private $data = null;
 
-    public $columns = [];
-
-    public $restricted = [];
-    public $restrictedIdentifiers = [];
-
-    public $allowed = [];
-    public $allowedIdentifiers = [];
-
-    public $encryptedColumns = [];
-    public $sourceColumns = [];
-
-    public function __construct ($type, $id, $obj = []) {
+    public function __construct ($type, $id, $obj = [])
+    {
         $this->source_type = $type;
         $this->source_id = $id;
 
@@ -34,7 +34,8 @@ class ColumnManager {
     /**
      *
      */
-    public function process () {
+    public function process ()
+    {
         $this->columns = $this->getDictionary();
 
         foreach ( $this->columns as $column ) {
@@ -62,9 +63,10 @@ class ColumnManager {
     }
 
     /**
-     * @return Column[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     * @return Column[]|Builder[]|\Illuminate\Database\Eloquent\Collection|Collection
      */
-    public function getDictionary () {
+    public function getDictionary ()
+    {
         return Column::with(['reference_model'])->where('source_type', $this->source_type)
             ->where('source_id', $this->source_id)
             ->get();
@@ -76,7 +78,8 @@ class ColumnManager {
      * @param $sourceId
      * @return object
      */
-    public static function getSourceColumnDetails ($source, $sourceId) {
+    public static function getSourceColumnDetails ($source, $sourceId)
+    {
         //find the model against which record is to be found out
         $source = DataModel::where('model_hash', $source)->first();
         $source_id = $sourceId;

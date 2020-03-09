@@ -1,6 +1,5 @@
 <?php
 
-use App\User;
 use Drivezy\LaravelRecordManager\Database\Seeds\DocumentTypeSeeder;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Models\LookupValue;
@@ -8,30 +7,32 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDzDocumentDetailsTable extends Migration {
+class CreateDzDocumentDetailsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_document_details', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
             $lookupTable = ( new LookupValue() )->getTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->string('source_type')->nullable();
-            $table->unsignedBigInteger('source_id')->nullable();
+            $table->unsignedInteger('source_id')->nullable();
 
-            $table->unsignedBigInteger('document_type_id')->nullable();
+            $table->unsignedInteger('document_type_id')->nullable();
             $table->string('document_url');
 
             $table->boolean('restricted_access')->default(false);
             $table->date('expiry_date')->nullable();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('document_type_id')->references('id')->on($lookupTable);
 
@@ -50,7 +51,8 @@ class CreateDzDocumentDetailsTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::dropIfExists('dz_document_details');
     }
 }

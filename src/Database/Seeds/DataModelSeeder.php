@@ -11,13 +11,15 @@ use Drivezy\LaravelUtility\LaravelUtility;
  * Class DataModelSeeder
  * @package Drivezy\LaravelRecordManager\Database\Seeds
  */
-class DataModelSeeder extends BaseSeeder {
+class DataModelSeeder extends BaseSeeder
+{
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run () {
+    public function run ()
+    {
         $records = [
             [
                 'name'                => 'User',

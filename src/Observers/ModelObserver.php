@@ -9,7 +9,8 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * Class ModelObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class ModelObserver extends BaseObserver {
+class ModelObserver extends BaseObserver
+{
     /**
      * @var array
      */
@@ -23,7 +24,8 @@ class ModelObserver extends BaseObserver {
      * @param Eloquent $model
      * @return bool
      */
-    public function saving (Eloquent $model) {
+    public function saving (Eloquent $model)
+    {
         $model->model_hash = md5($model->namespace . '\\' . $model->name);
 
         return parent::saving($model);

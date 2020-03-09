@@ -6,28 +6,30 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDzObserverActionsTable extends Migration {
+class CreateDzObserverActionsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_observer_actions', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->string('name');
 
-            $table->unsignedBigInteger('observer_rule_id')->nullable();
-            $table->unsignedBigInteger('script_id')->nullable();
+            $table->unsignedInteger('observer_rule_id')->nullable();
+            $table->unsignedInteger('script_id')->nullable();
 
-            $table->unsignedBigInteger('execution_order')->default(1);
+            $table->unsignedInteger('execution_order')->default(1);
             $table->boolean('active')->default(true);
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('observer_rule_id')->references('id')->on('dz_system_scripts');
             $table->foreign('script_id')->references('id')->on('dz_system_scripts');
@@ -47,7 +49,8 @@ class CreateDzObserverActionsTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::dropIfExists('dz_observer_actions');
         ( new ModelEventTypeSeeder() )->drop();
     }

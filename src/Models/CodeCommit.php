@@ -9,7 +9,8 @@ use Drivezy\LaravelUtility\Models\BaseModel;
  * Class CodeCommit
  * @package Drivezy\LaravelRecordManager\Models
  */
-class CodeCommit extends BaseModel {
+class CodeCommit extends BaseModel
+{
     /**
      * @var string
      */
@@ -18,7 +19,8 @@ class CodeCommit extends BaseModel {
     /**
      * Over ride the boot functionality
      */
-    protected static function boot () {
+    protected static function boot ()
+    {
         parent::boot();
         self::observe(new CodeCommitObserver());
     }

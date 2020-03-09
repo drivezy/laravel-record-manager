@@ -5,21 +5,23 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDzInappMessagesTable extends Migration {
+class CreateDzInappMessagesTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_inapp_messages', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->uuid('uuid');
 
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->unsignedBigInteger('platform_id')->nullable();
+            $table->unsignedInteger('user_id')->nullable();
+            $table->unsignedInteger('platform_id')->nullable();
 
             $table->string('content', 1024)->nullable();
             $table->text('description')->nullable();
@@ -31,8 +33,8 @@ class CreateDzInappMessagesTable extends Migration {
 
             $table->date('viewed_at')->nullable();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('user_id')->references('id')->on($userTable);
             $table->foreign('platform_id')->references('id')->on('dz_lookup_values');
@@ -50,7 +52,8 @@ class CreateDzInappMessagesTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::dropIfExists('dz_inapp_messages');
     }
 }

@@ -83,23 +83,6 @@ class ModelManager
     }
 
     /**
-     * Validate if the model without any roles attached is approachable or not
-     * @param $model
-     * @param $operation
-     * @return bool
-     */
-    private static function validateUnRegulatedModel ($model, $operation)
-    {
-        //non internal users are allowed
-        if ( !AccessManager::hasRole('internal') ) return false;
-
-        //only allow publicly allowed operation
-        if ( strpos($model->allowed_permissions, $operation) === false ) return false;
-
-        return true;
-    }
-
-    /**
      * validate if the model with role attached is regulated or not
      * @param $model
      * @param $operation
@@ -117,6 +100,22 @@ class ModelManager
         return AccessManager::hasRole($roles) ? true : false;
     }
 
+    /**
+     * Validate if the model without any roles attached is approachable or not
+     * @param $model
+     * @param $operation
+     * @return bool
+     */
+    private static function validateUnRegulatedModel ($model, $operation)
+    {
+        //non internal users are allowed
+        if ( !AccessManager::hasRole('internal') ) return false;
+
+        //only allow publicly allowed operation
+        if ( strpos($model->allowed_permissions, $operation) === false ) return false;
+
+        return true;
+    }
 
     /**
      * @param $model

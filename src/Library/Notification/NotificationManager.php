@@ -4,6 +4,7 @@ namespace Drivezy\LaravelRecordManager\Library\Notification;
 
 use Drivezy\LaravelRecordManager\Models\Notification;
 use Drivezy\LaravelUtility\Library\DateUtil;
+use Log;
 
 /**
  * Class NotificationManager
@@ -29,7 +30,7 @@ class NotificationManager
      */
     public function process ($id = null)
     {
-        \Log::info('i am here : ' . DateUtil::getDateTime());
+        Log::info('i am here : ' . DateUtil::getDateTime());
         //validate if the notification is present or not
         if ( !$this->notification ) return false;
 

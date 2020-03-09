@@ -9,13 +9,15 @@ use Illuminate\Support\Facades\Response;
  * Class ReadRecordController
  * @package Drivezy\LaravelRecordManager\Controller
  */
-class ReadRecordController extends BaseController {
+class ReadRecordController extends BaseController
+{
 
     /**
      * @param Request $request
      * @return mixed
      */
-    public function store (Request $request) {
+    public function store (Request $request)
+    {
         return Response::json(['success' => false, 'response' => 'invalid operation']);
     }
 
@@ -24,7 +26,8 @@ class ReadRecordController extends BaseController {
      * @param $id
      * @return mixed
      */
-    public function update (Request $request, $id) {
+    public function update (Request $request, $id)
+    {
         return Response::json(['success' => false, 'response' => 'invalid operation']);
     }
 
@@ -32,7 +35,8 @@ class ReadRecordController extends BaseController {
      * @param $id
      * @return mixed
      */
-    public function destroy (Request $request, $id) {
+    public function destroy (Request $request, $id)
+    {
         return Response::json(['success' => false, 'response' => 'invalid operation']);
     }
 }

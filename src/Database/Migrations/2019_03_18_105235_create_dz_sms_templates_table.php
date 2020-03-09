@@ -5,25 +5,27 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDzSmsTemplatesTable extends Migration {
+class CreateDzSmsTemplatesTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_sms_templates', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->string('name');
             $table->string('identifier')->unique();
 
             $table->text('content');
-            $table->unsignedBigInteger('gateway_id')->nullable();
+            $table->unsignedInteger('gateway_id')->nullable();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('gateway_id')->references('id')->on('dz_lookup_values');
 
@@ -40,7 +42,8 @@ class CreateDzSmsTemplatesTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::dropIfExists('dz_sms_templates');
     }
 }

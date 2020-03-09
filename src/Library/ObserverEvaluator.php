@@ -6,6 +6,7 @@ use Drivezy\LaravelRecordManager\Library\Notification\NotificationManager;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ObserverAction;
 use Drivezy\LaravelRecordManager\Models\ObserverRule;
+use Exception;
 use Illuminate\Database\Eloquent\Model as Eloquent;
 
 /**
@@ -58,6 +59,21 @@ class ObserverEvaluator
     }
 
     /**
+     * @return int
+     */
+    private function getOperationType ()
+    {
+        //check if it is a new record
+        if ( $this->model->isNewRecord() ) return 71;
+
+        //check if the record is in deleted state
+        if ( $this->model->isTrashed() ) return 73;
+
+        //defaults to updating of record
+        return 72;
+    }
+
+    /**
      * Validate the observer event against a setup rule
      * @param $rule
      * @return mixed|null|void
@@ -96,7 +112,7 @@ class ObserverEvaluator
         $data = $model = $this->model;
         try {
             eval($action->script->script);
-        } catch ( \Exception $e ) {
+        } catch ( Exception $e ) {
             //the exception is to be here
         }
     }
@@ -108,20 +124,5 @@ class ObserverEvaluator
     private function processNotification (ObserverAction $action)
     {
         ( new NotificationManager($action->notification_id) )->process($this->model->id);
-    }
-
-    /**
-     * @return int
-     */
-    private function getOperationType ()
-    {
-        //check if it is a new record
-        if ( $this->model->isNewRecord() ) return 71;
-
-        //check if the record is in deleted state
-        if ( $this->model->isTrashed() ) return 73;
-
-        //defaults to updating of record
-        return 72;
     }
 }
