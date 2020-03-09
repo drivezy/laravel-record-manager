@@ -9,7 +9,8 @@ use Drivezy\LaravelUtility\Models\BaseModel;
  * Class FormPreference
  * @package Drivezy\LaravelRecordManager\Models
  */
-class FormPreference extends BaseModel {
+class FormPreference extends BaseModel
+{
     /**
      * @var string
      */
@@ -19,7 +20,8 @@ class FormPreference extends BaseModel {
     /**
      * Override the boot functionality to add up the observer
      */
-    public static function boot () {
+    public static function boot ()
+    {
         parent::boot();
         self::observe(new FormPreferenceObserver());
     }

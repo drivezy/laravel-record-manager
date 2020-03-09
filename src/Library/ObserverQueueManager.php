@@ -9,13 +9,15 @@ use Drivezy\LaravelUtility\Library\DateUtil;
 use Drivezy\LaravelUtility\Library\QueueManager;
 use Illuminate\Support\Facades\Cache;
 
-class ObserverQueueManager extends QueueManager {
+class ObserverQueueManager extends QueueManager
+{
     private $maxItemsToPush = 0;
 
     /**
      * ObserverQueueManager constructor.
      */
-    public function __construct () {
+    public function __construct ()
+    {
         $this->identifier = 'observer.queue.push';
         parent::__construct();
     }
@@ -23,7 +25,8 @@ class ObserverQueueManager extends QueueManager {
     /**
      * This would poll the event queue table and would process it.
      */
-    public function processQueue () {
+    public function processQueue ()
+    {
         $lastRestartTime = $this->getLastRestartTime();
         while ( true ) {
             $this->needsRestart($lastRestartTime);

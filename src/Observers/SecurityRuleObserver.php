@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class SecurityRuleObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class SecurityRuleObserver extends BaseObserver {
+class SecurityRuleObserver extends BaseObserver
+{
     /**
      * @var array
      */

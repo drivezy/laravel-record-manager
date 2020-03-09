@@ -34,6 +34,17 @@ class SMSManager
     }
 
     /**
+     *
+     */
+    private function setUserData ()
+    {
+        //create user out of the user attribute.
+        //if integer then create user object out of it
+        $userModel = LaravelUtility::getUserModelFullQualifiedName();
+        $this->user = is_numeric($this->user) ? $userModel::find($this->user) : $this->user;
+    }
+
+    /**
      * @param $gateway
      * @param $content
      * @param array $attributes
@@ -51,17 +62,6 @@ class SMSManager
             return ( new FileSMSMessaging($message) )->process();
 
         ( new $gateway($message) )->process();
-    }
-
-    /**
-     *
-     */
-    private function setUserData ()
-    {
-        //create user out of the user attribute.
-        //if integer then create user object out of it
-        $userModel = LaravelUtility::getUserModelFullQualifiedName();
-        $this->user = is_numeric($this->user) ? $userModel::find($this->user) : $this->user;
     }
 
     /**

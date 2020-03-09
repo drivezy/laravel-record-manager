@@ -7,12 +7,14 @@ use Drivezy\LaravelAdmin\Models\ClientScript;
 use Drivezy\LaravelAdmin\Models\UIAction;
 use Drivezy\LaravelRecordManager\Observers\ModelObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class Model
  * @package Drivezy\LaravelRecordManager\Models
  */
-class DataModel extends BaseModel {
+class DataModel extends BaseModel
+{
     /**
      * @var string
      */
@@ -23,59 +25,67 @@ class DataModel extends BaseModel {
     protected $hidden = ['created_by', 'updated_by', 'created_at', 'updated_at', 'deleted_at'];
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * Override the boot functionality to add up the observer
      */
-    public function columns () {
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new ModelObserver());
+    }
+
+    /**
+     * @return HasMany
+     */
+    public function columns ()
+    {
         return $this->hasMany(Column::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function relationships () {
+    public function relationships ()
+    {
         return $this->hasMany(ModelRelationship::class, 'model_id');
     }
 
     /**
      * @return $this
      */
-    public function roles () {
+    public function roles ()
+    {
         return $this->hasMany(RoleAssignment::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function ui_actions () {
+    public function ui_actions ()
+    {
         return $this->hasMany(UIAction::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function client_scripts () {
+    public function client_scripts ()
+    {
         return $this->hasMany(ClientScript::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function security_rules () {
+    public function security_rules ()
+    {
         return $this->hasMany(SecurityRule::class, 'source_id')->where('source_type', md5(self::class));
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
-    public function business_rules () {
+    public function business_rules ()
+    {
         return $this->hasMany(BusinessRule::class, 'model_id');
-    }
-
-    /**
-     * Override the boot functionality to add up the observer
-     */
-    public static function boot () {
-        parent::boot();
-        self::observe(new ModelObserver());
     }
 }

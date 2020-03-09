@@ -2,6 +2,7 @@
 
 namespace Drivezy\LaravelRecordManager\Models;
 
+use AWS;
 use Drivezy\LaravelRecordManager\Library\ModelManager;
 use Drivezy\LaravelUtility\Library\DateUtil;
 
@@ -52,6 +53,47 @@ trait DynamoEloquentTrait
     }
 
     /**
+     * get the dynamo column data from the dynamo db against the
+     * given model and then push first element as dynamo object
+     * @return bool
+     */
+    private function getModelRecord ()
+    {
+        //create dynamo client
+        $client = AWS::createClient("DynamoDb");
+
+        //query the db against the given elements
+        $iterator = $client->getIterator('Query',
+            array(
+                'TableName'     => $this->dynamo_table,
+                'KeyConditions' => array(
+                    'model_hash' => array(
+                        'AttributeValueList' => array(
+                            array('S' => '' . $this->class_hash . ''),
+                        ),
+                        'ComparisonOperator' => 'EQ',
+                    ),
+                    'model_id'   => array(
+                        'AttributeValueList' => array(
+                            array('N' => '' . $this->id . ''),
+                        ),
+                        'ComparisonOperator' => 'EQ',
+                    ),
+                ),
+            ),
+            array(
+                'limit' => 1,
+            ));
+
+        //return first element which every is returned from the request
+        foreach ( $iterator as $item ) {
+            return $item;
+        }
+
+        return [];
+    }
+
+    /**
      * push the columns that are defined as dynamo column to the dynamodb
      * @param $attributes
      */
@@ -86,6 +128,20 @@ trait DynamoEloquentTrait
     }
 
     /**
+     * save the items to the dynamo db
+     * @param $item
+     */
+    private function setModelRecord ($item)
+    {
+        $client = AWS::createClient("DynamoDb");
+        $client->putItem([
+            "TableName"              => $this->dynamo_table,
+            "Item"                   => $item,
+            "ReturnConsumedCapacity" => "NONE",
+        ]);
+    }
+
+    /**
      * remove the dynamo columns from the regular model object
      * and then set it aside in the dynamo element which can then
      * be pushed to the db post final saving
@@ -105,60 +161,5 @@ trait DynamoEloquentTrait
             //remove those columns from the transaction db schema
             unset($this->{$column});
         }
-    }
-
-    /**
-     * get the dynamo column data from the dynamo db against the
-     * given model and then push first element as dynamo object
-     * @return bool
-     */
-    private function getModelRecord ()
-    {
-        //create dynamo client
-        $client = \AWS::createClient("DynamoDb");
-
-        //query the db against the given elements
-        $iterator = $client->getIterator('Query',
-            array(
-                'TableName'     => $this->dynamo_table,
-                'KeyConditions' => array(
-                    'model_hash' => array(
-                        'AttributeValueList' => array(
-                            array('S' => '' . $this->class_hash . ''),
-                        ),
-                        'ComparisonOperator' => 'EQ',
-                    ),
-                    'model_id'   => array(
-                        'AttributeValueList' => array(
-                            array('N' => '' . $this->id . ''),
-                        ),
-                        'ComparisonOperator' => 'EQ',
-                    ),
-                ),
-            ),
-            array(
-                'limit' => 1,
-            ));
-
-        //return first element which every is returned from the request
-        foreach ( $iterator as $item ) {
-            return $item;
-        }
-
-        return [];
-    }
-
-    /**
-     * save the items to the dynamo db
-     * @param $item
-     */
-    private function setModelRecord ($item)
-    {
-        $client = \AWS::createClient("DynamoDb");
-        $client->putItem([
-            "TableName"              => $this->dynamo_table,
-            "Item"                   => $item,
-            "ReturnConsumedCapacity" => "NONE",
-        ]);
     }
 }

@@ -25,18 +25,6 @@ trait DynamoEloquentObserverTrait
     }
 
     /**
-     * Save the elements saved for dynamo columns to the dynamodb
-     * @param Eloquent $model
-     * @return Eloquent
-     */
-    public function postSaved (Eloquent $model)
-    {
-        if ( !$this->validateIfRequired($model) ) return $model;
-
-        $model->setDynamoAttributes();
-    }
-
-    /**
      * check if dynamo eloquent trait is available or not
      * @param Eloquent $model
      * @return bool
@@ -46,5 +34,17 @@ trait DynamoEloquentObserverTrait
         if ( isset($model->dynamo_columns) ) return true;
 
         return false;
+    }
+
+    /**
+     * Save the elements saved for dynamo columns to the dynamodb
+     * @param Eloquent $model
+     * @return Eloquent
+     */
+    public function postSaved (Eloquent $model)
+    {
+        if ( !$this->validateIfRequired($model) ) return $model;
+
+        $model->setDynamoAttributes();
     }
 }

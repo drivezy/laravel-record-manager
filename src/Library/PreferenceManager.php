@@ -10,14 +10,16 @@ use Illuminate\Support\Facades\Auth;
  * Class PreferenceManager
  * @package Drivezy\LaravelRecordManager\Library
  */
-class PreferenceManager {
+class PreferenceManager
+{
 
     /**
      * @param $source
      * @param $id
      * @return mixed
      */
-    public static function getListPreference ($source, $id) {
+    public static function getListPreference ($source, $id)
+    {
         $userId = Auth::id();
 
         $listPreferences = ListPreference::where('source_type', $source)
@@ -35,7 +37,8 @@ class PreferenceManager {
      * @param $id
      * @return mixed
      */
-    public static function getFormPreference ($source, $id) {
+    public static function getFormPreference ($source, $id)
+    {
         $formPreference = FormPreference::where('source_type', $source)
             ->where('source_id', $id)->get();
 

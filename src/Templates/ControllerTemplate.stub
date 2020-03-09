@@ -13,5 +13,5 @@ class {{name}}Controller extends {{read}}RecordController {
     /**
      * @var string
      */
-     public $model = {{name}}::class;
+     protected $model = {{name}}::class;
 }

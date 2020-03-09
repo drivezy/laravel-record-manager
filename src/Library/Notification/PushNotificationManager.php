@@ -6,12 +6,14 @@ use Drivezy\LaravelRecordManager\Models\DeviceToken;
 use Drivezy\LaravelRecordManager\Models\PushNotification;
 use Illuminate\Support\Facades\DB;
 
-class PushNotificationManager extends BaseNotification {
+class PushNotificationManager extends BaseNotification
+{
 
     /**
      * process all push notifications required for the given notification
      */
-    public function process () {
+    public function process ()
+    {
         $this->processPushNotifications();
     }
 
@@ -19,7 +21,8 @@ class PushNotificationManager extends BaseNotification {
      * process push notifications
      * @return mixed
      */
-    private function processPushNotifications () {
+    private function processPushNotifications ()
+    {
         $pushNotifications = PushNotification::with(['active_recipients.custom_query', 'active_recipients.run_condition', 'run_condition', 'custom_query'])
             ->where('notification_id', $this->notification->id)->get();
         foreach ( $pushNotifications as $pushNotification ) {
@@ -35,7 +38,8 @@ class PushNotificationManager extends BaseNotification {
      * @param $pushNotification
      * @return mixed
      */
-    private function processPushNotification ($pushNotification) {
+    private function processPushNotification ($pushNotification)
+    {
         $users = ( new NotificationUserManager($this->user_request_object) )->getTotalUsers($pushNotification->default_users, $pushNotification->active_recipients);
         $devices = $this->getPushNotificationDevices($users, $pushNotification);
 
@@ -74,7 +78,8 @@ class PushNotificationManager extends BaseNotification {
      * @param $pushNotification
      * @return mixed
      */
-    protected function getPushNotificationDevices ($users, $pushNotification) {
+    protected function getPushNotificationDevices ($users, $pushNotification)
+    {
         $data = $this->data;
 
         //get all users who are eligible for the push notification

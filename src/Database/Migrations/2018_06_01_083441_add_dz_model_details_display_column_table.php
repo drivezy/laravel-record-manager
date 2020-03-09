@@ -1,16 +1,18 @@
 <?php
 
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class AddDzModelDetailsDisplayColumnTable extends Migration {
+class AddDzModelDetailsDisplayColumnTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::table('dz_model_details', function (Blueprint $table) {
             $table->string('display_column')->nullable()->after('route_name');
         });
@@ -21,7 +23,8 @@ class AddDzModelDetailsDisplayColumnTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::table('dz_model_details', function (Blueprint $table) {
             $table->dropColumn('display_column');
         });

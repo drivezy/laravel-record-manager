@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\NotificationTrigger;
  * Class NotificationTriggerController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class NotificationTriggerController extends RecordController {
+class NotificationTriggerController extends RecordController
+{
     /**
      * @var string
      */

@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class NotificationTriggerObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class NotificationTriggerObserver extends BaseObserver {
+class NotificationTriggerObserver extends BaseObserver
+{
     /**
      * @var array
      */

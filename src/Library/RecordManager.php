@@ -8,9 +8,10 @@ use Drivezy\LaravelRecordManager\Models\Column;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
+use Drivezy\LaravelUtility\Facade\Message;
+use Exception;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Message;
 
 class RecordManager extends DataManager
 {
@@ -76,7 +77,7 @@ class RecordManager extends DataManager
                 if ( !$data ) {
                     Message::info('Relationship ' . $relationship . ' not found');
                     break;
-                };
+                }
 
                 //user does not have access to the model
                 if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) ) {
@@ -145,6 +146,19 @@ class RecordManager extends DataManager
     }
 
     /**
+     * @param $relationship
+     * @param $include
+     * @return string|string[]
+     */
+    private function getIncludes ($relationship, $include)
+    {
+        $tab = str_replace($relationship . '.', '', $include);
+        if ( $tab != $relationship ) return $tab;
+
+        return str_replace($relationship, null, $include);
+    }
+
+    /**
      * Load the results of the record as requested by the record condition
      */
     private function loadResults ()
@@ -156,7 +170,7 @@ class RecordManager extends DataManager
         foreach ( $this->encryptedColumns as $item ) {
             try {
                 $this->data->{$item} = Crypt::decrypt($this->data->{$item});
-            } catch ( \Exception $e ) {
+            } catch ( Exception $e ) {
                 $this->data->{$item} = 'Invalid Account Number';
             }
         }
@@ -169,18 +183,5 @@ class RecordManager extends DataManager
             $this->data->{$column} = 'Object-' . $sourceRecord[0];
             $this->data->{$sourceId} = 'Record-' . $sourceRecord[1];
         }
-    }
-
-    /**
-     * @param $relationship
-     * @param $include
-     * @return string|string[]
-     */
-    private function getIncludes ($relationship, $include)
-    {
-        $tab = str_replace($relationship . '.', '', $include);
-        if ( $tab != $relationship ) return $tab;
-
-        return str_replace($relationship, null, $include);
     }
 }

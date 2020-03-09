@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class PushNotificationObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class PushNotificationObserver extends BaseObserver {
+class PushNotificationObserver extends BaseObserver
+{
     /**
      * @var array
      */

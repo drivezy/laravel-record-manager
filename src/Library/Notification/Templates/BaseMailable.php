@@ -10,6 +10,7 @@ use Illuminate\Queue\SerializesModels;
  * Class BaseMailable
  * @package Drivezy\LaravelRecordManager\Library\Notification
  */
-class BaseMailable extends Mailable {
+class BaseMailable extends Mailable
+{
     use Queueable, SerializesModels;
 }

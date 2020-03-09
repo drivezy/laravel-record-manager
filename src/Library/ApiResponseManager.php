@@ -5,9 +5,8 @@ namespace Drivezy\LaravelRecordManager\Library;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-
-use JRApp\Libraries\Utility\RecordManagement as RecordManagement;
 
 /**
  * Class ApiResponseManager
@@ -38,7 +37,7 @@ class ApiResponseManager
     }
 
     /**
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function index ()
     {
@@ -54,20 +53,6 @@ class ApiResponseManager
         $data['success'] = true;
 
         return $data;
-    }
-
-    /**
-     * @param $id
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function show ($id)
-    {
-        return RecordManagement::show($id);
-
-        $model = $this->model;
-        $includes = $this->getQueryInclusions();
-
-        return success_response($model::with($includes)->find($id));
     }
 
     /**
@@ -92,40 +77,6 @@ class ApiResponseManager
         $encode['value'] = $arr;
 
         return $encode;
-    }
-
-    /**
-     * @param $query
-     * @return mixed
-     */
-    private function addQueryParams ($query)
-    {
-        $request = $this->request;
-
-        if ( $request->has('scopes') ) {
-            $scopes = explode(',', $request->get('scopes'));
-            foreach ( $scopes as $scope ) {
-                $query->{$scope}();
-            }
-        }
-
-        if ( $request->has('in') ) {
-            $ins = explode("and", $request->get('in'));
-            foreach ( $ins as $in ) {
-                $x = explode('=', $in);
-                $query->whereIn(trim($x[0]), explode(',', trim($x[1])));
-            }
-        }
-
-        if ( $request->has('not_in') ) {
-            $ins = explode("and", $request->get('not_in'));
-            foreach ( $ins as $in ) {
-                $x = explode('=', $in);
-                $query->whereNotIn(trim($x[0]), explode(',', trim($x[1])));
-            }
-        }
-
-        return $query;
     }
 
     /**
@@ -174,6 +125,40 @@ class ApiResponseManager
         $response['response'] = $data;
 
         return $response;
+    }
+
+    /**
+     * @param $query
+     * @return mixed
+     */
+    private function addQueryParams ($query)
+    {
+        $request = $this->request;
+
+        if ( $request->has('scopes') ) {
+            $scopes = explode(',', $request->get('scopes'));
+            foreach ( $scopes as $scope ) {
+                $query->{$scope}();
+            }
+        }
+
+        if ( $request->has('in') ) {
+            $ins = explode("and", $request->get('in'));
+            foreach ( $ins as $in ) {
+                $x = explode('=', $in);
+                $query->whereIn(trim($x[0]), explode(',', trim($x[1])));
+            }
+        }
+
+        if ( $request->has('not_in') ) {
+            $ins = explode("and", $request->get('not_in'));
+            foreach ( $ins as $in ) {
+                $x = explode('=', $in);
+                $query->whereNotIn(trim($x[0]), explode(',', trim($x[1])));
+            }
+        }
+
+        return $query;
     }
 
     /**
@@ -238,6 +223,20 @@ class ApiResponseManager
         }
 
         return $allowedIncludes;
+    }
+
+    /**
+     * @param $id
+     * @return JsonResponse
+     */
+    public function show ($id)
+    {
+        return RecordManagement::show($id);
+
+        $model = $this->model;
+        $includes = $this->getQueryInclusions();
+
+        return success_response($model::with($includes)->find($id));
     }
 
 

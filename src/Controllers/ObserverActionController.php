@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\ObserverAction;
  * Class ObserverActionController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class ObserverActionController extends RecordController {
+class ObserverActionController extends RecordController
+{
     /**
      * @var string
      */

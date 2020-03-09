@@ -10,19 +10,22 @@ use Drivezy\LaravelUtility\Library\DateUtil;
  * Class InAppNotificationManager
  * @package Drivezy\LaravelRecordManager\src\Library\Notification
  */
-class InAppNotificationManager extends BaseNotification {
+class InAppNotificationManager extends BaseNotification
+{
 
     /**
      * process all inapp notifications which are part of it
      */
-    public function process () {
+    public function process ()
+    {
         $this->processInAppNotifications();
     }
 
     /**
      *
      */
-    private function processInAppNotifications () {
+    private function processInAppNotifications ()
+    {
         $inAppNotifications = InAppNotification::with(['active_recipients.custom_query', 'active_recipients.run_condition', 'template.gateway', 'run_condition'])->where('notification_id', $this->notification->id)->get();
         foreach ( $inAppNotifications as $inAppNotification ) {
             if ( $this->validateRunCondition($inAppNotification->run_condition) ) {
@@ -35,7 +38,8 @@ class InAppNotificationManager extends BaseNotification {
     /**
      * @param InAppNotification $inAppNotification
      */
-    private function processInAppNotification (InAppNotification $inAppNotification) {
+    private function processInAppNotification (InAppNotification $inAppNotification)
+    {
         //get all users who are defined for the given notification
         $users = ( new NotificationUserManager($this->user_request_object) )->getTotalUsers($inAppNotification->default_users, $inAppNotification->active_recipients);
 

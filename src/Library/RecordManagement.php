@@ -9,7 +9,7 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * Class RecordManagement
- * @package JRApp\Libraries
+ * @package Drivezy\Libraries
  */
 class RecordManagement
 {
@@ -37,71 +37,18 @@ class RecordManagement
         return $data;
     }
 
-
     /**
-     * @param Request $request
-     * @return mixed
+     * @param $request
+     * @return array
      */
-    public static function store (Request $request)
+    private static function setRequestForExport ($request)
     {
-        $model = self::$model;
-        $data = $model::create($request->except('access_token'));
-
-        return $data;
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public static function show ($id)
-    {
-        $model = self::$model;
-
-        $includes = self::getQueryInclusions();
-        $response['response'] = $model::with($includes)->find($id);
-        $response['success'] = true;
-
-        return $response;
-    }
+        $data['payload'] = $request->only('query', 'in', 'not_in', 'export_columns', 'export_comment', 'export_name', 'order');
+        $data['user_id'] = Auth::id();
+        $data['model'] = self::$model;
 
 
-    /**
-     * @param Request $request
-     * @param $id
-     * @return null
-     */
-    public static function update (Request $request, $id)
-    {
-        $model = self::$model;
-
-        $data = $model::find($id);
-        if ( !$data ) return null;
-
-        $inputs = $request->except('deleted_at', 'created_at', 'updated_at', 'created_by', 'updated_by', 'access_token');
-
-        foreach ( $inputs as $key => $value )
-            $data->setAttribute($key, self::convertToDbValue($value));
-
-        $data->save();
-
-        return $data;
-    }
-
-    /**
-     * @param $id
-     * @return mixed
-     */
-    public static function destroy ($id)
-    {
-        $model = self::$model;
-
-        $data = $model::find($id);
-        if ( !$data )
-            return null;
-        $data->delete();
-
-        return $data;
+        return ["success" => true, "response" => EventQueueManager::setEvent('export.query.data', serialize($data))];
     }
 
     /**
@@ -126,19 +73,6 @@ class RecordManagement
         $encode['value'] = $arr;
 
         return $encode;
-    }
-
-    /**
-     * @param $query
-     * @param $formQuery
-     * @return array
-     */
-    public static function getRecordDataWithQuery ($query, $formQuery)
-    {
-        $encodedQuery = self::getEncodedQuery($formQuery);
-        $query = $query->whereRaw($encodedQuery['query'], $encodedQuery['value']);
-
-        return self::getRecordData($query);
     }
 
     /**
@@ -189,62 +123,6 @@ class RecordManagement
     }
 
     /**
-     * @return mixed
-     */
-    private static function getDictionaryStarter ()
-    {
-        $splits = explode('\\', self::$model);
-
-        return end($splits);
-    }
-
-    /**
-     * @param $request
-     * @return array
-     */
-    private static function setRequestForExport ($request)
-    {
-        $data['payload'] = $request->only('query', 'in', 'not_in', 'export_columns', 'export_comment', 'export_name', 'order');
-        $data['user_id'] = Auth::id();
-        $data['model'] = self::$model;
-
-
-        return ["success" => true, "response" => EventQueueManager::setEvent('export.query.data', serialize($data))];
-    }
-
-    /**
-     * Convert the data into the corresponding db value. Handling null and empty as well as 0 & false ones
-     * @param $value
-     * @return int|null
-     */
-    public static function convertToDbValue ($value)
-    {
-        if ( is_null($value) ) {
-            $val = null;
-        } elseif ( $value === 0 || $value === "0" || $value === false || $value === "false" ) {
-            $val = 0;
-        } elseif ( empty($value) ) {
-            $val = null;
-        } else
-            $val = $value;
-
-        return $val;
-    }
-
-    /**
-     * @return array
-     */
-    private static function getQueryInclusions ()
-    {
-        $includes = \Illuminate\Support\Facades\Request::get('includes');
-        if ( !$includes ) return [];
-
-        if ( $includes == 'null' ) return [];
-
-        return explode(',', $includes);
-    }
-
-    /**
      * @param $query
      * @return mixed
      */
@@ -288,6 +166,116 @@ class RecordManagement
     }
 
     /**
+     * @return array
+     */
+    private static function getQueryInclusions ()
+    {
+        $includes = \Illuminate\Support\Facades\Request::get('includes');
+        if ( !$includes ) return [];
+
+        if ( $includes == 'null' ) return [];
+
+        return explode(',', $includes);
+    }
+
+    /**
+     * @param Request $request
+     * @return mixed
+     */
+    public static function store (Request $request)
+    {
+        $model = self::$model;
+        $data = $model::create($request->except('access_token'));
+
+        return $data;
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public static function show ($id)
+    {
+        $model = self::$model;
+
+        $includes = self::getQueryInclusions();
+        $response['response'] = $model::with($includes)->find($id);
+        $response['success'] = true;
+
+        return $response;
+    }
+
+    /**
+     * @param Request $request
+     * @param $id
+     * @return null
+     */
+    public static function update (Request $request, $id)
+    {
+        $model = self::$model;
+
+        $data = $model::find($id);
+        if ( !$data ) return null;
+
+        $inputs = $request->except('deleted_at', 'created_at', 'updated_at', 'created_by', 'updated_by', 'access_token');
+
+        foreach ( $inputs as $key => $value )
+            $data->setAttribute($key, self::convertToDbValue($value));
+
+        $data->save();
+
+        return $data;
+    }
+
+    /**
+     * Convert the data into the corresponding db value. Handling null and empty as well as 0 & false ones
+     * @param $value
+     * @return int|null
+     */
+    public static function convertToDbValue ($value)
+    {
+        if ( is_null($value) ) {
+            $val = null;
+        } elseif ( $value === 0 || $value === "0" || $value === false || $value === "false" ) {
+            $val = 0;
+        } elseif ( empty($value) ) {
+            $val = null;
+        } else
+            $val = $value;
+
+        return $val;
+    }
+
+    /**
+     * @param $id
+     * @return mixed
+     */
+    public static function destroy ($id)
+    {
+        $model = self::$model;
+
+        $data = $model::find($id);
+        if ( !$data )
+            return null;
+        $data->delete();
+
+        return $data;
+    }
+
+    /**
+     * @param $query
+     * @param $formQuery
+     * @return array
+     */
+    public static function getRecordDataWithQuery ($query, $formQuery)
+    {
+        $encodedQuery = self::getEncodedQuery($formQuery);
+        $query = $query->whereRaw($encodedQuery['query'], $encodedQuery['value']);
+
+        return self::getRecordData($query);
+    }
+
+    /**
      * @param $sourceType
      * @param $sourceId
      * @return array
@@ -310,5 +298,15 @@ class RecordManagement
 
         //send as a array of both object
         return [$sourceType, $sourceId];
+    }
+
+    /**
+     * @return mixed
+     */
+    private static function getDictionaryStarter ()
+    {
+        $splits = explode('\\', self::$model);
+
+        return end($splits);
     }
 }

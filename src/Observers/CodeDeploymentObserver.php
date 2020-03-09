@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class CodeDeploymentObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class CodeDeploymentObserver extends BaseObserver {
+class CodeDeploymentObserver extends BaseObserver
+{
     /**
      * @var array
      */

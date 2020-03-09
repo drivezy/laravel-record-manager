@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\PushNotification;
  * Class PushNotificationController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class PushNotificationController extends RecordController {
+class PushNotificationController extends RecordController
+{
     /**
      * @var string
      */

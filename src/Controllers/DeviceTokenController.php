@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\DeviceToken;
  * Class DeviceTokenController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class DeviceTokenController extends RecordController {
+class DeviceTokenController extends RecordController
+{
     /**
      * @var string
      */

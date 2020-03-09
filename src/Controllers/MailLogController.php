@@ -9,7 +9,8 @@ use Drivezy\LaravelRecordManager\Models\MailLog;
  * Class MailLogController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class MailLogController extends ReadRecordController {
+class MailLogController extends ReadRecordController
+{
 
     /**
      * @var string

@@ -4,6 +4,8 @@ namespace Drivezy\LaravelRecordManager\Models;
 
 use Drivezy\LaravelRecordManager\Observers\WhatsAppNotificationObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
  * Class WhatsAppNotification
@@ -17,7 +19,16 @@ class WhatsAppNotification extends BaseModel
     protected $table = 'dz_whatsapp_notifications';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Override the boot functionality to add up the observer
+     */
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new WhatsAppNotificationObserver());
+    }
+
+    /**
+     * @return BelongsTo
      */
     public function template ()
     {
@@ -25,7 +36,7 @@ class WhatsAppNotification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function notification ()
     {
@@ -33,7 +44,7 @@ class WhatsAppNotification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function recipients ()
     {
@@ -41,7 +52,7 @@ class WhatsAppNotification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     * @return HasMany
      */
     public function active_recipients ()
     {
@@ -49,19 +60,10 @@ class WhatsAppNotification extends BaseModel
     }
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * @return BelongsTo
      */
     public function run_condition ()
     {
         return $this->belongsTo(SystemScript::class);
-    }
-
-    /**
-     * Override the boot functionality to add up the observer
-     */
-    public static function boot ()
-    {
-        parent::boot();
-        self::observe(new WhatsAppNotificationObserver());
     }
 }

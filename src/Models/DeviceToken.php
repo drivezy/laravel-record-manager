@@ -5,29 +5,33 @@ namespace Drivezy\LaravelRecordManager\Models;
 use Drivezy\LaravelRecordManager\Observers\DeviceTokenObserver;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class DeviceToken
  * @package Drivezy\LaravelRecordManager\Models
  */
-class DeviceToken extends BaseModel {
+class DeviceToken extends BaseModel
+{
     /**
      * @var string
      */
     protected $table = 'dz_device_tokens';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Override the boot functionality to add up the observer
      */
-    public function user () {
-        return $this->belongsTo(LaravelUtility::getUserModelFullQualifiedName());
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new DeviceTokenObserver());
     }
 
     /**
-     * Override the boot functionality to add up the observer
+     * @return BelongsTo
      */
-    public static function boot () {
-        parent::boot();
-        self::observe(new DeviceTokenObserver());
+    public function user ()
+    {
+        return $this->belongsTo(LaravelUtility::getUserModelFullQualifiedName());
     }
 }

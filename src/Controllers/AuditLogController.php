@@ -2,9 +2,11 @@
 
 namespace Drivezy\LaravelRecordManager\Controllers;
 
+use AWS;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Drivezy\LaravelUtility\Library\DateUtil;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
@@ -18,7 +20,7 @@ class AuditLogController extends Controller
     /**
      * @param $id
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function getAuditLog ($id, Request $request)
     {
@@ -27,7 +29,7 @@ class AuditLogController extends Controller
 
         $table = LaravelUtility::getProperty('dynamo.audit.table', 'dz_audit_logs');
 
-        $client = \AWS::createClient('DynamoDb');
+        $client = AWS::createClient('DynamoDb');
         $iterator = $client->getIterator('Query',
             array(
                 'TableName'     => $table,

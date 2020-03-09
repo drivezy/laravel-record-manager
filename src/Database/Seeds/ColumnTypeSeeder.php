@@ -9,13 +9,15 @@ use Drivezy\LaravelUtility\Database\Seeds\BaseSeeder;
  * Class ColumnTypeSeeder
  * @package Drivezy\LaravelRecordManager\Database\Seeds
  */
-class ColumnTypeSeeder extends BaseSeeder {
+class ColumnTypeSeeder extends BaseSeeder
+{
     /**
      * Run the database seeds.
      *
      * @return void
      */
-    public function run () {
+    public function run ()
+    {
         //this would be locked down to the 20th record.
         //21st and above would be used for something else
 

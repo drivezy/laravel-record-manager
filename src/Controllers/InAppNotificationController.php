@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\InAppNotification;
  * Class InAppNotificationController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class InAppNotificationController extends RecordController {
+class InAppNotificationController extends RecordController
+{
     /**
      * @var string
      */

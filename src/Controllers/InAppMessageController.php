@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\InAppMessage;
  * Class InAppMessageController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class InAppMessageController extends RecordController {
+class InAppMessageController extends RecordController
+{
     /**
      * @var string
      */

@@ -1,37 +1,39 @@
 <?php
 
 use Drivezy\LaravelUtility\LaravelUtility;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class CreateDzSecurityRulesTable extends Migration {
+class CreateDzSecurityRulesTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_security_rules', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->string('name');
             $table->string('description')->nullable();
 
             $table->string('source_type')->nullable();
-            $table->unsignedBigInteger('source_id')->nullable();
+            $table->unsignedInteger('source_id')->nullable();
 
             $table->char('operation', 1)->nullable();
             $table->string('filter_condition')->nullable();
 
-            $table->unsignedBigInteger('script_id')->nullable();
+            $table->unsignedInteger('script_id')->nullable();
 
             $table->boolean('active')->default(true);
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('script_id')->references('id')->on('dz_system_scripts');
 
@@ -50,7 +52,8 @@ class CreateDzSecurityRulesTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::dropIfExists('dz_security_rules');
     }
 }

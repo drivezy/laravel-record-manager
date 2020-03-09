@@ -9,7 +9,8 @@ use Drivezy\LaravelUtility\Models\BaseModel;
  * Class CodeDeployment
  * @package Drivezy\LaravelRecordManager\Models
  */
-class CodeDeployment extends BaseModel {
+class CodeDeployment extends BaseModel
+{
     /**
      * @var string
      */
@@ -18,7 +19,8 @@ class CodeDeployment extends BaseModel {
     /**
      * Over ride the default observer
      */
-    protected static function boot () {
+    protected static function boot ()
+    {
         parent::boot();
         self::observe(new CodeDeploymentObserver());
     }

@@ -14,11 +14,13 @@ use Illuminate\Support\Facades\Crypt;
  * Class CodeCommitSyncJob
  * @package Drivezy\LaravelRecordManager\Jobs
  */
-class CodeCommitSyncJob extends BaseJob {
+class CodeCommitSyncJob extends BaseJob
+{
     /**
      * @return bool
      */
-    public function handle () {
+    public function handle ()
+    {
         parent::handle();
 
         $commit = CodeCommit::find($this->id);
@@ -57,7 +59,8 @@ class CodeCommitSyncJob extends BaseJob {
      * @param CodeCommit $commit
      * @return mixed
      */
-    private function getActiveServers (CodeCommit $commit) {
+    private function getActiveServers (CodeCommit $commit)
+    {
         return ServerDeployment::where('repository_name', $commit->repository_name)
             ->where('branch', $commit->branch)
             ->where('last_ping_time', '>', DateUtil::getPastTime(2))

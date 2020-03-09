@@ -4,29 +4,33 @@ namespace Drivezy\LaravelRecordManager\Models;
 
 use Drivezy\LaravelRecordManager\Observers\MailRecipientObserver;
 use Drivezy\LaravelUtility\Models\BaseModel;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
  * Class MailRecipient
  * @package Drivezy\LaravelRecordManager\Models
  */
-class MailRecipient extends BaseModel {
+class MailRecipient extends BaseModel
+{
     /**
      * @var string
      */
     protected $table = 'dz_mail_recipients';
 
     /**
-     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     * Override the boot functionality to add up the observer
      */
-    public function mail () {
-        return $this->belongsTo(MailLog::class);
+    public static function boot ()
+    {
+        parent::boot();
+        self::observe(new MailRecipientObserver());
     }
 
     /**
-     * Override the boot functionality to add up the observer
+     * @return BelongsTo
      */
-    public static function boot () {
-        parent::boot();
-        self::observe(new MailRecipientObserver());
+    public function mail ()
+    {
+        return $this->belongsTo(MailLog::class);
     }
 }

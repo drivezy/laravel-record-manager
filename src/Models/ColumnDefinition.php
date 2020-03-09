@@ -9,7 +9,8 @@ use Drivezy\LaravelUtility\Models\BaseModel;
  * Class ColumnDefinition
  * @package Drivezy\LaravelRecordManager\Models
  */
-class ColumnDefinition extends BaseModel {
+class ColumnDefinition extends BaseModel
+{
     /**
      * @var string
      */
@@ -18,7 +19,8 @@ class ColumnDefinition extends BaseModel {
     /**
      * Override the boot functionality to add up the observer
      */
-    public static function boot () {
+    public static function boot ()
+    {
         parent::boot();
         self::observe(new ColumnDefinitionObserver());
     }

@@ -56,7 +56,7 @@ class MailMessageListener
 
         $fileName = strtotime('now') . '-' . LaravelUtility::generateRandomAlphabets(10) . '.html';
 
-        $path = $userClass = config('custom-utility.s3_bucket') . '/mails//';
+        $path = $userClass = config('utility.s3_bucket') . '/mails//';
         Storage::disk('s3')->put($path . $fileName, $messageSent->message->getBody(), 'public');
 
         $mail = new MailLog();

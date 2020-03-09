@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\ModelRelationship;
  * Class ModelRelationshipController
  * @package Drivezy\LaravelRecordManager\Controller
  */
-class ModelRelationshipController extends RecordController {
+class ModelRelationshipController extends RecordController
+{
     /**
      * @var string
      */

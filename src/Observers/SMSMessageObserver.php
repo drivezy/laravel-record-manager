@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class SMSMessageObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class SMSMessageObserver extends BaseObserver {
+class SMSMessageObserver extends BaseObserver
+{
     /**
      * @var array
      */

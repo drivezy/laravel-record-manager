@@ -3,7 +3,6 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelRecordManager\Models\FormPreference;
-use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -11,7 +10,8 @@ use Illuminate\Support\Facades\Response;
  * Class FormPreferenceController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class FormPreferenceController extends RecordController {
+class FormPreferenceController extends RecordController
+{
     /**
      * @var string
      */
@@ -21,7 +21,8 @@ class FormPreferenceController extends RecordController {
      * @param Request $request
      * @return mixed
      */
-    public function store (Request $request) {
+    public function store (Request $request)
+    {
         $preference = FormPreference::firstOrNew([
             'source_type' => $request->source_type,
             'source_id'   => $request->source_id,

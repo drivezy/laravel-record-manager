@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\SMSNotification;
  * Class SMSNotificationController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class SMSNotificationController extends RecordController {
+class SMSNotificationController extends RecordController
+{
     /**
      * @var string
      */

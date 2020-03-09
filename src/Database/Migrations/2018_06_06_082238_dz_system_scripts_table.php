@@ -2,35 +2,37 @@
 
 use Drivezy\LaravelRecordManager\Database\Seeds\ScriptTypeSeeder;
 use Drivezy\LaravelUtility\LaravelUtility;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
 
-class DzSystemScriptsTable extends Migration {
+class DzSystemScriptsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_system_scripts', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->string('name');
             $table->string('description')->nullable();
 
-            $table->unsignedBigInteger('script_type_id')->nullable();
+            $table->unsignedInteger('script_type_id')->nullable();
 
             $table->string('source_type')->nullable();
-            $table->unsignedBigInteger('source_id')->nullable();
+            $table->unsignedInteger('source_id')->nullable();
             $table->string('source_column')->nullable();
 
             $table->text('script')->nullable();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('script_type_id')->references('id')->on('dz_lookup_values');
 
@@ -51,7 +53,8 @@ class DzSystemScriptsTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::dropIfExists('dz_system_scripts');
 
         ( new ScriptTypeSeeder() )->drop();

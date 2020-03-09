@@ -4,9 +4,10 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\ModelColumn;
 use Drivezy\LaravelRecordManager\Models\ModelRelationship;
+use Drivezy\LaravelUtility\Library\Message;
+use Exception;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
-use Message;
 
 /**
  * Class ListManager
@@ -70,7 +71,7 @@ class ListManager extends DataManager
                 if ( !$data ) {
                     Message::info('Relationship ' . $relationship . 'not found for one to one');
                     break;
-                };
+                }
 
                 //user does not have access to the model
                 if ( !ModelManager::validateModelAccess($data->reference_model, ModelManager::READ) ) {
@@ -130,7 +131,7 @@ class ListManager extends DataManager
             foreach ( $this->encryptedColumns as $column ) {
                 try {
                     $this->data[ $iterator ]->{$column} = Crypt::decrypt($item->{$column});
-                } catch ( \Exception $e ) {
+                } catch ( Exception $e ) {
                     $this->data[ $iterator ]->{$column} = 'Invalid Account Number';
                 }
             }
@@ -146,40 +147,6 @@ class ListManager extends DataManager
 
             ++$iterator;
         }
-    }
-
-    /**
-     * Get the stats data as part of the list condition
-     */
-    private function getStatsData ()
-    {
-        $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
-
-        if ( $this->query )
-            $sql .= ' and (' . $this->query . ')';
-
-        $sql .= $this->deletedQuery();
-
-        $this->stats = [
-            'total'  => DB::select(DB::raw($sql))[0]->count,
-            'page'   => $this->page,
-            'record' => $this->limit,
-        ];
-    }
-
-    /**
-     * If aggregation operation has been requested then do the same
-     */
-    private function setAggregationData ()
-    {
-        $sql = 'SELECT ' . $this->aggregation_operator . '(' . $this->aggregation_column . ')' . ' as ' . $this->aggregation_column . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
-
-        if ( $this->query )
-            $sql .= ' and (' . $this->query . ')';
-
-        $sql .= $this->deletedQuery();
-
-        $this->data = DB::select(DB::raw($sql));
     }
 
     /**
@@ -219,6 +186,18 @@ class ListManager extends DataManager
     }
 
     /**
+     * Adds deleted_at query to the string if trashed is false
+     * @return string
+     */
+    private function deletedQuery ()
+    {
+        if ( !$this->trashed )
+            return ' and `' . $this->base . '`.deleted_at is null';
+
+        return '';
+    }
+
+    /**
      * Get the count of records for stats for grouped data
      */
     private function setGroupingDataStats ()
@@ -239,15 +218,37 @@ class ListManager extends DataManager
     }
 
     /**
-     * Adds deleted_at query to the string if trashed is false
-     * @return string
+     * If aggregation operation has been requested then do the same
      */
-    private function deletedQuery ()
+    private function setAggregationData ()
     {
-        if ( !$this->trashed )
-            return ' and `' . $this->base . '`.deleted_at is null';
+        $sql = 'SELECT ' . $this->aggregation_operator . '(' . $this->aggregation_column . ')' . ' as ' . $this->aggregation_column . ' FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
 
-        return '';
+        if ( $this->query )
+            $sql .= ' and (' . $this->query . ')';
+
+        $sql .= $this->deletedQuery();
+
+        $this->data = DB::select(DB::raw($sql));
+    }
+
+    /**
+     * Get the stats data as part of the list condition
+     */
+    private function getStatsData ()
+    {
+        $sql = 'SELECT count(1) count FROM ' . $this->sql['tables'] . ' WHERE ' . $this->sql['joins'];
+
+        if ( $this->query )
+            $sql .= ' and (' . $this->query . ')';
+
+        $sql .= $this->deletedQuery();
+
+        $this->stats = [
+            'total'  => DB::select(DB::raw($sql))[0]->count,
+            'page'   => $this->page,
+            'record' => $this->limit,
+        ];
     }
 }
 

@@ -9,7 +9,8 @@ use Drivezy\LaravelUtility\LaravelUtility;
  * Class BaseNotification
  * @package Drivezy\LaravelRecordManager\Library\Notification
  */
-class BaseNotification {
+class BaseNotification
+{
     protected $data = null;
     protected $notification = null;
     protected $default_users = null;
@@ -20,7 +21,8 @@ class BaseNotification {
      * BaseNotification constructor.
      * @param array $args
      */
-    public function __construct ($args = []) {
+    public function __construct ($args = [])
+    {
         //assign the input params as pushed
         foreach ( $args as $key => $value )
             $this->{$key} = $value;
@@ -39,8 +41,10 @@ class BaseNotification {
      * @param null $data
      * @return bool
      */
-    protected function validateRunCondition($condition, $data = null){
+    protected function validateRunCondition ($condition, $data = null)
+    {
         $data = $data ? : $this->data;
+
         return self::validateCondition($condition, $data);
     }
 
@@ -49,7 +53,8 @@ class BaseNotification {
      * @param null $data
      * @return bool
      */
-    public static function validateCondition ($condition, $data = null) {
+    public static function validateCondition ($condition, $data = null)
+    {
         if ( !( $condition && $condition->script ) ) return true;
 
         $answer = false;
@@ -65,7 +70,8 @@ class BaseNotification {
      * @param $type
      * @return bool
      */
-    protected function validateSubscription ($user, $type) {
+    protected function validateSubscription ($user, $type)
+    {
         if ( !isset($user->id) ) return true;
 
         $count = NotificationSubscriber::where('notification_id', $this->notification->id)

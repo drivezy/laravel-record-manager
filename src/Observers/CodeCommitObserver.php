@@ -10,13 +10,15 @@ use Illuminate\Database\Eloquent\Model as Eloquent;
  * Class CodeCommitObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class CodeCommitObserver extends BaseObserver {
+class CodeCommitObserver extends BaseObserver
+{
     protected $rules = [
         'repository_name' => 'required',
         'branch'          => 'required',
     ];
 
-    public function created (Eloquent $model) {
+    public function created (Eloquent $model)
+    {
         parent::created($model);
 
         //run job to handle syncing of code across all servers

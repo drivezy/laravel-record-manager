@@ -4,13 +4,15 @@ namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelRecordManager\Models\ServerDeployment;
 use Drivezy\LaravelUtility\Library\DateUtil;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
  * Class ServerDeploymentController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class ServerDeploymentController extends RecordController {
+class ServerDeploymentController extends RecordController
+{
     /**
      * @var string
      */
@@ -19,9 +21,10 @@ class ServerDeploymentController extends RecordController {
     /**
      * Over riding the store method so as to avoid duplicate record
      * @param Request $request
-     * @return \Illuminate\Http\JsonResponse|mixed
+     * @return JsonResponse|mixed
      */
-    public function store (Request $request) {
+    public function store (Request $request)
+    {
         $deployment = ServerDeployment::firstOrNew($request->only(['private_ip', 'repository_name', 'branch']));
 
         if ( !$deployment->repository_name ) return failed_response('invalid params');

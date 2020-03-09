@@ -6,25 +6,27 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDzBusinessRulesTable extends Migration {
+class CreateDzBusinessRulesTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_business_rules', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
 
             $table->string('name');
             $table->string('description')->nullable();
 
-            $table->unsignedBigInteger('model_id')->nullable();
-            $table->unsignedBigInteger('execution_type_id')->nullable();
-            $table->unsignedBigInteger('script_id')->nullable();
-            $table->unsignedBigInteger('filter_condition_id')->nullable();
+            $table->unsignedInteger('model_id')->nullable();
+            $table->unsignedInteger('execution_type_id')->nullable();
+            $table->unsignedInteger('script_id')->nullable();
+            $table->unsignedInteger('filter_condition_id')->nullable();
 
             $table->string('model_hash')->nullable();
 
@@ -36,8 +38,8 @@ class CreateDzBusinessRulesTable extends Migration {
             $table->boolean('active')->default(true);
             $table->integer('order')->default(100);
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('model_id')->references('id')->on('dz_model_details');
             $table->foreign('script_id')->references('id')->on('dz_system_scripts');
@@ -61,7 +63,8 @@ class CreateDzBusinessRulesTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         ( new ExecutionTypeSeeder() )->drop();
         Schema::dropIfExists('dz_business_rules');
     }

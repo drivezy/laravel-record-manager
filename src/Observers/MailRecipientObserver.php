@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class MailLogObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class MailRecipientObserver extends BaseObserver {
+class MailRecipientObserver extends BaseObserver
+{
     /**
      * @var array
      */

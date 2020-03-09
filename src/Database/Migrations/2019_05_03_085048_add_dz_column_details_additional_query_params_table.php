@@ -4,13 +4,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddDzColumnDetailsAdditionalQueryParamsTable extends Migration {
+class AddDzColumnDetailsAdditionalQueryParamsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::table('dz_column_details', function (Blueprint $table) {
             $table->string('additional_query_params', 1024)->nullable();
         });
@@ -21,7 +23,8 @@ class AddDzColumnDetailsAdditionalQueryParamsTable extends Migration {
      *
      * @return void
      */
-    public function down () {
+    public function down ()
+    {
         Schema::table('dz_column_details', function (Blueprint $table) {
             $table->dropColumn('additional_query_params');
         });

@@ -10,26 +10,16 @@ use Illuminate\Support\Collection;
 class ColumnManager
 {
 
+    public $columns = [];
+    public $restricted = [];
+    public $restrictedIdentifiers = [];
+    public $allowed = [];
+    public $allowedIdentifiers = [];
+    public $encryptedColumns = [];
+    public $sourceColumns = [];
     private $rules = [];
     private $data = null;
 
-    public $columns = [];
-
-    public $restricted = [];
-    public $restrictedIdentifiers = [];
-
-    public $allowed = [];
-    public $allowedIdentifiers = [];
-
-    public $encryptedColumns = [];
-    public $sourceColumns = [];
-
-    /**
-     * ColumnManager constructor.
-     * @param $type
-     * @param $id
-     * @param array $obj
-     */
     public function __construct ($type, $id, $obj = [])
     {
         $this->source_type = $type;
@@ -42,8 +32,7 @@ class ColumnManager
     }
 
     /**
-     * segregate all columns that are defined for the given model
-     * under the boundary of the security rules
+     *
      */
     public function process ()
     {
@@ -58,14 +47,14 @@ class ColumnManager
                 array_push($this->allowed, $column);
                 array_push($this->allowedIdentifiers, $column->name);
 
-                //segregate the encrypted columns
                 if ( $column->column_type_id == 18 )
                     array_push($this->encryptedColumns, $column->name);
 
-                //segregate the source columns
                 if ( $column->column_type_id == 20 ) {
                     array_push($this->sourceColumns, $column->name);
                 }
+
+
             } else {
                 array_push($this->restricted, $column);
                 array_push($this->restrictedIdentifiers, $column->name);

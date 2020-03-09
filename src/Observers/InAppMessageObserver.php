@@ -8,7 +8,8 @@ use Drivezy\LaravelUtility\Observers\BaseObserver;
  * Class InAppMessageObserver
  * @package Drivezy\LaravelRecordManager\Observers
  */
-class InAppMessageObserver extends BaseObserver {
+class InAppMessageObserver extends BaseObserver
+{
     /**
      * @var array
      */

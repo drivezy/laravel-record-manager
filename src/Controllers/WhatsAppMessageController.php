@@ -3,6 +3,7 @@
 namespace Drivezy\LaravelRecordManager\Controllers;
 
 use Drivezy\LaravelRecordManager\Models\WhatsAppMessage;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 /**
@@ -19,7 +20,7 @@ class WhatsAppMessageController extends RecordController
     /**
      * @param Request $request
      * @param $id
-     * @return \Illuminate\Http\JsonResponse
+     * @return JsonResponse
      */
     public function handleCallbackUrl (Request $request, $id)
     {

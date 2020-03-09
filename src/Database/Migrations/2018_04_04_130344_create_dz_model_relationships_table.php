@@ -10,13 +10,15 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDzModelRelationshipsTable extends Migration {
+class CreateDzModelRelationshipsTable extends Migration
+{
     /**
      * Run the migrations.
      *
      * @return void
      */
-    public function up () {
+    public function up ()
+    {
         Schema::create('dz_model_relationships', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
@@ -24,21 +26,21 @@ class CreateDzModelRelationshipsTable extends Migration {
             $modelColumn = ( new Column() )->getTable();
             $relationshipTable = ( new LookupValue() )->getTable();
 
-            $table->bigIncrements('id');
-            $table->unsignedBigInteger('model_id')->nullable();
+            $table->increments('id');
+            $table->unsignedInteger('model_id')->nullable();
 
             $table->string('name');
             $table->string('display_name');
             $table->string('description')->nullable();
             $table->string('join_definition')->nullable();
 
-            $table->unsignedBigInteger('reference_type_id')->nullable();
-            $table->unsignedBigInteger('reference_model_id')->nullable();
-            $table->unsignedBigInteger('source_column_id')->nullable();
-            $table->unsignedBigInteger('alias_column_id')->nullable();
+            $table->unsignedInteger('reference_type_id')->nullable();
+            $table->unsignedInteger('reference_model_id')->nullable();
+            $table->unsignedInteger('source_column_id')->nullable();
+            $table->unsignedInteger('alias_column_id')->nullable();
 
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->unsignedBigInteger('updated_by')->nullable();
+            $table->unsignedInteger('created_by')->nullable();
+            $table->unsignedInteger('updated_by')->nullable();
 
             $table->foreign('model_id')->references('id')->on($modelTable);
 
@@ -56,7 +58,7 @@ class CreateDzModelRelationshipsTable extends Migration {
         });
 
         //populate the data model table
-        (new ModelRelationshipTypeSeeder())->run();
+        ( new ModelRelationshipTypeSeeder() )->run();
         ( new DataModelSeeder() )->run();
     }
 
@@ -65,8 +67,9 @@ class CreateDzModelRelationshipsTable extends Migration {
      *
      * @return void
      */
-    public function down () {
-        (new ModelRelationshipTypeSeeder())->drop();
+    public function down ()
+    {
+        ( new ModelRelationshipTypeSeeder() )->drop();
         Schema::dropIfExists('dz_model_relationships');
     }
 }

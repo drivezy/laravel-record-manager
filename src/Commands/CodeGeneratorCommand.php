@@ -96,7 +96,7 @@ class CodeGeneratorCommand extends Command
         $template = file_get_contents(__DIR__ . '/../Templates/MigrationTemplate.stub');
         unlink($migrationFile);
 
-        $contents = str_replace('$table->bigIncrements(\'id\');', $template, $contents);
+        $contents = str_replace('$table->increments(\'id\');', $template, $contents);
         file_put_contents($migrationFile, $contents);
 
         $this->info('Created Migration File : ' . str_replace(database_path(), '', $migrationFile));
@@ -161,7 +161,7 @@ class CodeGeneratorCommand extends Command
      */
     public function replaceContents ($content)
     {
-        $content = str_replace('{{app}}', config('custom-utility.app_namespace'), $content);
+        $content = str_replace('{{app}}', config('utility.app_namespace'), $content);
         $content = str_replace('{{namespace}}', $this->namespace, $content);
         $content = str_replace('{{name}}', $this->name, $content);
         $content = str_replace('{{table}}', $this->table, $content);

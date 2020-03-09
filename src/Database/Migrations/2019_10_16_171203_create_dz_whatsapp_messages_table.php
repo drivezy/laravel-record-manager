@@ -17,7 +17,7 @@ class CreateDzWhatsappMessagesTable extends Migration
         Schema::create('dz_whatsapp_messages', function (Blueprint $table) {
             $userTable = LaravelUtility::getUserTable();
 
-            $table->bigIncrements('id');
+            $table->increments('id');
             $table->unsignedInteger('user_id')->nullable();
 
             $table->string('mobile');

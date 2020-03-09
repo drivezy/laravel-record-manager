@@ -8,7 +8,8 @@ use Drivezy\LaravelRecordManager\Models\BusinessRule;
  * Class BusinessRuleController
  * @package Drivezy\LaravelRecordManager\Controllers
  */
-class BusinessRuleController extends RecordController {
+class BusinessRuleController extends RecordController
+{
     /**
      * @var string
      */

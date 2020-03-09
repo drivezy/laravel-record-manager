@@ -6,19 +6,23 @@ use Drivezy\LaravelRecordManager\Library\Notification\Templates\NotificationMail
 use Drivezy\LaravelRecordManager\Models\EmailNotification;
 use Drivezy\LaravelUtility\LaravelUtility;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Debug\Exception\FatalThrowableError;
 
-class EmailNotificationManager extends BaseNotification {
+class EmailNotificationManager extends BaseNotification
+{
     /**
      * process all email notifications required for the given notification
      */
-    public function process () {
+    public function process ()
+    {
         $this->processEmailNotifications();
     }
 
     /**
      * push email notification
      */
-    private function processEmailNotifications () {
+    private function processEmailNotifications ()
+    {
         $emailNotifications = EmailNotification::with(['active_recipients.custom_query', 'active_recipients.run_condition', 'run_condition', 'body'])->where('notification_id', $this->notification->id)->get();
 
         foreach ( $emailNotifications as $emailNotification ) {
@@ -32,9 +36,10 @@ class EmailNotificationManager extends BaseNotification {
     /**
      * send individual email notification to users
      * @param $emailNotification
-     * @throws \Symfony\Component\Debug\Exception\FatalThrowableError
+     * @throws FatalThrowableError
      */
-    private function processEmailNotification ($emailNotification) {
+    private function processEmailNotification ($emailNotification)
+    {
         $users = ( new NotificationUserManager($this->user_request_object) )->getTotalUsers($emailNotification->default_users, $emailNotification->active_recipients);
 
         $subject = LaravelUtility::parseBladeToString($emailNotification->subject, $this->data);

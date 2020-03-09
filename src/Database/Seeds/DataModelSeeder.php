@@ -24,7 +24,7 @@ class DataModelSeeder extends BaseSeeder
             [
                 'name'                => 'User',
                 'description'         => 'User defined in the system',
-                'namespace'           => config('custom-utility.app_namespace'),
+                'namespace'           => config('utility.app_namespace'),
                 'allowed_permissions' => 'raed',
                 'table_name'          => LaravelUtility::getUserTable(),
             ],

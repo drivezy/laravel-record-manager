@@ -5,12 +5,14 @@ namespace Drivezy\LaravelRecordManager\Jobs;
 use Drivezy\LaravelRecordManager\Library\AuditManager;
 use Drivezy\LaravelRecordManager\Library\ObserverEvaluator;
 use Drivezy\LaravelUtility\Job\BaseJob;
+use Exception;
 
 /**
  * Class ObserverEventManagerJob
  * @package Drivezy\LaravelRecordManager\Jobs
  */
-class ObserverEventManagerJob extends BaseJob {
+class ObserverEventManagerJob extends BaseJob
+{
     public static $enabled = true;
     public $object;
 
@@ -18,15 +20,17 @@ class ObserverEventManagerJob extends BaseJob {
      * ObserverEventManagerJob constructor.
      * @param $object
      */
-    public function __construct ($object) {
+    public function __construct ($object)
+    {
         $this->object = serialize($object);
     }
 
     /**
      * @return bool|void
-     * @throws \Exception
+     * @throws Exception
      */
-    public function handle () {
+    public function handle ()
+    {
         parent::handle();
 
         //validate if observer event processing is enabled or not
