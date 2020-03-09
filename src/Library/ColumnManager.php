@@ -4,8 +4,11 @@ namespace Drivezy\LaravelRecordManager\Library;
 
 use Drivezy\LaravelRecordManager\Models\Column;
 use Drivezy\LaravelRecordManager\Models\DataModel;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Collection;
 
-class ColumnManager {
+class ColumnManager
+{
 
     private $rules = [];
     private $data = null;
@@ -21,7 +24,14 @@ class ColumnManager {
     public $encryptedColumns = [];
     public $sourceColumns = [];
 
-    public function __construct ($type, $id, $obj = []) {
+    /**
+     * ColumnManager constructor.
+     * @param $type
+     * @param $id
+     * @param array $obj
+     */
+    public function __construct ($type, $id, $obj = [])
+    {
         $this->source_type = $type;
         $this->source_id = $id;
 
@@ -32,9 +42,11 @@ class ColumnManager {
     }
 
     /**
-     *
+     * segregate all columns that are defined for the given model
+     * under the boundary of the security rules
      */
-    public function process () {
+    public function process ()
+    {
         $this->columns = $this->getDictionary();
 
         foreach ( $this->columns as $column ) {
@@ -46,14 +58,14 @@ class ColumnManager {
                 array_push($this->allowed, $column);
                 array_push($this->allowedIdentifiers, $column->name);
 
+                //segregate the encrypted columns
                 if ( $column->column_type_id == 18 )
                     array_push($this->encryptedColumns, $column->name);
 
+                //segregate the source columns
                 if ( $column->column_type_id == 20 ) {
                     array_push($this->sourceColumns, $column->name);
                 }
-
-
             } else {
                 array_push($this->restricted, $column);
                 array_push($this->restrictedIdentifiers, $column->name);
@@ -62,9 +74,10 @@ class ColumnManager {
     }
 
     /**
-     * @return Column[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Support\Collection
+     * @return Column[]|Builder[]|\Illuminate\Database\Eloquent\Collection|Collection
      */
-    public function getDictionary () {
+    public function getDictionary ()
+    {
         return Column::with(['reference_model'])->where('source_type', $this->source_type)
             ->where('source_id', $this->source_id)
             ->get();
@@ -76,7 +89,8 @@ class ColumnManager {
      * @param $sourceId
      * @return object
      */
-    public static function getSourceColumnDetails ($source, $sourceId) {
+    public static function getSourceColumnDetails ($source, $sourceId)
+    {
         //find the model against which record is to be found out
         $source = DataModel::where('model_hash', $source)->first();
         $source_id = $sourceId;

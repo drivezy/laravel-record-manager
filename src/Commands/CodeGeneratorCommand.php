@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Artisan;
  * Class CodeGeneratorCommand
  * @package Drivezy\LaravelRecordManager\Console
  */
-class CodeGeneratorCommand extends Command {
+class CodeGeneratorCommand extends Command
+{
 
     /**
      * @var
@@ -47,7 +48,8 @@ class CodeGeneratorCommand extends Command {
      *
      * @return void
      */
-    public function __construct () {
+    public function __construct ()
+    {
         parent::__construct();
     }
 
@@ -56,7 +58,8 @@ class CodeGeneratorCommand extends Command {
      *
      * @return mixed
      */
-    public function handle () {
+    public function handle ()
+    {
         $this->table = $this->ask('What is the name of the table');
         $this->namespace = $this->ask('What is the namespace of deployment');
         $this->name = $this->ask('What is the model name');
@@ -70,7 +73,8 @@ class CodeGeneratorCommand extends Command {
     /**
      * Generate files required for the development in one shot
      */
-    public function generateFile () {
+    public function generateFile ()
+    {
         $this->generateMigration();
         $this->verifyNamespaceValidity();
         $this->generateResourceFiles();
@@ -79,7 +83,8 @@ class CodeGeneratorCommand extends Command {
     /**
      * Generate migration file and then update it according to the stub file
      */
-    public function generateMigration () {
+    public function generateMigration ()
+    {
         Artisan::call('make:migration', [
             'name'     => 'create_' . $this->table . '_table',
             '--create' => $this->table,
@@ -101,7 +106,8 @@ class CodeGeneratorCommand extends Command {
      * Verify if the directory exists for the namespace
      * If not then create one
      */
-    public function verifyNamespaceValidity () {
+    public function verifyNamespaceValidity ()
+    {
         //check if models directory is created in app
         if ( !is_dir(app_path() . '/Models') ) mkdir(app_path() . '/Models');
 
@@ -130,7 +136,8 @@ class CodeGeneratorCommand extends Command {
     /**
      * Create observer, model and then controller
      */
-    public function generateResourceFiles () {
+    public function generateResourceFiles ()
+    {
         $content = $this->replaceContents(file_get_contents(__DIR__ . '/../Templates/ObserverTemplate.stub'));
         $file = app_path() . '/Observers/' . $this->namespace . '/' . $this->name . 'Observer.php';
         file_put_contents($file, $content);
@@ -152,8 +159,9 @@ class CodeGeneratorCommand extends Command {
      * @param $content
      * @return mixed
      */
-    public function replaceContents ($content) {
-        $content = str_replace('{{app}}', config('utility.app_namespace'), $content);
+    public function replaceContents ($content)
+    {
+        $content = str_replace('{{app}}', config('custom-utility.app_namespace'), $content);
         $content = str_replace('{{namespace}}', $this->namespace, $content);
         $content = str_replace('{{name}}', $this->name, $content);
         $content = str_replace('{{table}}', $this->table, $content);

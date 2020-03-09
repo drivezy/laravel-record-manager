@@ -5,6 +5,7 @@ namespace Drivezy\LaravelRecordManager\Library;
 use Drivezy\LaravelRecordManager\Models\DataModel;
 use Drivezy\LaravelRecordManager\Models\ListPreference;
 use Drivezy\LaravelUtility\Facade\Message;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -78,6 +79,7 @@ class AdminResponseManager {
 
     /**
      * @param $id
+     * @return JsonResponse
      */
     public function show ($id) {
         $request = $this->request;

@@ -87,7 +87,6 @@ class RecordManager extends DataManager
                     break;
                 }
 
-
                 if ( $first && $data->reference_type_id == 42 ) {
                     if ( !isset($this->detailArray[ $relationship ]) ) {
                         $sourceColumn = $data->source_column_id ? $data->source_column->name : 'id';
@@ -121,7 +120,8 @@ class RecordManager extends DataManager
                         ];
                     }
 
-                    array_push($this->detailArray[ $relationship ]['includes'], str_replace($relationship . '.', '', $include));
+                    //load the extra includes that is part of the relationship
+                    array_push($this->detailArray[ $relationship ]['includes'], $this->getIncludes($relationship, $include));
                     break;
                 }
 
@@ -169,5 +169,18 @@ class RecordManager extends DataManager
             $this->data->{$column} = 'Object-' . $sourceRecord[0];
             $this->data->{$sourceId} = 'Record-' . $sourceRecord[1];
         }
+    }
+
+    /**
+     * @param $relationship
+     * @param $include
+     * @return string|string[]
+     */
+    private function getIncludes ($relationship, $include)
+    {
+        $tab = str_replace($relationship . '.', '', $include);
+        if ( $tab != $relationship ) return $tab;
+
+        return str_replace($relationship, null, $include);
     }
 }

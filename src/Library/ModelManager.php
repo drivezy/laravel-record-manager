@@ -143,6 +143,7 @@ class ModelManager
     }
 
     /**
+     * get all columns that are defined as audit column
      * @param $modelHash
      * @return array
      */
@@ -159,14 +160,45 @@ class ModelManager
         if ( !$model ) return [];
 
         $enabled = [];
-        $columns = Column::where('source_type', '07b76506c43824b152745fe7df768486')->where('source_id', $model->id)->where('is_double_audit_enabled', true)->get();
+        $columns = Column::where('source_type', '07b76506c43824b152745fe7df768486')->where('source_id', $model->id)->where('is_double_audit_enabled', true)->pluck('name');
         foreach ( $columns as $column )
-            array_push($enabled, $column->name);
+            array_push($enabled, $column);
 
         //set the cache so as to get the value quickly next time
         Cache::put($key, $enabled, 15 * 60);
 
         return $enabled;
 
+    }
+
+    /**
+     * get all columns that are defined as dynamodb element
+     * make sure that result is always cached so as record can be quickly fetched
+     * @param $modelHash
+     * @return array|mixed
+     */
+    public static function getDynamoColumns ($modelHash, $reset = false)
+    {
+        $key = 'column-dynamo-db-' . $modelHash;
+
+        if ( !$reset ) {
+            //check if cache is available
+            $enabledColumns = Cache::get($key, null);
+            if ( $enabledColumns ) return $enabledColumns;
+        }
+
+        //get the model against which data is to be fetched
+        $model = DataModel::where('model_hash', $modelHash)->first();
+        if ( !$model ) return [];
+
+        $enabledColumns = [];
+        $columns = Column::where('source_type', '07b76506c43824b152745fe7df768486')->where('source_id', $model->id)->where('column_type_id', 25)->pluck('name');
+        foreach ( $columns as $column )
+            array_push($enabledColumns, $column);
+
+        //set the cache so as to get the value quickly next time
+        Cache::put($key, $enabledColumns, 15 * 60);
+
+        return $enabledColumns;
     }
 }

@@ -12,12 +12,14 @@ use Illuminate\Support\Facades\Storage;
  * Class MailMessageListener
  * @package Drivezy\LaravelRecordManager\Library\Listeners
  */
-class MailMessageListener {
+class MailMessageListener
+{
 
     /**
      * @param MessageSent $messageSent
      */
-    public function handle (MessageSent $messageSent) {
+    public function handle (MessageSent $messageSent)
+    {
         $users = [];
         $primaryUser = null;
         foreach ( $messageSent->message->getTo() as $key => $item ) {
@@ -54,7 +56,7 @@ class MailMessageListener {
 
         $fileName = strtotime('now') . '-' . LaravelUtility::generateRandomAlphabets(10) . '.html';
 
-        $path = $userClass = config('utility.s3_bucket') . '/mails//';
+        $path = $userClass = config('custom-utility.s3_bucket') . '/mails//';
         Storage::disk('s3')->put($path . $fileName, $messageSent->message->getBody(), 'public');
 
         $mail = new MailLog();

@@ -35,7 +35,10 @@ class DictionaryManager
     /**
      * @var array
      */
-    private $userRelationshipNames = ['created_user', 'updated_user'];
+    private $userRelationshipNames = [
+        'created_by' => 'created_user',
+        'updated_by' => 'created_user',
+    ];
 
     /**
      * DictionaryManager constructor.
@@ -53,6 +56,8 @@ class DictionaryManager
     {
         self::loadModelColumns();
         self::loadModelMethods();
+
+        $this->setWhoColumnMapping();
     }
 
     /**
@@ -103,6 +108,7 @@ class DictionaryManager
         $methods = $class->getMethods();
 
         foreach ( $methods as $method ) {
+            //check for the special who is columns
             if ( in_array($method->name, $this->userRelationshipNames) ) {
                 self::attachModelRelationship($method->name, [
                     'reference_model_id' => 1,
@@ -110,6 +116,7 @@ class DictionaryManager
                 continue;
             }
 
+            //check for all others user defined relationships
             if ( $method->class == $className && !$method->isStatic() ) {
                 self::attachModelRelationship($method->name);
             }
@@ -149,6 +156,7 @@ class DictionaryManager
      */
     private function attachModelRelationship ($method, $arr = [])
     {
+        //find existing relationship if defined in the system
         $record = ModelRelationship::firstOrNew([
             'name'     => $method,
             'model_id' => $this->model->id,
@@ -220,6 +228,26 @@ class DictionaryManager
         if ( substr($method, -1) == 's' ) return 42;
 
         return 41;
+    }
+
+    /**
+     * align the created user relationship against user record
+     */
+    private function setWhoColumnMapping ()
+    {
+        foreach ( $this->userRelationshipNames as $key => $value ) {
+            //find appropriate column against the given model
+            $column = Column::where('source_type', md5(DataModel::class))->where('source_id', $this->model->id)->where('name', $key)->first();
+
+            //find the model relationship against the given column
+            $relationship = ModelRelationship::where('model_id', $this->model->id)->where('name', $value)->first();
+
+            //if no record is found, look for another one
+            if ( !( $column && $relationship ) ) continue;
+
+            $relationship->source_column_id = $column->id;
+            $relationship->save();
+        }
     }
 
     /**

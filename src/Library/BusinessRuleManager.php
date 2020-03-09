@@ -21,6 +21,7 @@ class BusinessRuleManager {
 
     /**
      * @param $model
+     * @return array
      */
     public static function getQueryStrings ($model) {
         //validate if the business rule is to be processed at the high level
@@ -49,7 +50,7 @@ class BusinessRuleManager {
 
     /**
      * @param Eloquent $model
-     * @return array
+     * @return Eloquent
      */
     public static function handleCreatingRules (Eloquent $model) {
         //validate if the business rule is to be processed at the high level
@@ -66,6 +67,7 @@ class BusinessRuleManager {
 
     /**
      * @param Eloquent $model
+     * @return Eloquent
      */
     public static function handleCreatedRules (Eloquent $model) {
         //validate if the business rule is to be processed at the high level
@@ -82,7 +84,7 @@ class BusinessRuleManager {
 
     /**
      * @param Eloquent $model
-     * @return array
+     * @return Eloquent
      */
     public static function handleUpdatingRules (Eloquent $model) {
         //validate if the business rule is to be processed at the high level
@@ -99,6 +101,7 @@ class BusinessRuleManager {
 
     /**
      * @param Eloquent $model
+     * @return Eloquent
      */
     public static function handleUpdateRules (Eloquent $model) {
         //validate if the business rule is to be processed at the high level
@@ -115,7 +118,7 @@ class BusinessRuleManager {
 
     /**
      * @param Eloquent $model
-     * @return array
+     * @return Eloquent
      */
     public static function handleDeletingRules (Eloquent $model) {
         //validate if the business rule is to be processed at the high level
@@ -132,6 +135,7 @@ class BusinessRuleManager {
 
     /**
      * @param Eloquent $model
+     * @return Eloquent
      */
     public static function handleDeletedRules (Eloquent $model) {
         //validate if the business rule is to be processed at the high level
