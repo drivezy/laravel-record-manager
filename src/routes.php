@@ -83,4 +83,5 @@ Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers',
 
 Route::group(['namespace' => 'Drivezy\LaravelRecordManager\Controllers'], function () {
     Route::get('whatsAppCallback/{id}', 'WhatsAppMessageController@handleCallbackUrl');
+    Route::post('deviceToken', 'DeviceTokenController@store');
 });

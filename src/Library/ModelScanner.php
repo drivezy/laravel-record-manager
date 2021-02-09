@@ -17,7 +17,7 @@ class ModelScanner
      */
     public static function scanModels ()
     {
-        self::loadModels(app_path() . '/Models', config('utility.app_namespace') . '\\Models');
+        self::loadModels(app_path() . '/Models', config('custom-utility.app_namespace') . '\\Models');
     }
 
     /**
@@ -27,8 +27,10 @@ class ModelScanner
      */
     public static function loadModels ($path, $namespace)
     {
+        echo "Processing model path ${path}" . PHP_EOL;
         $files = self::getDirectoryListings($path);
         foreach ( $files as $file ) {
+            echo "Processing Model : ${file}" . PHP_EOL;
             $strippedFile = str_replace('.php', '', $file);
 
             $pwd = $path . '/' . $strippedFile;
