@@ -109,6 +109,11 @@ trait DynamoEloquentTrait
         //get current data from dynamo db
         $currentData = $this->getModelRecord();
 
+        if ( !count($currentData) ) {
+            $currentData['model_hash'] = ['S' => '' . $this->class_hash . ''];
+            $currentData['model_id'] = ['N' => '' . $this->id . ''];
+        }
+
         //merge old data with new data and override matching keys with new data
         $currentData = array_merge($currentData, $attributes);
         if ( !count($currentData) ) return;
